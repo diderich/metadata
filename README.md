@@ -19,17 +19,16 @@ data is coming from and/or how it is encoded.
 
 The package has been developed in the context of developing the proprietary HOLIDAY photo database software (see
 https://www.cdsp.photo/technology/holiday-database/), the end-user. As such it may lack functionality relevant for
-different uses. Tis explains the use of the top-level namespace prefix `\Holiday`.
+different uses. This explains the use of the top-level namespace prefix `\Holiday`.
 
 Most of the decoding and encoding of the JPG image file into different header segments as well as the decoding and
 encoding of the IPTC data is based on code from **The PHP JPEG Metadata Toolkit**
 (https://www.ozhiker.com/electronics/pjmt/), which is made available through the GNU Public License Version 1.12 and is
-hereby duly acknowledged. In the future, the decoding of the EXIF segment will also rely on the code in the same
-library.
+hereby duly acknowledged.
 
 
 ## Transparent access to JPG image metadata
-The class `\Holiday\Meatdata` allows reading and writing the most relevant (from the author's perspective) data in JPEG
+The class `\Holiday\Metadata` allows reading and writing the most relevant (from the author's perspective) data in JPEG
 files and access them in a transparent way, independent of how they are stored. Data for a field FIELD_ID can be read
 from file FILENAME using the following code. If no data is found `$data` will be equal to `false`, otherwise contain the
 read data, which may be a string, an integer, or an array:
@@ -37,7 +36,7 @@ read data, which may be a string, an integer, or an array:
 ```
 $metadata = new \Holiday\Metadata();
 
-$meadata->read(FILENAME);
+$metadata->read(FILENAME);
 $data = $metadata->get(\Holiday\Metadata::FIELD_ID);
 ```
 
@@ -46,10 +45,10 @@ using the code:
 
 ``` 
 $metadata->set(\Holiday\Metadata::FIELD_ID, NEW_DATA); 
-$metadata->write(NEWFILENAME);
+$metadata->write(NEW_FILENAME);
 ``` 
 
-The file NEW_FILENAME is automatically owerrwritten.
+The file NEW_FILENAME is automatically overwritten.
 
 If you want to past the editable part of the metadata from one file FILENAME to another one named PASTE_FILENAME (which
 must exist), you can do so use the following code:
@@ -57,8 +56,8 @@ must exist), you can do so use the following code:
 ```
 $metadata = new \Holiday\Metadata();
 
-$meadata->read(FILENAME);
-$meadata->paste(PASTE_FILENAME);
+$metadata->read(FILENAME);
+$metadata->paste(PASTE_FILENAME);
 ```
 
 The metadata is read in the following order, the first data read taking priority, i.e, if the CAPTION data is stored in
@@ -74,7 +73,7 @@ data. In the current implementation, user modifiable data stored in the EXIF/APP
 user-editable data and b) the complexity of the EXIF/APP1 data format.
 
 ## Exception handling
-All functions return `fase`in case of non-fatal errors. Fatal errors trigger the exception `\Holiday\Metatata\Exception`
+All functions return `false`in case of non-fatal errors. Fatal errors trigger the exception `\Holiday\Metadata\Exception`
 to be thrown (which extends the generic `Exception` class). The numerical code associated with an error
 (`$exception->getCode()`) allows identifying the type of the error. Constants are defined in the exception class
 `\Holiday\Metadata\Exception`.
@@ -83,10 +82,10 @@ The function `\Holiday\Metadata\Exception::getData()`returns additional data rel
 readable form.
 
 All exception messages are translatable using the `gettext` library. A translation template is provided in the `locale`
-diretory.
+directory.
 
 # Example
-The following exampls shows how to read, modify, and write metadata from JPG files in a transparent way (see also
+The following example shows how to read, modify, and write metadata from JPG files in a transparent way (see also
 `test/example.php`). Is requires/assumes a PSR-4 compliant mechanism for loading the class files.
 
 ```
@@ -95,7 +94,7 @@ $metadata = new \Holiday\Metadata();
 
 try {
   // Read metadata from the image file FILENAME
-  $metadat->read(FILENAME);
+  $metadata->read(FILENAME);
 
   // Read some of the metadata (assuming metadata is available)
   $caption = $metadata->get(\Holiday\Metadata::CAPTION);
@@ -131,7 +130,7 @@ try {
 ```
 
 # File and directory structure
-The directory structure shown describes the most relevant diretories and files of the library.
+The directory structure shown describes the most relevant directories and files of the library.
 
 All class files are commended in a phpDocumenter (https://www.phpdoc.org/) compliant way.
 ```
@@ -164,31 +163,31 @@ th XMP format.
 
 No exhaustive test concept for the classes exists and/or is planned.
 
-If you find a JPG file that is not correcly decoded, please raise an issue in the `Issue` section AND include a copy of
-the JPG file. Isses without accompagnying JPG data will be closed by the author without consideration.
+If you find a JPG file that is not correctly decoded, please raise an issue in the `Issue` section AND include a copy of
+the JPG file. Issus without accompanying JPG data will be closed by the author without consideration.
 
 
 # Open issues
 The following limitations currently exist and are acknowledged as such:
 * IPTC/APP13: Only Latin 1 and UTF-8 encoded data can be read. Other data formats will throw an exception.
-* XMP/APP1: The classes Xmp and/or XmpDocument may nor recognize all poorly/incorretcly formatted XMP/APP1 data.
+* XMP/APP1: The classes Xmp and/or XmpDocument may nor recognize all poorly/incorrectly formatted XMP/APP1 data.
 * XMP/APP1: If an data element TAG is updated in the namespace NS, then it will also be updated in the namespaces
   Iptc4xmpCore, dc, aux, xmp, photoshop, and photomechanic, if a data entry exists in those name spaces. Other name
   spaces, for example, used by other applications, are not updated. This may result in inconsistent data.
-* EXIF/APP1: Although all data read is returned, only the data considered relevant is decoded. For example, thumbails or
-  markernotes are not decoded. Data not decoded is return as a human readable hexadecimal string.
+* EXIF/APP1: Although all data read is returned, only the data considered relevant is decoded. For example, thumbnails
+  or markernotes are not decoded. Data not decoded is return as a human readable hexadecimal string.
 * EXIF/APP1: Due to the complexity of writing EXIF/APP1 data, the IPTC/NAA records in the EXIF IFD are not updated. They
   are overwritten with \x00.
 The author is not aiming a removing these limitations in the future.
 
 
 # Support
-Free communitiy support is available on `github.com` using the Issues and Discussion sections. The author may
+Free community support is available on `github.com` using the Issues and Discussion sections. The author may
 participate in providing free support, but does not guarantee to do so. Guaranteed paid support is available from
 the author.
 
 
-# Project status and roadmap
+# Project status and road-map
 The project is actively maintained. Not new features are currently planned.
 
 
