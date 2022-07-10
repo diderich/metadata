@@ -1,0 +1,26 @@
+{
+	"name": "diderich/metadata",
+	"description": "HOLIDAY - Metadata / PHP classes for reading and writing metadata from/to JPEG files",
+	"type": "library",
+	"keywords": [ "jpeg", "image", "metadata" ],
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "Claude Diderich",
+			"email": "cdiderich@cdsp.photo",
+			"homepage": "https://www.cdsp.photo",
+			"role": "Developer"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"Holiday\\": "src/"
+		}
+	},
+	"require": {
+		"php": ">=8.0",
+		"ext-dom": "*",
+		"ext-exif": "*",
+		"ext-xml": "*"
+	}
+}

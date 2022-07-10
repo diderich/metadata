@@ -1,0 +1,289 @@
+# HOLIDAY - Metadata / PHP classes for reading and writing metadata from JPG files
+# Copyright (c) 2022 by Claude.Diderich (cdiderich@cdsp.photo)
+# This file is distributed under the GPL-3.0 license.
+#
+#, fuzzy
+msgid "HOLIDAY - Metadata / PHP classes for reading and writing metadata from JPG files"
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-04 12:00+0200\n"
+"PO-Revision-Date: 2022-07-04 12:00+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/Metadata.php:148 src/Metadata/Jpeg.php:56
+msgid "File not found"
+msgstr ""
+
+#: src/Metadata.php:181 src/Metadata.php:201 src/Metadata/Jpeg.php:307
+msgid "No image and metadata previously read"
+msgstr ""
+
+#: src/Metadata.php:205
+msgid "File to copy metadata to not found"
+msgstr ""
+
+#: src/Metadata.php:231 src/Metadata.php:262 src/Metadata.php:327
+#: src/Metadata.php:354
+msgid "Invalid field identifier specified"
+msgstr ""
+
+#: src/Metadata.php:267
+msgid "Invalid type of field value identifier specified"
+msgstr ""
+
+#: src/Metadata.php:271
+msgid "Field is not writable"
+msgstr ""
+
+#: src/Metadata.php:331
+msgid "Only individual values of arrays can be dropped"
+msgstr ""
+
+#: src/Metadata.php:939
+msgid "sRGB"
+msgstr ""
+
+#: src/Metadata.php:942
+msgid "Adove RGB"
+msgstr ""
+
+#: src/Metadata.php:945
+msgid "Wide Gamut RGB"
+msgstr ""
+
+#: src/Metadata.php:948
+msgid "ICC Profile"
+msgstr ""
+
+#: src/Metadata.php:951
+msgid "Uncalibrated"
+msgstr ""
+
+#: src/Metadata.php:997
+msgid "second(s)"
+msgstr ""
+
+#: src/Metadata.php:1002
+msgid "Not defined"
+msgstr ""
+
+#: src/Metadata.php:1005 src/Metadata.php:1040
+msgid "Manual"
+msgstr ""
+
+#: src/Metadata.php:1008
+msgid "Program AE"
+msgstr ""
+
+#: src/Metadata.php:1011
+msgid "Aperture-priority AE"
+msgstr ""
+
+#: src/Metadata.php:1014
+msgid "Shutter speed priority AE"
+msgstr ""
+
+#: src/Metadata.php:1017
+msgid "Creative (Slow speed)"
+msgstr ""
+
+#: src/Metadata.php:1020
+msgid "Action (High speed)"
+msgstr ""
+
+#: src/Metadata.php:1023
+msgid "Portrait"
+msgstr ""
+
+#: src/Metadata.php:1026
+msgid "Landscape"
+msgstr ""
+
+#: src/Metadata.php:1029
+msgid "Bulb"
+msgstr ""
+
+#: src/Metadata.php:1037
+msgid "Auto"
+msgstr ""
+
+#: src/Metadata.php:1043
+msgid "Auto bracket"
+msgstr ""
+
+#: src/Metadata.php:1051
+msgid "Average"
+msgstr ""
+
+#: src/Metadata.php:1054
+msgid "Center-weighted average"
+msgstr ""
+
+#: src/Metadata.php:1057
+msgid "Spot"
+msgstr ""
+
+#: src/Metadata.php:1060
+msgid "Multi-spot"
+msgstr ""
+
+#: src/Metadata.php:1063
+msgid "Multi-segment"
+msgstr ""
+
+#: src/Metadata.php:1066
+msgid "Partial"
+msgstr ""
+
+#: src/Metadata.php:1069
+msgid "Other"
+msgstr ""
+
+#: src/Metadata.php:1072
+msgid "Unknown"
+msgstr ""
+
+#: src/Metadata/Exif.php:147
+msgid "Specified EXIF tag name is read-only"
+msgstr ""
+
+#: src/Metadata/Exif.php:195 src/Metadata/Exif.php:244
+msgid "Invalid TIFF header size"
+msgstr ""
+
+#: src/Metadata/Exif.php:203 src/Metadata/Exif.php:252
+msgid "TIFF header ID not found"
+msgstr ""
+
+#: src/Metadata/Exif.php:208 src/Metadata/Exif.php:257
+msgid "Error finding position of first IFD"
+msgstr ""
+
+#: src/Metadata/Exif.php:229
+msgid "Invalid byte alignment read"
+msgstr ""
+
+#: src/Metadata/Exif.php:426
+msgid "Cannot calculate data size of invalid data type"
+msgstr ""
+
+#: src/Metadata/Exif.php:498 src/Metadata/Exif.php:530
+msgid "Invalid IFD data type found"
+msgstr ""
+
+#: src/Metadata/Exif.php:528
+msgid "bytes of binary data"
+msgstr ""
+
+#: src/Metadata/Iptc.php:118 src/Metadata/Iptc.php:262
+msgid "Found IPTC encoding not supported"
+msgstr ""
+
+#: src/Metadata/Iptc.php:243
+msgid "IPTC data seems to be corrupt while decoding data tag"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:62
+msgid "Invalid file type"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:69
+msgid "File is corrupt"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:102
+msgid "Image data seems to be corrupt"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:111
+msgid "File seems to be corrupt"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:139 src/Metadata/Jpeg.php:209
+#: src/Metadata/Jpeg.php:227 src/Metadata/Jpeg.php:294
+#: src/Metadata/Jpeg.php:362
+msgid "No image and metadata read"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:144
+msgid "Header segment is too large to fit into JPG segment"
+msgstr ""
+
+#: src/Metadata/Jpeg.php:150
+msgid "Could not open file for writing"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:83 src/Metadata/XmpDocument.php:335
+#: src/Metadata/XmpDocument.php:352 src/Metadata/XmpDocument.php:362
+#: src/Metadata/XmpDocument.php:388 src/Metadata/XmpDocument.php:419
+#: src/Metadata/XmpDocument.php:524
+msgid "Cannot find"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:83 src/Metadata/XmpDocument.php:335
+#: src/Metadata/XmpDocument.php:352 src/Metadata/XmpDocument.php:362
+#: src/Metadata/XmpDocument.php:388 src/Metadata/XmpDocument.php:419
+#: src/Metadata/XmpDocument.php:524
+msgid "node"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:131 src/Metadata/XmpDocument.php:159
+#: src/Metadata/XmpDocument.php:192
+msgid "Node name without prefix found"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:217 src/Metadata/XmpDocument.php:243
+#: src/Metadata/XmpDocument.php:269
+msgid "Cannot set"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:217 src/Metadata/XmpDocument.php:243
+#: src/Metadata/XmpDocument.php:269
+msgid "node value if an attribute with the same name exists"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:352 src/Metadata/XmpDocument.php:362
+msgid "child of"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:431
+msgid "Error"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:431
+msgid "deleting"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:431
+msgid "updating"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:431
+msgid "attribute"
+msgstr ""
+
+#: src/Metadata/XmpDocument.php:468
+msgid "Error creating new attribute"
+msgstr ""
+
+#: src/Metadata/Xmp.php:99
+msgid "XMP metadata start tag not found"
+msgstr ""
+
+#: src/Metadata/Xmp.php:101
+msgid "XMP metadata end tag not found"
+msgstr ""
+
+#: src/Metadata/Xmp.php:110
+msgid "Error decoding XMP metdata as XML"
+msgstr ""
+
+#: src/Metadata/Xmp.php:127
+msgid "Error encoding XMP metdata as XML"
+msgstr ""
