@@ -672,14 +672,12 @@ class XmpDocument {
 	   if($descs !== false) {
 		 foreach($descs as $desc) {
 		   if($desc->hasAttribute("xmlns:$ns")) {
-			 echo "FOUND xmlns:$ns\n";
 			 $found = true;
 			 if(!$desc->hasAttribute('rdf:about')) $desc->setAttribute('rdf:about', '');
 		   }
 		 }
 	   }
 	   if(!$found) {
-		 echo "NOT FOUND xmlns:$ns\n";
 		 $elt = $dom->createElement(Xmp::DESCRIPTION);
 		 $desc = $root->appendChild($elt);
 		 $desc->setAttribute("xmlns:$ns", $uri);

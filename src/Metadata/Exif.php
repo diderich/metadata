@@ -157,10 +157,8 @@ class Exif {
 					  array('block' => 'IFD0', 'tag' => self::TAG_IFD0_ARTIST));
 	foreach($exif_data_ary as $seg_id => $seg_data) {
 	  foreach($seg_data as $elt) {
-		echo "DATA(".$elt['block'].",".dechex($elt['tag']).")=".$elt['ptr']."/".$elt['size']."\n";
 		foreach($data_ary as $data) {
 		  if($data['block'] === $elt['block'] && $data['tag'] === $elt['tag']) {
-			echo "FOUND DATA TO DELETE='".substr($segments[$seg_id], $elt['ptr'], $elt['size'])."'\n";
 			for($pos = 0; $pos < $elt['size']; $pos++) {
 			  $segments[$seg_id][$elt['ptr'] + $pos] = "\x00";
 			}
