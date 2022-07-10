@@ -1,5 +1,5 @@
 # Name
-** Metadata: A PHP classes for reading and writing metadata from JPG files in a transparent way**
+Metadata: A PHP classes for reading and writing metadata from JPG files in a transparent way
 
 
 # Version
