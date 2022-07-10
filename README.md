@@ -85,14 +85,6 @@ readable form.
 All exception messages are translatable using the `gettext` library. A translation template is provided in the `locale`
 diretory.
 
-
-# Installation
-The **Metadata** class can be installed using `composer`
-
-```
-composer update diderich/metadata
-```
-
 # Example
 The following exampls shows how to read, modify, and write metadata from JPG files in a transparent way (see also
 `test/example.php`). Is requires/assumes a PSR-4 compliant mechanism for loading the class files.
