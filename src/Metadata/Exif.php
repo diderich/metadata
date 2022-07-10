@@ -54,11 +54,10 @@ class Exif {
   const TAG_IFD0_ARTIST = 0x013b;
   const TAG_IFD0_COPYRIGHT = 0x8298;
   
-	  // - ExifIFD
+  // - ExifIFD
   const TAG_EXIF_EXPOSURE_TIME = 0x829a;
   const TAG_EXIF_FNUMBER = 0x829d;
   const TAG_EXIF_EXPOSURE_PROGRAM = 0x8822;
-  const TAG_EXIF_ISO = 0x8827;
   const TAG_EXIF_ISO_SPEED = 0x8833;
   const TAG_EXIF_DATE_TIME_ORIGINAL = 0x9003;
   const TAG_EXIF_CREATE_DATE = 0x9004;
@@ -77,6 +76,7 @@ class Exif {
   const TAG_EXIF_LENS_MODEL = 0xa434;
   const TAG_EXIF_LENS_SERIAL_NUMBER = 0xa435;
   const TAG_EXIF_LENS = 0xfdea;
+  const TAG_EXIF_SENSIVITY_TYPE = 0x8830;
 
   /** Data types */
   private const TYPE_UBYTE = 1;
@@ -168,7 +168,7 @@ class Exif {
 	}
 	return $segments;
   }
-  
+
   /**
    * Return actual tag used to reference an EXIF field
    *

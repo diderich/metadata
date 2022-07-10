@@ -873,13 +873,30 @@ class Metadata {
    * @param  string $data String formatted "x/y"
    * @return int|false Rounded value dividing x by y
    */
-  protected static function calcFrac(string $data): int|false
+  public static function calcFrac(string $data): int|false
   {
 	if(strpos($data, '/') === 0) return false;
 	list($nom, $denom) = explode('/', $data, 2);
 	return (int)round((int)$nom / (int)$denom);
   }
 
+  /**
+   * Re-format exposure into 1/x fraction
+   *
+   * @access protected
+   * @param  string $exposure Exposure as a string x/y
+   * @return string Exposure as a string 1/y
+   */
+ public static function calcExposure(string $exposure): string
+  {
+	if(strpos($exposure, '/') === false) return $exposure;
+	list($num, $denom) = explode('/', $exposure);
+	$num = (int)trim($num); $denom = (int)trim($denom);
+	$new_denom = $denom / $num;
+	if($new_denom != floor($new_denom)) return $exposure;
+	return '1/'.$new_denom;
+  }
+  
   /**
    * Read EXIF metadata from file
    * Function may be extended to read additional fields and/or recoginiez additional tags
@@ -995,7 +1012,8 @@ class Metadata {
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)]) &&
 	   !$this->isSet(self::IMG_EXPOSURE))
-	  $this->setRW(self::IMG_EXPOSURE, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)].
+	  $this->setRW(self::IMG_EXPOSURE,
+				   self::calcExposure($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)]).
 				   ' '._('second(s)'));
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) &&
 	   !$this->isSet(self::IMG_EXPOSURE_PROGRAM)) {
@@ -1078,13 +1096,11 @@ class Metadata {
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]) &&
 	   !$this->isSet(self::IMG_FOCAL_LENGTH))
 	  $this->setRW(self::IMG_FOCAL_LENGTH,
-				   (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]);
+				   self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]));
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)]) && !$this->isSet(self::IMG_FLASH))
 	  $this->setRW(self::IMG_FLASH, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isSet(self::IMG_ISO))
 	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO)]) && !$this->isSet(self::IMG_ISO))
-	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO)]);
 
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_DATE_TIME_ORIGINAL)]) &&
 	   !$this->isSet(self::CREATED_DATETIME))

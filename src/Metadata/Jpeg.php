@@ -392,6 +392,7 @@ class Jpeg {
 	$exif_ary = empty($exif_ary) ? false : $exif_ary;
 
 	// Encode data and replace old segments
+	if($this->exif_data === false) return;
 	$exif_segments = Exif::encode($this->getExifSegments(), $this->exif_data, $exif_ary);
 	foreach($exif_segments as $segment_pos => $segment_data) {
 	  $this->header[$segment_pos]['data'] = "Exif\x00\x00".$segment_data;
