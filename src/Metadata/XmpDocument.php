@@ -34,14 +34,13 @@ class XmpDocument {
   /**
    * Constructor
    *
-   * @param string $version  XML version
-   * @param string $encoding Data encoding, typically UTF-8
-
+   * @param DOMDocument DOM of XMP data
    */
-  public function __construct(\DOMDocument|false $dom)
+  public function __construct(\DOMDocument $dom)
   {
 	$this->nsPriorityAry = array(self::NS_IPTC4XMPCORE, self::NS_DC, self::NS_AUX, self::NS_XMP, self::NS_PHOTOSHOP,
 								 self::NS_PHOTOMECHANIC);
+	// All namespaces supported by default, others may be added before use using 'setXmpNamespace'
 	$all_ns = array('Iptc4xmpCore' => 'http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/',
 					'aux' => 'http://ns.adobe.com/exif/1.0/aux/',
 					'dc' => 'http://purl.org/dc/elements/1.1/',
@@ -56,8 +55,8 @@ class XmpDocument {
 					'stRef' => 'http://ns.adobe.com/xap/1.0/sType/ResourceRef#',
 					'xmpMM' => 'http://ns.adobe.com/xap/1.0/mm/',
 					'xmpRights' => 'http://ns.adobe.com/xap/1.0/rights/');
-								
-	$this->dom = self::validateXmpDocument($dom, $all_ns);
+	$this->dom = $dom;
+	$this->validateXmpDocument($all_ns);
   }
 
   /**
@@ -190,6 +189,39 @@ class XmpDocument {
   /**
    * SET XMP METADATA
    */
+
+  /**
+   * Define a new / ensure the existence of a given namespace
+   *
+   * @param string $ns  Namespace identifier
+   * @param string $uri Namespace URI
+   */
+  public function setXmpNamespace(string $ns, string $uri): void
+  {
+	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION);
+
+	// Search for an rdf:Description element with the specified namespace definition as attribute
+	$found = false;
+	if($descs !== false) {
+	  foreach($descs as $desc) {
+		if($desc->hasAttribute("xmlns:$ns")) {
+		  $found = true;
+		  if(!$desc->hasAttribute('rdf:about')) $desc->setAttribute('rdf:about', '');
+		}
+	  }
+	}
+
+	// Create a new rdf:Description element under rdf:RDF including the namespace definition
+	if(!$found) {
+	  $root = self::getXmpFirstNodeByName($this->dom, 'rdf:RDF');
+	  if($root === false)
+		throw new Exception(_('Internal error finding')." 'rdf:RDF' "._('element'), Exception::INTERNAL_ERROR);
+	  $elt = $this->dom->createElement(Xmp::DESCRIPTION);
+	  $desc = $root->appendChild($elt);
+	  $desc->setAttribute("xmlns:$ns", $uri);
+	  $desc->setAttribute('rdf:about', '');
+	}
+  }
   
   /**
    * Set Attribute (removing identically named nodes) and updating values in other namespaces
@@ -302,11 +334,15 @@ class XmpDocument {
    */
   public function updateHistory(string $software): void
   {
-	$history = self::getXmpFirstNodeByName($this->dom, Xmp::EDIT_HISTORY);
+	// Serch for a rdf:Description element that referneces to the xmpMM namespace in which histories are saves
+	$desc = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION);
+	if($desc === false)
+	  throw new Exception(_('Internal error finding')." 'rdf:Description' "._('including')." 'xmpMM' ".
+						  _('as namespaces'), Exception::INTERNAL_ERROR);
+	$history = self::getXmpFirstNodeByName($desc, Xmp::EDIT_HISTORY);
 
 	// Create new history entry, if none exists
 	if($history === false) {
-	  $desc = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION);
 	  $new_child = $this->dom->createElement('xmpMM:History');
 	  $history = $desc->appendChild($new_child);
 	}
@@ -314,7 +350,7 @@ class XmpDocument {
 	// Create new sequency, if none exists
 	$seq = self::getXmpFirstNodeByName($history, 'rdf:Seq');
 	If($seq === false) {
-	  $new_child = $this->dom->createElement(Xmp::EDIT_HISTORY);
+	  $new_child = $this->dom->createElement('rdf:Seq');
 	  $seq = $history->appendChild($new_child);
 	}
 
@@ -640,52 +676,35 @@ class XmpDocument {
    * the referenced namespaces. If no DOM document exists, a new one is created from scratch
    *
    * @access protected
-   * @param  \DOMDocument|false $dom Read DOM document representing XMP data
-   * @return \DOMDocument       Valid XMP DOM document
+   * @param  array $ns_ary Array of all namespaces that must exist
    */
-  protected static function validateXmpDocument(\DOMDocument|false $dom, array $ns_priority_ary): \DOMDocument
-   {
-	 // Create new DOM, if non exists
-	 if($dom === false) {
-	   $dom = new \DOMDocument('1.0', 'UTF-8');
-	   $elt = $dom->createElement('x:xmpmeta');
-	   $root = $dom->appendChild($elt);
-	   $root->setAttribute('xmlns:x', 'adobe:ns:meta/');
-	   $root->setAttribute('x:xmptk', 'XMP Core 5.6.0');
-	 }
-
-	 // Check that DOM has a rdf:RDF node
-	 $root = self::getXmpFirstNodeByName($dom, 'rdf:RDF');
-	 if($root === false) {
-	   $elt = $dom->createElement('rdf:RDF');
-	   $root = $dom->appendChild($elt);
-	 }
-
-	 // Ensure that root DOM defines its namespace
-	 if(!$root->hasAttribute('xmlns:rdf'))
-	   $root->setAttribute('xmlns:rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-
-	 // For each namespace not found, add a rdf:Document section xmlns:$ns="$uri"
-	 $descs = self::getXmpAllNodeByName($root, Xmp::DESCRIPTION);
-	 foreach($ns_priority_ary as $ns => $uri) {
-	   $found = false;
-	   if($descs !== false) {
-		 foreach($descs as $desc) {
-		   if($desc->hasAttribute("xmlns:$ns")) {
-			 $found = true;
-			 if(!$desc->hasAttribute('rdf:about')) $desc->setAttribute('rdf:about', '');
-		   }
-		 }
-	   }
-	   if(!$found) {
-		 $elt = $dom->createElement(Xmp::DESCRIPTION);
-		 $desc = $root->appendChild($elt);
-		 $desc->setAttribute("xmlns:$ns", $uri);
-		 $desc->setAttribute('rdf:about', '');
-	   }
-	 }
-
-	 // Return DOM
-	 return $dom;
-   }
+  protected function validateXmpDocument(array $ns_ary): void
+  {
+	// Find xmpmeta root node
+	$mroot = self::getXmpFirstNodeByName($this->dom, 'x:xmpmeta');
+	if($mroot === false) {
+	  $elt = $this->dom->createElement('x:xmpmeta');
+	  $mroot = $this->dom->appendChild($elt);
+	  $mroot->setAttribute('xmlns:x', 'adobe:ns:meta/');
+	  $mroot->setAttribute('x:xmptk', 'XMP Core 5.6.0');
+	}
+	
+	// Check that DOM has a rdf:RDF node
+	$root = self::getXmpFirstNodeByName($this->dom, 'rdf:RDF');
+	if($root === false) {
+	  $elt = $this->dom->createElementNS('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf:RDF');
+	  $root = $mroot->appendChild($elt);
+	}
+	
+	// For each namespace not found, add a rdf:Document section xmlns:$ns="$uri"
+	foreach($ns_ary as $ns => $uri) {
+	  $this->setXmpNamespace($ns, $uri);
+	}
+	
+	// Re-load to ensure namespaces are recognized
+	$status = $this->dom->loadXML($this->dom->saveXML());
+	if($status === false)
+	  throw new Exception(_('Internal error during XML re-validation'), Exception::INTERNAL_ERROR);
+	echo str_replace("><", ">\n<", $this->dom->saveXML());
+  }
 }

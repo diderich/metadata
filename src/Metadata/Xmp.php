@@ -33,7 +33,6 @@ class Xmp {
   const CREATED_DATETIME = "xmp:CreatedDate";             /** Read only: Date and time YYYY-MM-DD HH:MM:SS+HH:MM */
   const CREDIT = "photoshop:Credit";                      /** Text: Credit Line */
   const GENRE = "Iptc4xmpCore:IntellectualGenre";         /** Text: Genre */
-  const HEADLINE = "dc:title";                            /** Text: Headline */
   const INSTRUCTIONS = "photoshop:Instructions";          /** Text: Instructions */
   const KEYWORDS = "dc:subject";                          /** Bag: Keywords */
   const LOCATION = "Iptc4xmpCore:Location";               /** Text: Location */
@@ -90,7 +89,10 @@ class Xmp {
   */
   public static function decode(string $segment): XmpDocument|false
   {
-	if(empty($segment)) return new XmpDocument(false);
+	// Encode XMP data as XML / DOMDocument
+	$dom = new \DOMDocument('1.0', 'UTF-8');
+
+	if(empty($segment)) return new XmpDocument($dom);
 	
 	// Extract data from XMP block
 	$xmp_block = substr($segment, Xmp::XMP_HEADER_LEN);
@@ -99,9 +101,6 @@ class Xmp {
 	$xmp_end = strpos($xmp_block, '</x:xmpmeta>');
 	if($xmp_end === false) throw new Exception(_('XMP metadata end tag not found'), Exception::DATA_FORMAT_ERROR);
 	$xmp_data =substr($xmp_block, $xmp_start, $xmp_end - $xmp_start + 12);
-
-	// Encode XMP data as XML / DOMDocument
-	$dom = new \DOMDocument('1.0', 'UTF-8');
 
 	// -- Disable warning messages from loadXML only
 	$old_error_reporting = error_reporting(error_reporting() & ~E_WARNING);
