@@ -21,89 +21,97 @@ use \Holiday\Metadata\Exception;
 
 class Metadata {
   
-  const VERSION = '1.0.0';
+  const VERSION = '1.0.1';
 
   /** Fielt types */
   const TYPE_INVALID = 0;
   const TYPE_STR = 1;
   const TYPE_INT = 2;
-  const TYPE_ARY = 3;
+  const TYPE_FLOAT = 3;
+  const TYPE_ARY = 4;
 
   /** File specific fields: read only */
-  const FILE_NAME            = 001;            /** String: Filename */
-  const FILE_EXT             = 002;            /** String: File extension */
-  const FILE_SIZE            = 003;            /** Int: File size */
-  const FILE_DATE            = 004;            /** Int: Last modification date */
+  const FILE_NAME             = 001;            /** String: Filename */
+  const FILE_EXT              = 002;            /** String: File extension */
+  const FILE_SIZE             = 003;            /** Int: File size */
+  const FILE_DATE             = 004;            /** Int: Last modification date */
 
   /** IPTC/XMP fields: read/write */
-  const FIELD_ID_WRITE_FIRST = 100;            /** First field identifier that can be modified */
-  const FIELD_ID_WRITE_LAST  = 132;            /** Last field identifier that can be modified */
+  const FIELD_ID_WRITE_FIRST  = 100;            /** First field identifier that can be modified */
+  const FIELD_ID_WRITE_LAST   = 132;            /** Last field identifier that can be modified */
   
-  const AUTHOR               = 101;            /** String: Creator (name of photographer) */
-  const PHOTOGRAPHER         = 101;            /** - String: Creator (name of photographer) */
-  const AUTHOR_TITLE         = 102;            /** String: Creator's job title */
-  const PHOTOGRAPHER_TITLE   = 102;            /** - String: Creator's job title */
-  const CAPTION              = 103;            /** String:  Description/Caption */
-  const CAPTION_WRITER       = 104;            /** String: Description writer */
-  const CATEGORY             = 105;            /** String: Category - Max 3 characters */
-  const CITY                 = 106;            /** String: City */
-  const COPYRIGHT            = 107;            /** String: Copyright notice */
-  const COUNTRY              = 108;            /** String: Country name */
-  const COUNTRY_CODE         = 109;            /** String: ISO country code*/
-  const CREDIT               = 110;            /** String: Credit Line */
-  const EDIT_STATUS          = 111;            /** String: Edit Status - Max 64 characters */
-  const EVENT                = 112;            /** String: Event identifier */
-  const GENRE                = 113;            /** Array: Genre */
-  const HEADLINE             = 114;            /** String: Headline */
-  const INSTRUCTIONS         = 115;            /** String: Instructions */
-  const KEYWORDS             = 116;            /** Array: Keywords */
-  const LOCATION             = 117;            /** String: Location */
-  const OBJECT               = 118;            /** String: Object name (Title)*/
-  const ORG_CODE             = 119;            /** Array: Code of Organization in image */
-  const NAT                  = 119;            /**  - Array: Nationalities */
-  const ORG_NAME             = 120;            /** Array: Name of Organization in image */
-  const ORG                  = 120;            /**  - Array: Organizations/Teams in image */
-  const PERSON               = 121;            /** Array: Person shown in image */
-  const PEOPLE               = 121;            /** - Array: Person shown in image */
-  const PERSONALITY          = 121;            /** - Array: Person shown in image (Getty terminology) */
-  const PRIORITY             = 122;            /** Int: Urgency - 1 numeric character */
-  const RATING               = 123;            /** Int: Numeric image rating, -1 (rejected), 0..5 */
-  const SCENES               = 124;            /** Array: Scene codes*/
-  const SOURCE               = 125;            /** String: Source */
-  const STATE                = 126;            /** String: Providence/State */
-  const SUBJECT_CODE         = 127;            /** Array: Subject code */
-  const SUPP_CATEGORY_A      = 128;            /** String: Supplemental Category 1 */
-  const SUPP_CATEGORY_B      = 129;            /** String: Supplemental Category 2 */
-  const SUPP_CATEGORY_C      = 130;            /** String: Supplemental Category 3 */
-  const TRANSFER_REF         = 131;            /** String: Original Transmission Reference - Max 32 characters */
-  const USAGE_TERMS          = 132;            /** String: Rights Usage Terms */
+  const AUTHOR                = 101;            /** String: Creator (name of photographer) */
+  const PHOTOGRAPHER          = 101;            /** - String: Creator (name of photographer) */
+  const AUTHOR_TITLE          = 102;            /** String: Creator's job title */
+  const PHOTOGRAPHER_TITLE    = 102;            /** - String: Creator's job title */
+  const CAPTION               = 103;            /** String:  Description/Caption */
+  const CAPTION_WRITER        = 104;            /** String: Description writer */
+  const CATEGORY              = 105;            /** String: Category - Max 3 characters */
+  const CITY                  = 106;            /** String: City */
+  const COPYRIGHT             = 107;            /** String: Copyright notice */
+  const COUNTRY               = 108;            /** String: Country name */
+  const COUNTRY_CODE          = 109;            /** String: ISO country code*/
+  const CREDIT                = 110;            /** String: Credit Line */
+  const EDIT_STATUS           = 111;            /** String: Edit Status - Max 64 characters */
+  const EVENT                 = 112;            /** String: Event identifier */
+  const GENRE                 = 113;            /** Array: Genre */
+  const HEADLINE              = 114;            /** String: Headline */
+  const INSTRUCTIONS          = 115;            /** String: Instructions */
+  const KEYWORDS              = 116;            /** Array: Keywords */
+  const LOCATION              = 117;            /** String: Location */
+  const OBJECT                = 118;            /** String: Object name (Title)*/
+  const ORG_CODE              = 119;            /** Array: Code of Organization in image */
+  const NAT                   = 119;            /**  - Array: Nationalities */
+  const ORG_NAME              = 120;            /** Array: Name of Organization in image */
+  const ORG                   = 120;            /**  - Array: Organizations/Teams in image */
+  const PERSON                = 121;            /** Array: Person shown in image */
+  const PEOPLE                = 121;            /** - Array: Person shown in image */
+  const PERSONALITY           = 121;            /** - Array: Person shown in image (Getty terminology) */
+  const PRIORITY              = 122;            /** Int: Urgency - 1 numeric character */
+  const RATING                = 123;            /** Int: Numeric image rating, -1 (rejected), 0..5 */
+  const SCENES                = 124;            /** Array: Scene codes*/
+  const SOURCE                = 125;            /** String: Source */
+  const STATE                 = 126;            /** String: Providence/State */
+  const SUBJECT_CODE          = 127;            /** Array: Subject code */
+  const SUPP_CATEGORY_A       = 128;            /** String: Supplemental Category 1 */
+  const SUPP_CATEGORY_B       = 129;            /** String: Supplemental Category 2 */
+  const SUPP_CATEGORY_C       = 130;            /** String: Supplemental Category 3 */
+  const TRANSFER_REF          = 131;            /** String: Original Transmission Reference - Max 32 characters */
+  const USAGE_TERMS           = 132;            /** String: Rights Usage Terms */
   
   /** IPTC/XMP fiels: read only */
-  const CREATED_DATETIME     = 201;            /** Int: Timestamp when photo was created */
+  const CREATED_DATETIME      = 201;            /** Int: Timestamp when photo was created */
 
   /** Image data fields: read only **/
-  const IMG_APERTURE         = 301;            /** String: Aperture (f/X) */
-  const IMG_CAMERA_MAKE      = 302;            /** String: Camera brand */
-  const IMG_CAMERA_MODEL     = 303;            /** String: Camera model */
-  const IMG_CAMERA_SERIAL    = 304;            /** Stringg: Camera serial number */
-  const IMG_COLOR_SPACE      = 305;            /** String: Color space */
-  const IMG_EXPOSURE         = 306;            /** String: Exposure */
-  const IMG_EXPOSURE_MODE    = 307;            /** String/Int: Exposure mode */
-  const IMG_EXPOSURE_PROGRAM = 308;            /** String/Int: Exposure setting */
-  const IMG_FLASH            = 309;            /** Int: Flash used */
-  const IMG_FOCAL_LENGTH     = 310;            /** Int: Focal length */
-  const IMG_HEIGHT           = 311;            /** Int: Image height */
-  const IMG_ISO              = 312;            /** Int: ISO */
-  const IMG_LENS_MAKE        = 313;            /** String: Lens brand */
-  const IMG_LENS_MODEL       = 314;            /** String: Lens name */
-  const IMG_LENS_SERIAL      = 315;            /** String: Lens serial number */
-  const IMG_ORIENTATION      = 316;            /** Int: Orientation */
-  const IMG_RESOLUTION       = 317;            /** Int: Image resolution */
-  const IMG_SIZE_FORMATTED   = 318;            /** String: Formatted image size ( W x H px - X x Y cm (x MB) */
-  const IMG_SOFTWARE         = 319;            /** String: Software used */
-  const IMG_TYPE             = 320;            /** Int: Image type (see imagetypes() for constants) */
-  const IMG_WIDTH            = 321;            /** Int: Image width */
-  const IMG_METERING_MODE    = 322;            /** String/Int: Merering model */
+  const IMG_APERTURE          = 301;            /** Float: Aperture */
+  const IMG_APERTURE_FMT      = 302;            /** String: Aperture (f/X) */
+  const IMG_CAMERA_MAKE       = 303;            /** String: Camera brand */
+  const IMG_CAMERA_MODEL      = 304;            /** String: Camera model */
+  const IMG_CAMERA_SERIAL     = 305;            /** String: Camera serial number */
+  const IMG_COLOR_SPACE_FMT   = 306;            /** String: Color space */
+  const IMG_EXPOSURE          = 307;            /** Array: Exposure */
+  const IMG_EXPOSURE_FMT      = 308;            /** String: Exposure  (1/X second(s))*/
+  const IMG_EXPOSURE_MODE_FMT = 309;            /** String: Exposure mode */
+  const IMG_EXPOSURE_PGM_FMT  = 310;            /** String: Exposure setting */
+  const IMG_FLASH             = 311;            /** Int: Flash used */
+  const IMG_FLASH_FMT         = 312;            /** String: Flash used (Flash | No flash)*/
+  const IMG_FOCAL_LENGTH      = 313;            /** Int: Focal length */
+  const IMG_FOCAL_LENGTH_FMT  = 314;            /** String: Focal length (X mm) */
+  const IMG_HEIGHT            = 315;            /** Int: Image height */
+  const IMG_ISO               = 316;            /** Int: ISO */
+  const IMG_LENS_MAKE         = 317;            /** String: Lens brand */
+  const IMG_LENS_MODEL        = 318;            /** String: Lens name */
+  const IMG_LENS_SERIAL       = 319;            /** String: Lens serial number */
+  const IMG_METERING_MODE_FMT = 320;            /** String: Merering model */
+  const IMG_ORIENTATION       = 321;            /** Int: Orientation */
+  const IMG_RESOLUTION        = 322;            /** Int: Image resolution, in resolution unit */
+  const IMG_RESOLUTION_FMT    = 323;            /** String: Image resolution, in resolution unit */
+  const IMG_RESOLUTION_UNIT   = 324;            /** Int: Resolution unit (1, 3=cm / 2=inch) */
+  const IMG_SIZE_FMT          = 325;            /** String: Formatted image size ( W x H px - X x Y cm (x MB) */
+  const IMG_SOFTWARE          = 326;            /** String: Software used */
+  const IMG_TYPE              = 327;            /** Int: Image type (see imagetypes() for constants) */
+  const IMG_TYPE_FMT          = 328;            /** String: Image type (jpeg) */
+  const IMG_WIDTH             = 329;            /** Int: Image width */
 
   /** Orientation encoding: IMG_ORIENTATION */
   const IMG_ORI_VERTICAL     = 1;
@@ -113,6 +121,7 @@ class Metadata {
 
   /** Private variables */
   protected bool          $data_read;          /** Has data been loaded/read */
+  protected bool          $read_only;          /** Data has benn read in read-only mode, disabling writing back */
   protected array         $data;               /** Source agnostic data */
   protected Metadata\Jpeg $jpeg;               /** Jpeg object */
 
@@ -120,8 +129,8 @@ class Metadata {
    * Consturctor
    */
   public function __construct()
-  {
-	$this->data_read = false;
+  { 
+	$this->data_read = false; $this->read_only = true;
 	$this->data = array();
 	$this->jpeg = new Metadata\Jpeg();
   }
@@ -136,15 +145,17 @@ class Metadata {
   /**
    * Read IPTC, XMP, and EXIF metadata from file and make then available in a transparent way
    *
-   * @param string $filename Filename to read metadata from
-   * @param bool  $extend   Extend IPTC keyword data into XMP specific fields, e.g. Event:, Scene:, Genre:,
+   * @param string $filename  Filename to read metadata from
+   * @param bool   $extend    Extend IPTC keyword data into XMP specific fields, e.g. Event:, Scene:, Genre:,
+   * @param bool   $read_only Read JPG data in read-only model
    * @throw Exception
    */
-  public function read(string $filename, bool $extend = false): void
+  public function read(string $filename, bool $extend = false, bool $read_only = false): void
   {
 	// Re-initialize data
 	$this->data_read = false;
 	$this->data = array();
+	$this->read_only = $read_only;
 
 	// Get file specific fields
 	if(!file_exists($filename)) throw new Exception(_('File not found'), Exception::FILE_NOT_FOUND, $filename);
@@ -157,7 +168,7 @@ class Metadata {
 	$this->setRW(self::FILE_DATE, filemtime($filename));
 
 	// Read JPG data
-	$this->jpeg->read($filename);
+	$this->jpeg->read($filename, read_only: $this->read_only);
 
 	// Import data (in decreasing order of relevance)
 	$this->importIptc();
@@ -181,6 +192,8 @@ class Metadata {
   {
 	if(!$this->data_read)
 	  throw new Exception(_('No image and metadata previously read'), Exception::DATA_NOT_FOUND);
+	if($this->read_only)
+	  throw new Exception(_('Cannot write file because data was read in read-only mode'), Exception::DATA_NOT_FOUND);
 
 	// Export data
 	$this->exportIptc();
@@ -224,10 +237,10 @@ class Metadata {
    * Return data associated with a given field or 'false', if not value can be found
    *
    * @param  int $field_id Field identifier
-   * @return string|int|array|false Field value
-   * @throw  Metadate\Exception
+   * @return string|int|float|array|false Field value
+   * @throw  Exception
    */
-  public function get(int $field_id): string|int|array|false
+  public function get(int $field_id): string|int|float|array|false
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
@@ -240,11 +253,11 @@ class Metadata {
   /**
    * Save data associated with a given field identifier
    *
-   * @param int                    $field_id     Field identifier
-   * @param string|int|array|false $field_value  Field value
+   * @param int $field_id Field identifier
+   * @param string|int|float|array|false $field_value  Field value
    * @throw Exception
    */
-  public function set(int $field_id, string|int|array|false $field_value): void
+  public function set(int $field_id, string|int|float|array|false $field_value): void
   {
 	$this->setRW($field_id, $field_value, ignore_write: false);
   }
@@ -253,12 +266,12 @@ class Metadata {
    * Save data associated with a given field identifier
    *
    * @access private
-   * @param  int                    $field_id     Field identifier
-   * @param  string|int|array|false $field_value  Field value
-   * @param  bool                   $ignore_write Ignore write check
+   * @param  int  $field_id Field identifier
+   * @param  string|int|float|array|false $field_value  Field value
+   * @param  bool $ignore_write Ignore write check
    * @throw  Exception
    */
-  private function setRW(int $field_id, string|int|array|false $field_value, bool $ignore_write = true): void
+  private function setRW(int $field_id, string|int|float|array|false $field_value, bool $ignore_write = true): void
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
@@ -377,6 +390,7 @@ class Metadata {
 	case self::PERSON:
 	case self::SCENES:
 	case self::SUBJECT_CODE:
+	case self::IMG_EXPOSURE:
 	  return self::TYPE_ARY;
 
 	case self::FILE_DATE:
@@ -390,9 +404,13 @@ class Metadata {
 	case self::IMG_ISO:
 	case self::IMG_ORIENTATION;
 	case self::IMG_RESOLUTION:
+	case self::IMG_RESOLUTION_UNIT:
 	case self::IMG_TYPE:
 	case self::IMG_WIDTH:
 	  return self::TYPE_INT;
+
+	case self::IMG_APERTURE:
+	  return self::TYPE_FLOAT;
 	  
 	case self::FILE_NAME:
 	case self::FILE_EXT:
@@ -419,20 +437,24 @@ class Metadata {
 	case self::SUPP_CATEGORY_C:
 	case self::TRANSFER_REF:
 	case self::USAGE_TERMS:
-	case self::IMG_APERTURE:
+	case self::IMG_APERTURE_FMT:
 	case self::IMG_CAMERA_MAKE:
 	case self::IMG_CAMERA_MODEL:
 	case self::IMG_CAMERA_SERIAL;
-	case self::IMG_COLOR_SPACE:
-	case self::IMG_EXPOSURE:
-	case self::IMG_EXPOSURE_MODE:
-	case self::IMG_EXPOSURE_PROGRAM:
+	case self::IMG_COLOR_SPACE_FMT:
+	case self::IMG_EXPOSURE_FMT:
+	case self::IMG_EXPOSURE_MODE_FMT:
+	case self::IMG_EXPOSURE_PGM_FMT:
+	case self::IMG_FLASH_FMT:
+	case self::IMG_FOCAL_LENGTH_FMT:
 	case self::IMG_LENS_MAKE:
 	case self::IMG_LENS_MODEL:
 	case self::IMG_LENS_SERIAL:
-	case self::IMG_SIZE_FORMATTED:
+	case self::IMG_METERING_MODE_FMT:
+	case self::IMG_RESOLUTION_FMT:
+	case self::IMG_SIZE_FMT:
 	case self::IMG_SOFTWARE:
-	case self::IMG_METERING_MODE:
+	case self::IMG_TYPE_FMT:
 	  return self::TYPE_STR;
 	default:
 	  return self::TYPE_INVALID;
@@ -442,17 +464,19 @@ class Metadata {
   /**
    * Return if the type asssociated with a given field value is valid
    *
-   * @param int                    $field_id    Field identifier
-   * @param string|int|array|false $field_value Field value
+   * @param int $field_id Field identifier
+   * @param string|int|float|array|false $field_value Field value
    * @return bool Isd the type of the value appropriate for the field
    */
-  public static function isValidFieldType(int $field_id, string|int|array|false $field_value): bool
+  public static function isValidFieldType(int $field_id, string|int|float|array|false $field_value): bool
   {
 	switch(self::fieldType($field_id)) {
 	case self::TYPE_STR:
 	  return gettype($field_value) === 'string';
 	case self::TYPE_INT:
 	  return gettype($field_value) === 'integer';
+	case self::TYPE_FLOAT:
+	  return gettype($field_value) === 'double' || gettype($field_value) === 'integer';
 	case self::TYPE_ARY:
 	  return gettype($field_value) === 'array';
 	default:
@@ -710,10 +734,8 @@ class Metadata {
 	  $this->set(self::CREDIT, $xmp_data->getXmpText(Xmp::CREDIT));
 	if(!$this->isSet(self::GENRE) && $xmp_data->isXmpText(Xmp::GENRE))
 	  $this->set(self::GENRE, $this->stringToArray($xmp_data->getXmpText(Xmp::GENRE)));
-	if(!$this->isSet(self::HEADLINE) && $xmp_data->isXmpText(Xmp::HEADLINE))
-	  $this->set(self::HEADLINE, $xmp_data->getXmpText(Xmp::PS_HEADLINE));
 	if(!$this->isSet(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
-	  $this->set(self::HEADLINE, $xmp_data->getXmpText(Xmp::HEADLINE));
+	  $this->set(self::HEADLINE, $xmp_data->getXmpText(Xmp::PS_HEADLINE));
 	if(!$this->isSet(self::INSTRUCTIONS) && $xmp_data->isXmpText(Xmp::INSTRUCTIONS))
 	  $this->set(self::INSTRUCTIONS, $xmp_data->getXmpText(Xmp::INSTRUCTIONS));
 	if(!$this->isSet(self::KEYWORDS) && $xmp_data->isXmpBag(Xmp::KEYWORDS))
@@ -794,8 +816,8 @@ class Metadata {
 	  $this->setRW(self::IMG_LENS_MODEL, $xmp_data->getXmpText(Xmp::LENS_MODEL), true);
 	if(!$this->isSet(self::IMG_LENS_SERIAL) && $xmp_data->isXmpText(Xmp::LENS_SERIAL))
 	  $this->setRW(self::IMG_LENS_SERIAL, $xmp_data->getXmpText(Xmp::LENS_SERIAL), true);
-	if(!$this->isSet(self::IMG_COLOR_SPACE) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
-	  $this->setRW(self::IMG_COLOR_SPACE, $xmp_data->getXmpText(Xmp::COLOR_SPACE), true);
+	if(!$this->isSet(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
+	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE), true);
 	
   }
 
@@ -827,7 +849,6 @@ class Metadata {
 	if($xmp_data->isXmpText(Xmp::PM_EDIT_STATUS))
 	  $xmp_data->setXmpText(Xmp::PM_EDIT_STATUS, $this->get(self::EDIT_STATUS));
 	$xmp_data->setXmpText(Xmp::GENRE, self::arrayToString($this->get(self::GENRE)));
-	$xmp_data->setXmpText(Xmp::HEADLINE, $this->get(self::HEADLINE));
 	if($xmp_data->isXmpText(Xmp::PS_HEADLINE)) $xmp_data->setXmpText(Xmp::PS_HEADLINE, $this->get(self::HEADLINE));
 	$xmp_data->setXmpText(Xmp::INSTRUCTIONS, $this->get(self::INSTRUCTIONS));
 	$xmp_data->setXmpBag(Xmp::KEYWORDS, $this->get(self::KEYWORDS));
@@ -871,32 +892,46 @@ class Metadata {
    *
    * @access protected
    * @param  string $data String formatted "x/y"
-   * @return int|false Rounded value dividing x by y
+   * @return float|false Rounded value dividing x by y
    */
-  public static function calcFrac(string $data): int|false
+  protected static function calcFrac(string $data): float|false
   {
 	if(strpos($data, '/') === 0) return false;
 	list($nom, $denom) = explode('/', $data, 2);
-	return (int)round((int)$nom / (int)$denom);
+	return (float)((int)$nom / (int)$denom);
   }
 
   /**
-   * Re-format exposure into 1/x fraction
+   * Normalize fraction to a 1/x fraction
    *
    * @access protected
-   * @param  string $exposure Exposure as a string x/y
-   * @return string Exposure as a string 1/y
+   * @param  string $frac Fraction as a string x/y
+   * @return string Fraction as a string 1/y (where y is rounded)
    */
- public static function calcExposure(string $exposure): string
+ protected static function nrmFrac(string $frac): string
   {
-	if(strpos($exposure, '/') === false) return $exposure;
-	list($num, $denom) = explode('/', $exposure);
+	if(strpos($frac, '/') === false) return $frac;
+	list($num, $denom) = explode('/', $frac);
 	$num = (int)trim($num); $denom = (int)trim($denom);
 	$new_denom = $denom / $num;
-	if($new_denom != floor($new_denom)) return $exposure;
-	return '1/'.$new_denom;
+	return '1/'.round($new_denom);
   }
-  
+
+ /**
+  * Decompose fraction into array
+  *
+   * @access protected
+   * @param  string $frac Fraction as a string x/y
+   * @return array  Array with two elements of fraction
+  */
+ protected static function fracToArray(string $frac): array
+ {
+	if(strpos($frac, '/') === false)
+	  throw new Exception(_('Invalid fraction specified'), Exception::DATA_FORMAT_ERROR, $frac);
+	list($num, $denom) = explode('/', $frac);
+	return array($num, $denom);
+ }
+ 
   /**
    * Read EXIF metadata from file
    * Function may be extended to read additional fields and/or recoginiez additional tags
@@ -908,80 +943,106 @@ class Metadata {
   {
 	$exif_data = $this->jpeg->getExifData();
 	if($exif_data === false) return;
-	$this->setRW(self::IMG_TYPE, IMG_JPG);
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF,Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)]) &&
-	   !$this->isSet(self::IMG_WIDTH)) {
-	  $width = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)];
-	  $this->setRW(self::IMG_WIDTH, $width);
+
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)])) {
+	  $aperture = self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)]);
+	  if(!$this->isSet(self::IMG_APERTURE)) $this->setRW(self::IMG_APERTURE, $aperture);
+	  if(!$this->isSet(self::IMG_APERTURE_FMT)) $this->setRW(self::IMG_APERTURE_FMT, 'f/'.number_format($aperture, 1));
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)]) &&
-	   !$this->isSet(self::IMG_HEIGHT)) {
-	  $height = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)];
-	  $this->setRW(self::IMG_HEIGHT, $height);
-	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)])) {
-	  switch((int)$exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)]) {
-	  case 1:
-	  case 3:
-		$resolution_cm = 1.0;
-		break;
-	  case 2:
-		$resolution_cm = 2.54;
-		break;
-	  }
-	}
-	else {
-	  $resolution_cm = 2.54;
-	}
-	// Note: We use XResolution as the image resolution, ignoring YResolution
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]) &&
-	   !$this->isSet(self::IMG_RESOLUTION)) {
-	  $resolution = self::calcFrac($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]);
-	  $this->setRW(self::IMG_RESOLUTION, $resolution);
-	}
-	if(isset($width) && isset($height)) {
-	  $size = "$width x $height px";
-	  if($width > $height) $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_HORIZONTAL);
-	  if($width < $height) $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_VERTICAL);
-	  if($width === $height) $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_SQUARE);
-	  if(isset($resolution) && isset($resolution_cm)) {
-		$size .= ' - '.number_format($resolution_cm * $width / $resolution, 2).' x '.
-		  number_format($resolution_cm * $height / $resolution, 2).' cm ('.
-		  number_format($this->get(self::FILE_SIZE) / 1024 / 1024, 0).' MB)';
-	  }
-	  $this->setRW(self::IMG_SIZE_FORMATTED, $size);
-	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) &&
-	   !$this->isSet(self::IMG_COLOR_SPACE)) {
-	  switch((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) {
-	  case 0x1:
-		$this->setRW(self::IMG_COLOR_SPACE, _('sRGB'));
-		break;
-	  case 0x2:
-		$this->setRW(self::IMG_COLOR_SPACE, _('Adove RGB'));
-		break;
-	  case 0xfffd:
-		$this->setRW(self::IMG_COLOR_SPACE, _('Wide Gamut RGB'));
-		break;
-	  case 0xfffe:
-		$this->setRW(self::IMG_COLOR_SPACE, _('ICC Profile'));
-		break;
-	  case 0xfffe:
-		$this->setRW(self::IMG_COLOR_SPACE, _('Uncalibrated'));
-		break;
-		
-	  }
-	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]) &&
-	   !$this->isSet(self::IMG_CAMERA_MAKE))
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]) && !$this->isSet(self::IMG_CAMERA_MAKE))
 	  $this->setRW(self::IMG_CAMERA_MAKE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MODEL)]) &&
 	   !$this->isSet(self::IMG_CAMERA_MODEL))
 	  $this->setRW(self::IMG_CAMERA_MODEL, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MODEL)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]) &&
 	   !$this->isSet(self::IMG_CAMERA_SERIAL))
-	  $this->setRW(self::IMG_CAMERA_SERIAL,
-				   $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]);
+	  $this->setRW(self::IMG_CAMERA_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]);
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) &&
+	   !$this->isSet(self::IMG_COLOR_SPACE_FMT)) {
+	  switch((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) {
+	  case 0x1:
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('sRGB')); break;
+	  case 0x2:
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Adobe RGB')); break;
+	  case 0xfffd:
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Wide Gamut RGB')); break;
+	  case 0xfffe:
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('ICC Profile')); break;
+	  case 0xfffe:
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Uncalibrated')); break;
+		
+	  }
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)])) {
+	  $exposure = $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)];
+	  if(!$this->isSet(self::IMG_EXPOSURE)) $this->setRW(self::IMG_EXPOSURE, self::fracToArray($exposure));
+	  if(!$this->isSet(self::IMG_EXPOSURE_FMT))
+		$this->setRW(self::IMG_EXPOSURE_FMT, self::nrmFrac($exposure).' '._('second(s)'));
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) &&
+	   !$this->isSet(self::IMG_EXPOSURE_MODE_FMT)) {
+	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) {
+	  case 0:
+		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Auto')); break;
+	  case 1:
+		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Manual')); break;
+	  case 2:
+		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Auto bracket')); break;
+	  }
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) &&
+	   !$this->isSet(self::IMG_EXPOSURE_PGM_FMT)) {
+	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) {
+	  case 0:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Not defined')); break;
+	  case 1:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Manual')); break;
+	  case 2:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Program')); break;
+	  case 3:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Aperture-priority')); break;
+	  case 4:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Shutter speed priority')); break;
+	  case 5:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Creative (slow speed)')); break;
+	  case 6:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Action (high speed)')); break;
+	  case 7:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Portrait')); break;
+	  case 8:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Landscape')); break;
+	  case 9:
+		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Bulb')); break;
+	  }
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)])) {
+	  $flash  =$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)];
+	  if(!$this->isSet(self::IMG_FLASH)) $this->setRW(self::IMG_FLASH, (int)$flash);
+	  if(!$this->isSet(self::IMG_FLASH_FMT))
+		$this->setRW(self::IMG_FLASH_FMT, (int)$flash === 1 ? _('Flash') : _('No flash'));
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)])) {
+	  $focal_length = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]);
+	  if(!$this->isSet(self::IMG_FOCAL_LENGTH)) $this->setRW(self::IMG_FOCAL_LENGTH, $focal_length);
+	  if(!$this->isSet(self::IMG_FOCAL_LENGTH_FMT))
+		$this->setRW(self::IMG_FOCAL_LENGTH_FMT, $focal_length.' '._('mm'));
+	}
+	if(!$this->isSet(self::IMG_HEIGHT)) {
+	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)])) {
+		$height = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)];
+		if($height > 0 && $height < 32768) $this->setRW(self::IMG_HEIGHT, $height); else unset($height);
+	  }
+	}
+	else {
+	  $height = $this->get(self::IMG_HEIGHT);
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isSet(self::IMG_ISO))
+	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isSet(self::IMG_ISO)) {
+	  // This is not according to specifications, but typically works
+	  $photo_sensitivity = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)];
+	  if($photo_sensitivity < 65536) $this->setRW(self::IMG_ISO, $photo_sensitivity);
+	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]) &&
 	   !$this->isSet(self::IMG_LENS_MAKE))
 	  $this->setRW(self::IMG_LENS_MAKE, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]);
@@ -990,117 +1051,93 @@ class Metadata {
 	  $this->setRW(self::IMG_LENS_MODEL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MODEL)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]) &&
 	   !$this->isSet(self::IMG_LENS_SERIAL))
-	  $this->setRW(self::IMG_LENS_SERIAL,
-				   $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]);
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]) &&
-	   !$this->isSet(self::IMG_SOFTWARE))
+	  $this->setRW(self::IMG_LENS_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]);
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) &&
+	   !$this->isSet(self::IMG_METERING_MODE_FMT)) {
+	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) {
+	  case 1:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Average')); break;
+	  case 2:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Center-weighted average')); break;
+	  case 3:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Spot')); break;
+	  case 4:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Multi-spot')); break;
+	  case 5:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Multi-segment')); break;
+	  case 6:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Partial')); break;
+	  case 255:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Other')); break;
+	  default:
+		$this->setRW(self::IMG_METERING_MODE_FMT, _('Unknown')); break;
+	  }
+	}
+	if(!$this->isSet(self::IMG_RESOLUTION_UNIT)) {
+	  if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)])) {
+		$resolution_unit = (int)$exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)];
+		$this->setRW(self::IMG_RESOLUTION_UNIT, $resolution_unit);
+	  }
+	  else {
+		$resolution_unit = 0;
+	  }
+	}
+	else {
+	  $resolution_unit = $this->get(self::IMG_RESOLUTION_UNIT);
+	}
+	switch($resolution_unit) {
+	case 1:
+	case 3:
+	  $resolution_per_cm = 1.0; break;
+	default:
+	  $resolution_per_cm = 2.54; break;
+	}
+	// Note: We give preference to XResolution ofer YResolution
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]) &&
+	   !$this->isSet(self::IMG_RESOLUTION)) {
+	  $resolution = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]);
+	  $this->setRW(self::IMG_RESOLUTION, $resolution);
+	  $this->setRW(self::IMG_RESOLUTION_FMT, $resolution.' '.($resolution_per_cm == 1 ? _('dpcm') : _('dpi')));
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_YRESOLUTION)]) &&
+	   !$this->isSet(self::IMG_RESOLUTION)) {
+	  $resolution = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_YRESOLUTION)]);
+	  $this->setRW(self::IMG_RESOLUTION, $resolution);
+	}
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]) && !$this->isSet(self::IMG_SOFTWARE))
 	  $this->setRW(self::IMG_SOFTWARE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_PROCESSING_SOFTWARE)]) &&
 	   !$this->isSet(self::IMG_SOFTWARE))
 	  $this->setRW(self::IMG_SOFTWARE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_PROCESSING_SOFTWARE)]);
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)]) &&
-	   !$this->isSet(self::IMG_APERTURE)) {
-	  $aperture = 'f/'.
-		number_format(self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)]), 1);
-	  $this->setRW(self::IMG_APERTURE, $aperture);
-	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_APERTURE_VALUE)]) &&
-	   !$this->isSet(self::IMG_APERTURE)) {
-	  $aperture = 'f/'.
-		number_format(self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_APERTURE_VALUE)]), 1);
-	  $this->setRW(self::IMG_APERTURE, $aperture);
-	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)]) &&
-	   !$this->isSet(self::IMG_EXPOSURE))
-	  $this->setRW(self::IMG_EXPOSURE,
-				   self::calcExposure($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)]).
-				   ' '._('second(s)'));
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) &&
-	   !$this->isSet(self::IMG_EXPOSURE_PROGRAM)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) {
-	  case 0:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Not defined'));
-		break;
-	  case 1:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Manual'));
-		break;
-	  case 2:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Program AE'));
-		break;
-	  case 3:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Aperture-priority AE'));
-		break;
-	  case 4:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Shutter speed priority AE'));
-		break;
-	  case 5:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Creative (Slow speed)'));
-		break;
-	  case 6:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Action (High speed)'));
-		break;
-	  case 7:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Portrait'));
-		break;
-	  case 8:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Landscape'));
-		break;
-	  case 9:
-		$this->setRW(self::IMG_EXPOSURE_PROGRAM, _('Bulb'));
-		break;
+	$this->setRW(self::IMG_TYPE, IMG_JPG);
+	$this->setRW(self::IMG_TYPE_FMT, 'jpeg');
+	if(!$this->isSet(self::IMG_WIDTH)) {
+	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)])) {
+		$width = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)];
+		if($width > 0 && $width < 32768) $this->setRW(self::IMG_WIDTH, $height); else unset($width);
 	  }
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) &&
-	   !$this->isSet(self::IMG_EXPOSURE_MODE)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) {
-	  case 0:
-		$this->setRW(self::IMG_EXPOSURE_MODE, _('Auto'));
-		break;
-	  case 1:
-		$this->setRW(self::IMG_EXPOSURE_MODE, _('Manual'));
-		break;
-	  case 2:
-		$this->setRW(self::IMG_EXPOSURE_MODE, _('Auto bracket'));
-		break;
-	  }
+	else {
+	  $width = $this->get(self::IMG_WIDTH);
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) &&
-	   !$this->isSet(self::IMG_METERING_MODE)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) {
-	  case 1:
-		$this->setRW(self::IMG_METERING_MODE, _('Average'));
-		break;
-	  case 2:
-		$this->setRW(self::IMG_METERING_MODE, _('Center-weighted average'));
-		break;
-	  case 3:
-		$this->setRW(self::IMG_METERING_MODE, _('Spot'));
-		break;
-	  case 4:
-		$this->setRW(self::IMG_METERING_MODE, _('Multi-spot'));
-		break;
-	  case 5:
-		$this->setRW(self::IMG_METERING_MODE, _('Multi-segment'));
-		break;
-	  case 6:
-		$this->setRW(self::IMG_METERING_MODE, _('Partial'));
-		break;
-	  case 255:
-		$this->setRW(self::IMG_METERING_MODE, _('Other'));
-		break;
-	  default:
-		$this->setRW(self::IMG_METERING_MODE, _('Unknown'));
-		break;
-	  }
+	if(isset($width) && isset($height)) {
+	  if($width > $height) $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_HORIZONTAL);
+	  elseif($width < $height) $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_VERTICAL);
+	  else $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_SQUARE);
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]) &&
-	   !$this->isSet(self::IMG_FOCAL_LENGTH))
-	  $this->setRW(self::IMG_FOCAL_LENGTH,
-				   self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]));
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)]) && !$this->isSet(self::IMG_FLASH))
-	  $this->setRW(self::IMG_FLASH, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)]);
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isSet(self::IMG_ISO))
-	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
+	else {
+	  $this->setRW(self::IMG_ORIENTATION, self::IMG_ORI_UNKNOWN);
+	}
+	if(isset($width) && isset($height)) {
+	  $size_fmt = "$width x $height "._('px');
+	  if(isset($resolution)) {
+		$size_fmt .= ' - '.number_format($resolution_per_cm * $width / $resolution, 2).' x '.
+		  number_format($resolution_per_cm * $height / $resolution, 2).' '._('cm');
+	  }
+	  if($this->isSet(self::FILE_SIZE))
+		$size_fmt .= ' ('.number_format($this->get(self::FILE_SIZE)/1024/1024, 0).' MB)';
+	  $this->setRW(self::IMG_SIZE_FMT, $size_fmt);
+	}
 
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_DATE_TIME_ORIGINAL)]) &&
 	   !$this->isSet(self::CREATED_DATETIME))
@@ -1110,8 +1147,6 @@ class Metadata {
 	   !$this->isSet(self::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME,
 				   strtotime($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CREATE_DATE)]));
-
-
   }
 
   /**

@@ -705,6 +705,5 @@ class XmpDocument {
 	$status = $this->dom->loadXML($this->dom->saveXML());
 	if($status === false)
 	  throw new Exception(_('Internal error during XML re-validation'), Exception::INTERNAL_ERROR);
-	echo str_replace("><", ">\n<", $this->dom->saveXML());
   }
 }

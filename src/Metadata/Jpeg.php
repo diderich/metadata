@@ -22,6 +22,7 @@ class Jpeg {
   private XmpDocument|false $xmp_data;  // Read XMP data
   private array|false       $exif_data; // Read EXIF data
   private bool              $data_read; // Flag if data has been read
+  private bool              $read_only; // Data read is read only (writing is disabled)
   
   /**
    * Constructor
@@ -30,7 +31,7 @@ class Jpeg {
   {
 	$this->filename = false; $this->header = array(); $this->img = '';
 	$this->iptc_data = false; $this->xmp_data = false; $this->exif_data = false;
-	$this->data_read = false;
+	$this->data_read = false; $this->read_only = true;
   }
 
   /**
@@ -41,15 +42,18 @@ class Jpeg {
   }
 
   /**
-   * Read all data (image and metadata) from a JPG file
+   * Read all data (image and metadata) from a JPG file: IF read-only is set, the image data is not read and the data
+   * cannot be written back.
    *
-   * @param string $filename JPG filename
+   * @param string $filename  JPG filename
+   * @param bool   $readonly Allow only reading data
    * @throw Metadata\Exception
    */
-  public function read(string $filename): void
+  public function read(string $filename, bool $read_only = false): void
   {
 	// Initrialize all variables
 	self::__construct();
+	$this->read_only = $read_only;
 
 	// Open image file for reading
 	$handle = fopen($filename, 'rb');
@@ -87,22 +91,24 @@ class Jpeg {
 	  // Check if the segment was the last one
 	  if($data[1] === "\xDA") {
 		$hit_img_data = true;
-		
-		// Read image data
+
 		$this->img = '';
-		do {
-		  $this->img .= $this->dataRead($handle, 1048576);
+		if(!$this->read_only) {
+		  // Read image data
+		  do {
+			$this->img .= $this->dataRead($handle, 1048576);
+		  }
+		  while(!feof($handle));
+		  
+		  // Stripp of EOI and anything thereafter
+		  $eoi_pos = strpos($this->img, "\xFF\xD9");
+		  if($eoi_pos === false) {
+			fclose($handle);
+			throw new Exception(_('Image data seems to be corrupt'), Exception::FILE_CORRUPT, $filename);
+		  }
+		  
+		  $this->img = substr($this->img, 0, $eoi_pos);
 		}
-		while(!feof($handle));
-		
-		// Stripp of EOI and anything thereafter
-		$eoi_pos = strpos($this->img, "\xFF\xD9");
-		if($eoi_pos === false) {
-		  fclose($handle);
-		  throw new Exception(_('Image data seems to be corrupt'), Exception::FILE_CORRUPT, $filename);
-		}
-		
-		$this->img = substr($this->img, 0, $eoi_pos);
 	  }
 	  else {
 		$data = $this->dataRead($handle, 2);
@@ -136,7 +142,10 @@ class Jpeg {
    */
   public function write(string $filename): void
   {
-	if(!$this->data_read) throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
+	if(!$this->data_read)
+	  throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
+	if($this->read_only)
+	  throw new Exception(_('Cannot write file because data was read in read-only mode'), Exception::DATA_NOT_FOUND);
 
 	// Check that headers are not too large
 	foreach($this->header as $segment) {

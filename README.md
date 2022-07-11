@@ -21,10 +21,9 @@ The package has been developed in the context of developing the proprietary HOLI
 https://www.cdsp.photo/technology/holiday-database/), the end-user. As such it may lack functionality relevant for
 different uses. This explains the use of the top-level namespace prefix `\Holiday`.
 
-Most of the decoding and encoding of the JPG image file into different header segments as well as the decoding and
-encoding of the IPTC data is based on code from **The PHP JPEG Metadata Toolkit**
-(https://www.ozhiker.com/electronics/pjmt/), which is made available through the GNU Public License Version 1.12 and is
-hereby duly acknowledged.
+The decoding and encoding of the JPG image file into different header segments as well as the decoding and encoding of
+the IPTC data is inspired in part by **The PHP JPEG Metadata Toolkit** (https://www.ozhiker.com/electronics/pjmt/),
+which is hereby duly acknowledged.
 
 
 ## Transparent access to JPG image metadata
@@ -73,10 +72,10 @@ data. In the current implementation, user modifiable data stored in the EXIF/APP
 user-editable data and b) the complexity of the EXIF/APP1 data format.
 
 ## Exception handling
-All functions return `false`in case of non-fatal errors. Fatal errors trigger the exception `\Holiday\Metadata\Exception`
-to be thrown (which extends the generic `Exception` class). The numerical code associated with an error
-(`$exception->getCode()`) allows identifying the type of the error. Constants are defined in the exception class
-`\Holiday\Metadata\Exception`.
+All functions return `false`in case of non-fatal errors. Fatal errors trigger the exception
+`\Holiday\Metadata\Exception` to be thrown (which extends the generic `Exception` class). The numerical code associated
+with an error (`$exception->getCode()`) allows identifying the type of the error. Constants are defined in the exception
+class `\Holiday\Metadata\Exception`.
 
 The function `\Holiday\Metadata\Exception::getData()`returns additional data relevant to the thrown exception in human
 readable form.
@@ -137,12 +136,12 @@ All class files are commended in a phpDocumenter (https://www.phpdoc.org/) compl
 |-- src/                    Directory containing all class files required to use the library
   |-- Metadata.php          Class implementing transparent read/write access to JPG metadata
     |-- Metadata
-	  |-- Exception.php     Exception handling class
-	  |-- Exif.php          Class reading and writing EXIF/APP1 specific raw data
-	  |-- Iptc.php          Class reading and writing IPTC/APP13 specific raw data
+      |-- Exception.php     Exception handling class
+      |-- Exif.php          Class reading and writing EXIF/APP1 specific raw data
+      |-- Iptc.php          Class reading and writing IPTC/APP13 specific raw data
       |-- Jpeg.php          Class reading and writing JPG header segment data
-	  |-- XmpDocument.php   Class encoding and decoding Xmp data in a DOMDocument class format
-	  |-- Xmp.php           Class reading and writing XMP/APP1 specific data
+      |-- XmpDocument.php   Class encoding and decoding Xmp data in a DOMDocument class format
+      |-- Xmp.php           Class reading and writing XMP/APP1 specific data
 |-- test/
   |-- example.php           Sample program using the metadata class libraries
   |-- img.example.jpg       Sample image used by metadata.php
@@ -179,6 +178,14 @@ The following limitations currently exist and are acknowledged as such:
 * EXIF/APP1: Due to the complexity of writing EXIF/APP1 data, the IPTC/NAA records in the EXIF IFD are not updated. They
   are overwritten with \x00.
 The author is not aiming a removing these limitations in the future.
+
+
+# Idea for future development
+Although not currently planned, I would love to see the class implement multi-lingual metadata, allowing reading and
+writing of the same data fields in different languages. For example, caption information could be stored in English,
+French, and German in/with the same image. The multi-lingual framework exists in the XMP specification (attribute
+`xml:lang="x-default"` in text, rdf:Alt, and rdf:Bag elements), but I am currently not aware of any photo handling
+software that exploits this possibility.
 
 
 # Support
