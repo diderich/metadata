@@ -1,3 +1,8 @@
+[![Latest Stable Version](https://img.shields.io/packagist/v/diderich/metadata)](https://packagist.org/packages/diderich/metadata)
+[![Minimum PHP version](https://img.shields.io/packagist/php-v/diderich/metadata)](https://packagist.org/packages/diderich/metadata)
+[![License:
+MIT](https://img.shields.io/badge/license-MIT-blueviolet.svg)](https://github.com/diderich/metadata/blob/master/LICENSE)
+
 # Name
 Metadata: A PHP classes for reading and writing metadata from JPG files in a transparent way
 
@@ -32,7 +37,7 @@ files and access them in a transparent way, independent of how they are stored. 
 from file FILENAME using the following code. If no data is found `$data` will be equal to `false`, otherwise contain the
 read data, which may be a string, an integer, or an array:
 
-```
+```php
 $metadata = new \Holiday\Metadata();
 
 $metadata->read(FILENAME);
@@ -42,7 +47,7 @@ $data = $metadata->get(\Holiday\Metadata::FIELD_ID);
 Data in field FIELD_ID can be updated to NEW_DATA and written back to the same file or a new different file NEW_FILENAME
 using the code:
 
-``` 
+```php 
 $metadata->set(\Holiday\Metadata::FIELD_ID, NEW_DATA); 
 $metadata->write(NEW_FILENAME);
 ``` 
@@ -52,7 +57,7 @@ The file NEW_FILENAME is automatically overwritten.
 If you want to past the editable part of the metadata from one file FILENAME to another one named PASTE_FILENAME (which
 must exist), you can do so use the following code:
 
-```
+```php
 $metadata = new \Holiday\Metadata();
 
 $metadata->read(FILENAME);
@@ -87,7 +92,7 @@ directory.
 The following example shows how to read, modify, and write metadata from JPG files in a transparent way (see also
 `test/example.php`). Is requires/assumes a PSR-4 compliant mechanism for loading the class files.
 
-```
+```php
 // Create an instance of the Metadata class
 $metadata = new \Holiday\Metadata();
 
@@ -153,6 +158,12 @@ All class files are commended in a phpDocumenter (https://www.phpdoc.org/) compl
 |-- composer.json
 ```
 
+# Installation
+The metadata class can be installed using composer
+
+```shell
+composer require diderich/meta
+```
 
 # Testing
 The classes have been successfully tested on a number of JPG images written by a non-exhaustive list of different camera
@@ -181,7 +192,7 @@ The author is not aiming a removing these limitations in the future.
 
 
 # Idea for future development
-Although not currently planned, I would love to see the class implement multi-lingual metadata, allowing reading and
+Although not currently planned, The would love to see the class implement multi-lingual metadata, allowing reading and
 writing of the same data fields in different languages. For example, caption information could be stored in English,
 French, and German in/with the same image. The multi-lingual framework exists in the XMP specification (attribute
 `xml:lang="x-default"` in text, rdf:Alt, and rdf:Bag elements), but I am currently not aware of any photo handling
@@ -204,6 +215,6 @@ The author will respond to e-mails at his own discretion.
 
 
 # License
-GPL-3.0 https://opensource.org/licenses/GPL-3.0
+MIT https://opensource.org/licenses/mit
 
 
