@@ -6,7 +6,7 @@
    * @version   1.0
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
-   * @license   https://opensource.org/licenses/GPL-3.0 GPL-3.0
+   * @license   https://opensource.org/licenses/mit MIT
    *
    * @see       https://exiftool.org/TagNames/EXIF.html
    */
@@ -293,16 +293,21 @@ class Metadata {
 
 	// Add/update field value
 	if(self::fieldType($field_id) === self::TYPE_ARY) {
-	  if(isset($this->data[$field_id]) && !is_array($field_value)) {
-		// If field type is array and field value is not, add/update the value to the array
-		if(!in_array($field_value, $this->data[$field_id], strict: true))
-		  $this->data[$field_id][] = $field_value;
-	  }
-	  else {
+	  if(is_array($field_value)) {
 		// Replace all values
 		$this->drop($field_id);
 		foreach($field_value as $field_subvalue) {
 		  $this->data[$field_id][] = $field_subvalue;
+		}
+	  }
+	  else {
+		if(isset($this->data[$field_id])) {
+		  // If field type is array and field value is not, add/update the value to the array
+		  if(!in_array($field_value, $this->data[$field_id], strict: true))
+			$this->data[$field_id][] = $field_value;
+		}
+		else {
+		  $this->data[$field_id][] = $field_value;
 		}
 	  }
 	}
@@ -778,8 +783,6 @@ class Metadata {
 	  $this->set(self::CITY, $xmp_data->getXmpText(Xmp::PS_CITY));
 	if(!$this->isSet(self::COUNTRY) && $xmp_data->isXmpText(Xmp::PS_COUNTRY))
 	  $this->set(self::COUNTRY, $xmp_data->getXmpText(Xmp::PS_COUNTRY));
-	if(!$this->isSet(self::CREATED_DATETIME) && $xmp_data->isXmpText(Xmp::PS_CREATED_DATETIME))
-	  $this->set(self::CREATED_DATETIME, strtotime($xmp_data->getXmpText(Xmp::PS_CREATED_DATETIME)));
 	if(!$this->isSet(self::EDIT_STATUS) && $xmp_data->isXmpText(Xmp::PM_EDIT_STATUS))
 	  $this->set(self::EDIT_STATUS, $xmp_data->getXmpText(Xmp::PM_EDIT_STATUS));
 	if(!$this->isSet(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
@@ -1039,7 +1042,7 @@ class Metadata {
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isSet(self::IMG_ISO))
 	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isSet(self::IMG_ISO)) {
-	  // This is not according to specifications, but typically works
+	  // Note: SensitivtyType should be 2-7 or 0
 	  $photo_sensitivity = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)];
 	  if($photo_sensitivity < 65536) $this->setRW(self::IMG_ISO, $photo_sensitivity);
 	}
@@ -1134,8 +1137,15 @@ class Metadata {
 		$size_fmt .= ' - '.number_format($resolution_per_cm * $width / $resolution, 2).' x '.
 		  number_format($resolution_per_cm * $height / $resolution, 2).' '._('cm');
 	  }
-	  if($this->isSet(self::FILE_SIZE))
-		$size_fmt .= ' ('.number_format($this->get(self::FILE_SIZE)/1024/1024, 0).' MB)';
+	  if($this->isSet(self::FILE_SIZE)) {
+		$file_size = $this->get(self::FILE_SIZE);
+		if($file_size > 1024 * 1024)
+		  $size_fmt .= ' ('.number_format($file_size / 1024 / 1024, 0).' MB)';
+		elseif($file_size > 1024)
+		  $size_fmt .= ' ('.number_format($file_size / 1024, 0).' KB)';
+		else
+		  $size_fmt .= ' ('.number_format($file_size / 1024, 2).' KB)';
+	  }
 	  $this->setRW(self::IMG_SIZE_FMT, $size_fmt);
 	}
 

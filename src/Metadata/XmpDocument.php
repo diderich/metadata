@@ -6,7 +6,7 @@
    * @version   1.0
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
-   * @license   https://opensource.org/licenses/GPL-3.0 GPL-3.0
+   * @license   https://opensource.org/licenses/mit MIT
    *
    * @see       https://www.npes.org/pdf/xmpspecification-Jun05.pdf
    * @see       https://developer.adobe.com/xmp/docs/XMPSpecifications/
@@ -90,7 +90,7 @@ class XmpDocument {
   public function isXmpText(string $name): bool
   {
 	// Search for Name as Attribute
-	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION);
+	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $name);
 	if($descs === false)
 	  throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'),  Exception::DATA_FORMAT_ERROR);
 	foreach($descs as $desc) {
@@ -334,14 +334,20 @@ class XmpDocument {
    */
   public function updateHistory(string $software): void
   {
-	// Serch for a rdf:Description element that referneces to the xmpMM namespace in which histories are saves
-	$desc = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION);
+	// Serch for a rdf:Description element that references to the xmpMM namespace in which histories are saves
+	$desc = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION, 'xmpMM');
 	if($desc === false)
 	  throw new Exception(_('Internal error finding')." 'rdf:Description' "._('including')." 'xmpMM' ".
 						  _('as namespaces'), Exception::INTERNAL_ERROR);
-	$history = self::getXmpFirstNodeByName($desc, Xmp::EDIT_HISTORY);
+
+	// Ensure that rdf:Description has stEvt and stRef namespace attributes set
+	if(!$desc->hasAttribute('xmlns:stEvt'))
+	   $desc->setAttribute('stEvt', 'http://ns.adobe.com/xap/1.0/sType/ResourceEvent#');
+	if(!$desc->hasAttribute('xmlns:stRef'))
+	   $desc->setAttribute('stRef','http://ns.adobe.com/xap/1.0/sType/ResourceRef#');
 
 	// Create new history entry, if none exists
+	$history = self::getXmpFirstNodeByName($desc, Xmp::EDIT_HISTORY);
 	if($history === false) {
 	  $new_child = $this->dom->createElement('xmpMM:History');
 	  $history = $desc->appendChild($new_child);
@@ -379,7 +385,7 @@ class XmpDocument {
   protected function getXmpTextNS(string $ns, string $name): string|false
   {
 	// Search text as attribute of any rdf:Description node
-	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION);
+	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
 	if($descs === false)
 	  throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'),  Exception::DATA_FORMAT_ERROR);
 
@@ -462,7 +468,7 @@ class XmpDocument {
 	$name = "$ns:$name";
 
 	// Check if $name is an attribute
-	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION);
+	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
 	
 	if($descs === false)
 	  throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'),  Exception::DATA_FORMAT_ERROR);
@@ -634,20 +640,24 @@ class XmpDocument {
   }
   
   /**
-   * Return the first element of a named element, ensuring correct prefix
+   * Return the first element of a named element, ensuring correct prefix (and optionally the appropriate namespace)
    *
    * @access protected
    * @param  string $name   Element name (with ot without prefix)
+   * @param  string $ns     Optionally, check that $name includes xmlns:$ns attribute
    * return \DOMElement|false First node matching the name, including prefix, or false
    */
   protected static function getXmpFirstNodeByName(\DOMDocument|\DOMElement|\DOMNode $dom,
-												  string $name): \DOMElement|false
+												  string $name, string $ns = ''): \DOMElement|false
   {
 	$prefix = '';
 	if(strpos($name, ':') !== false) list($prefix, $name) = explode(':', $name, 2);
+	if(strpos($ns, ':') !== false) list($ns, $dummy) = explode(':', $ns, 2);
 	$childs = $dom->getElementsByTagName($name);
 	foreach($childs as $child) {
-	  if(empty($prefix) || $child->prefix === $prefix) return $child;
+	  if(empty($prefix) || $child->prefix === $prefix) {
+		if(empty($ns) || $child->hasAttribute("xmlns:$ns"))	return $child;
+	  }
 	}
 	return false;
   }
@@ -656,17 +666,22 @@ class XmpDocument {
    * Return an array of all elements of a named element, ensuring correct prefix
    *
    * @access protected
-   * @param  string $name   Element name (with ot without prefix)
+   * @param  string $name Element name (with ot without prefix,  and optionally the appropriate namespace)
+   * @param  string $ns     Optionally, check that $name includes xmlns:$ns attribute
    * return array|false   Array of nodes nodes matching the name, including prefix, or false
    */
-  protected static function getXmpAllNodeByName(\DOMDocument|\DOMElement|\DOMNode $dom, string $name): array|false
+  protected static function getXmpAllNodeByName(\DOMDocument|\DOMElement|\DOMNode $dom, string $name,
+												string $ns = ''): array|false
   {
 	$result = array();
 	$prefix = '';
 	if(strpos($name, ':') !== false) list($prefix, $name) = explode(':', $name, 2);
+	if(strpos($ns, ':') !== false) list($ns, $dummy) = explode(':', $ns, 2);
 	$childs = $dom->getElementsByTagName($name);
 	foreach($childs as $child) {
-	  if(empty($prefix) || $child->prefix === $prefix) $result[] = $child;
+	  if(empty($prefix) || $child->prefix === $prefix)  {
+		if(empty($ns) || $child->hasAttribute("xmlns:$ns"))	$result[] = $child;
+	  }
 	}
 	return empty($result) ? false : $result;
   }
@@ -683,9 +698,8 @@ class XmpDocument {
 	// Find xmpmeta root node
 	$mroot = self::getXmpFirstNodeByName($this->dom, 'x:xmpmeta');
 	if($mroot === false) {
-	  $elt = $this->dom->createElement('x:xmpmeta');
+	  $elt = $this->dom->createElementNS('adobe:ns:meta/', 'x:xmpmeta');
 	  $mroot = $this->dom->appendChild($elt);
-	  $mroot->setAttribute('xmlns:x', 'adobe:ns:meta/');
 	  $mroot->setAttribute('x:xmptk', 'XMP Core 5.6.0');
 	}
 	

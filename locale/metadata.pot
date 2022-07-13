@@ -16,164 +16,167 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/Metadata.php:160 src/Metadata/Jpeg.php:60
+#: src/Metadata.php:160 src/Metadata/Jpeg.php:60 src/Metadata.php:161
 msgid "File not found"
 msgstr ""
 
 #: src/Metadata.php:193 src/Metadata.php:215 src/Metadata/Jpeg.php:316
+#: src/Metadata.php:194 src/Metadata.php:216
 msgid "No image and metadata previously read"
 msgstr ""
 
-#: src/Metadata.php:195 src/Metadata/Jpeg.php:148
+#: src/Metadata.php:195 src/Metadata/Jpeg.php:148 src/Metadata.php:196
 msgid "Cannot write file because data was read in read-only mode"
 msgstr ""
 
-#: src/Metadata.php:219
+#: src/Metadata.php:219 src/Metadata.php:220
 msgid "File to paste metadata to not found"
 msgstr ""
 
 #: src/Metadata.php:245 src/Metadata.php:276 src/Metadata.php:341
-#: src/Metadata.php:368
+#: src/Metadata.php:368 src/Metadata.php:246 src/Metadata.php:277
+#: src/Metadata.php:342 src/Metadata.php:369
 msgid "Invalid field identifier specified"
 msgstr ""
 
-#: src/Metadata.php:281
+#: src/Metadata.php:281 src/Metadata.php:282
 msgid "Invalid type of field value identifier specified"
 msgstr ""
 
-#: src/Metadata.php:285
+#: src/Metadata.php:285 src/Metadata.php:286
 msgid "Field is not writable"
 msgstr ""
 
-#: src/Metadata.php:345
+#: src/Metadata.php:345 src/Metadata.php:346
 msgid "Only individual values of arrays can be dropped"
 msgstr ""
 
-#: src/Metadata.php:928
+#: src/Metadata.php:928 src/Metadata.php:930
 msgid "Invalid fraction specified"
 msgstr ""
 
-#: src/Metadata.php:962
+#: src/Metadata.php:962 src/Metadata.php:964
 msgid "sRGB"
 msgstr ""
 
-#: src/Metadata.php:964
+#: src/Metadata.php:964 src/Metadata.php:966
 msgid "Adobe RGB"
 msgstr ""
 
-#: src/Metadata.php:966
+#: src/Metadata.php:966 src/Metadata.php:968
 msgid "Wide Gamut RGB"
 msgstr ""
 
-#: src/Metadata.php:968
+#: src/Metadata.php:968 src/Metadata.php:970
 msgid "ICC Profile"
 msgstr ""
 
-#: src/Metadata.php:970
+#: src/Metadata.php:970 src/Metadata.php:972
 msgid "Uncalibrated"
 msgstr ""
 
-#: src/Metadata.php:978
+#: src/Metadata.php:978 src/Metadata.php:980
 msgid "second(s)"
 msgstr ""
 
-#: src/Metadata.php:984
+#: src/Metadata.php:984 src/Metadata.php:986
 msgid "Auto"
 msgstr ""
 
-#: src/Metadata.php:986 src/Metadata.php:997
+#: src/Metadata.php:986 src/Metadata.php:997 src/Metadata.php:988
+#: src/Metadata.php:999
 msgid "Manual"
 msgstr ""
 
-#: src/Metadata.php:988
+#: src/Metadata.php:988 src/Metadata.php:990
 msgid "Auto bracket"
 msgstr ""
 
-#: src/Metadata.php:995
+#: src/Metadata.php:995 src/Metadata.php:997
 msgid "Not defined"
 msgstr ""
 
-#: src/Metadata.php:999
+#: src/Metadata.php:999 src/Metadata.php:1001
 msgid "Program"
 msgstr ""
 
-#: src/Metadata.php:1001
+#: src/Metadata.php:1001 src/Metadata.php:1003
 msgid "Aperture-priority"
 msgstr ""
 
-#: src/Metadata.php:1003
+#: src/Metadata.php:1003 src/Metadata.php:1005
 msgid "Shutter speed priority"
 msgstr ""
 
-#: src/Metadata.php:1005
+#: src/Metadata.php:1005 src/Metadata.php:1007
 msgid "Creative (slow speed)"
 msgstr ""
 
-#: src/Metadata.php:1007
+#: src/Metadata.php:1007 src/Metadata.php:1009
 msgid "Action (high speed)"
 msgstr ""
 
-#: src/Metadata.php:1009
+#: src/Metadata.php:1009 src/Metadata.php:1011
 msgid "Portrait"
 msgstr ""
 
-#: src/Metadata.php:1011
+#: src/Metadata.php:1011 src/Metadata.php:1013
 msgid "Landscape"
 msgstr ""
 
-#: src/Metadata.php:1013
+#: src/Metadata.php:1013 src/Metadata.php:1015
 msgid "Bulb"
 msgstr ""
 
-#: src/Metadata.php:1020
+#: src/Metadata.php:1020 src/Metadata.php:1022
 msgid "Flash"
 msgstr ""
 
-#: src/Metadata.php:1020
+#: src/Metadata.php:1020 src/Metadata.php:1022
 msgid "No flash"
 msgstr ""
 
-#: src/Metadata.php:1026
+#: src/Metadata.php:1026 src/Metadata.php:1028
 msgid "mm"
 msgstr ""
 
-#: src/Metadata.php:1057
+#: src/Metadata.php:1057 src/Metadata.php:1059
 msgid "Average"
 msgstr ""
 
-#: src/Metadata.php:1059
+#: src/Metadata.php:1059 src/Metadata.php:1061
 msgid "Center-weighted average"
 msgstr ""
 
-#: src/Metadata.php:1061
+#: src/Metadata.php:1061 src/Metadata.php:1063
 msgid "Spot"
 msgstr ""
 
-#: src/Metadata.php:1063
+#: src/Metadata.php:1063 src/Metadata.php:1065
 msgid "Multi-spot"
 msgstr ""
 
-#: src/Metadata.php:1065
+#: src/Metadata.php:1065 src/Metadata.php:1067
 msgid "Multi-segment"
 msgstr ""
 
-#: src/Metadata.php:1067
+#: src/Metadata.php:1067 src/Metadata.php:1069
 msgid "Partial"
 msgstr ""
 
-#: src/Metadata.php:1069
+#: src/Metadata.php:1069 src/Metadata.php:1071
 msgid "Other"
 msgstr ""
 
-#: src/Metadata.php:1071
+#: src/Metadata.php:1071 src/Metadata.php:1073
 msgid "Unknown"
 msgstr ""
 
-#: src/Metadata.php:1129
+#: src/Metadata.php:1129 src/Metadata.php:1132
 msgid "px"
 msgstr ""
 
-#: src/Metadata.php:1132
+#: src/Metadata.php:1132 src/Metadata.php:1135
 msgid "cm"
 msgstr ""
 
@@ -334,4 +337,12 @@ msgstr ""
 
 #: src/Metadata/Xmp.php:126
 msgid "Error encoding XMP metdata as XML"
+msgstr ""
+
+#: src/Metadata.php:1100
+msgid "dpcm"
+msgstr ""
+
+#: src/Metadata.php:1100
+msgid "dpi"
 msgstr ""

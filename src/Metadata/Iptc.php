@@ -6,9 +6,8 @@
    * @version   1.0
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
-   * @license   https://opensource.org/licenses/GPL-3.0 GPL-3.0
+   * @license   https://opensource.org/licenses/mit MIT
    *
-   * @see       https://www.ozhiker.com/electronics/pjmt/
    * @see       https://exiftool.org/TagNames/IPTC.html
    */
 
