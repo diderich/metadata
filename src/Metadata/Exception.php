@@ -30,6 +30,8 @@ class Exception extends \Exception {
   const DATA_FORMAT_ERROR = 22;
   const INVALID_FIELD_ID = 23;
   const INVALID_FIELD_WRITE = 24;
+  const INVALID_FIELD_DATA = 25;
+  const INVALID_LANG = 26;
 
   /** Internal variables */
   protected mixed $data;

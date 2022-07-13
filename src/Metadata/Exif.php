@@ -271,6 +271,7 @@ class Exif {
 
 		// Decode Tag data
 		$ifd_tag_data = self::decodeIFDData(substr($ifd_data_tag, 12 * $tag + 8, 4), self::TYPE_ULONG, $byte_align);
+
 		if(self::blockName($ifd_tag_id) !== false) {
 		  // We have a pointer to a new IFD block
 			$exif_ary = array_merge($exif_ary, self::decodeIFDBlock($segment, self::blockName($ifd_tag_id),
@@ -285,6 +286,8 @@ class Exif {
 		}
 		else {
 		  // We have actual data
+		  $ifd_tag_data = self::decodeIFDData(substr($ifd_data_tag, 12 * $tag + 8, self::getIFDTypeSize($ifd_tag_type)),
+											  $ifd_tag_type, $byte_align);
 		  $ifd_tag_str = self::getIFDString($ifd_tag_data, $ifd_tag_type);
 		}
 

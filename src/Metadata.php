@@ -11,6 +11,11 @@
    * @see       https://exiftool.org/TagNames/EXIF.html
    */
 
+  /**
+   * NOTE: The API specification for the set(), get(), and drop() functions support language as optional parameter, but
+   *   the functionality to handle non- default languages has not (net) been implemented
+   */
+
 namespace Holiday;
 
 use \Holiday\Metadata\Iptc;
@@ -21,7 +26,7 @@ use \Holiday\Metadata\Exception;
 
 class Metadata {
   
-  const VERSION = '1.0.1';
+  const VERSION = '1.0.2';
 
   /** Fielt types */
   const TYPE_INVALID = 0;
@@ -119,11 +124,16 @@ class Metadata {
   const IMG_ORI_SQUARE       = 3;
   const IMG_ORI_UNKNOWN      = -1;
 
+  /** Supported foreign languages */
+  const LANG_DEFAULT = 'x-default';             /** Default language: English */
+  const LANG_DE = 'de';                         /** Language: German */
+  const LANG_FR = 'fr';                         /** Language: French */
+
   /** Private variables */
-  protected bool          $data_read;          /** Has data been loaded/read */
-  protected bool          $read_only;          /** Data has benn read in read-only mode, disabling writing back */
-  protected array         $data;               /** Source agnostic data */
-  protected Metadata\Jpeg $jpeg;               /** Jpeg object */
+  protected bool          $data_read;           /** Has data been loaded/read */
+  protected bool          $read_only;           /** Data has benn read in read-only mode, disabling writing back */
+  protected array         $data;                /** Source agnostic data */
+  protected Metadata\Jpeg $jpeg;                /** Jpeg object */
 
   /**
    * Consturctor
@@ -238,13 +248,15 @@ class Metadata {
    *
    * @param  int $field_id Field identifier
    * @return string|int|float|array|false Field value
+   * @param string $lang Language of value set (if language is supported by value)
    * @throw  Exception
    */
-  public function get(int $field_id): string|int|float|array|false
+  public function get(int $field_id, string $lang = self::LANG_DEFAULT): string|int|float|array|false
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
-	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
-								   $field_id);
+	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
+	if(!self::supportsLang($field_id, $lang))
+	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $lang);
 	
 	if(isset($this->data[$field_id])) return $this->data[$field_id];
 	return false;
@@ -255,11 +267,12 @@ class Metadata {
    *
    * @param int $field_id Field identifier
    * @param string|int|float|array|false $field_value  Field value
+   * @param string $lang Language of value set (if language is supported by value)
    * @throw Exception
    */
-  public function set(int $field_id, string|int|float|array|false $field_value): void
+  public function set(int $field_id, string|int|float|array|false $field_value, string $lang = self::LANG_DEFAULT): void
   {
-	$this->setRW($field_id, $field_value, ignore_write: false);
+	$this->setRW($field_id, $field_value, $lang, ignore_write: false);
   }
   
   /**
@@ -268,14 +281,17 @@ class Metadata {
    * @access private
    * @param  int  $field_id Field identifier
    * @param  string|int|float|array|false $field_value  Field value
+   * @param  string $lang Language of value set (if language is supported by value)
    * @param  bool $ignore_write Ignore write check
    * @throw  Exception
    */
-  private function setRW(int $field_id, string|int|float|array|false $field_value, bool $ignore_write = true): void
+  private function setRW(int $field_id, string|int|float|array|false $field_value, string $lang = self::LANG_DEFAULT,
+						 bool $ignore_write = true): void
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
-	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
-								   $field_id);
+	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
+	if(!self::supportsLang($field_id, $lang))
+	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $lang);
 
 	if(!self::isValidFieldType($field_id, $field_value) &&
 	   !(self::fieldType($field_id) === self::TYPE_ARY && !is_array($field_value)) && $field_value !== false)
@@ -327,8 +343,11 @@ class Metadata {
 
   /**
    * Drop all data
+   *
+   * @param string $lang Language of value set (if language is supported by value)
+   * @throw Exception
    */
-  public function dropAll(): void
+  public function dropAll(string $lang = self::LANG_DEFAULT): void
   {
 	$this->data = array();
   }
@@ -336,20 +355,20 @@ class Metadata {
   /**
    * Drop data associated with a given field identifier
    *
-   * @param int           $field_id     Field identifier
-   * @param string|false  $fiel_value   Field value
-   * @param bool          $ignore_write Ignore write check
+   * @param int          $field_id     Field identifier
+   * @param string|false $fiel_value   Field value
+   * @param string $lang Language of value set (if language is supported by value)
    * @throw Exception
    */
-  public function drop(int $field_id, string|false $field_value = false): void
+  public function drop(int $field_id, string|false $field_value = false, string $lang = self::LANG_DEFAULT): void
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
-	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
-								   $field_id);
+	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
+	if(!self::supportsLang($field_id, $lang))
+	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $lang);
 	
 	if(self::fieldType($field_id) !== self::TYPE_ARY && $field_value !== false) 
-	  throw new Exception(_('Only individual values of arrays can be dropped'),
-								   Exception::INVALID_FIELD_ID, $field_id);
+	  throw new Exception(_('Only individual values of arrays can be dropped'), Exception::INVALID_FIELD_ID, $field_id);
 	
 	if($field_value !== false) {
 	  $field_pos = array_search($field_value, $this->data[$field_id], strict: true);
@@ -365,20 +384,35 @@ class Metadata {
    *
    * @param  int  $field_id Field identifier
    * @param string|false  $fiel_value   Field value
+   * @param string $lang Language of value set (if language is supported by value)
    * @return bool Is field already set
    * @throw Exception
    */
-  public function isSet(int $field_id, string|false $field_value = false): bool
+  public function isSet(int $field_id, string|false $field_value = false, string $lang = self::LANG_DEFAULT): bool
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
-	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID,
-								   $field_id);
+	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
+	if(!self::supportsLang($field_id, $lang))
+	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $lang);
 
 	if($field_value === false) return isset($this->data[$field_id]);
 	$field_pos = array_search($field_value, $this->data[$field_id], strict: true);
 	return !($field_pos === false);
   }
-  
+
+  /**
+   * Returns true, if the field supports the specified language
+   *
+   * @param  string $lang Laguage
+   * @return bool   Is language supported for specific field
+   */
+  public static function supportsLang(int $field_id, string $lang): bool
+  {
+	switch($field_id) {
+	default:
+	  return $lang === self::LANG_DEFAULT;
+	}
+  }
   /**
    * Return the type associaed with a given field identifier
    *
@@ -648,7 +682,7 @@ class Metadata {
 	if(isset($iptc_data[Iptc::CREATED_DATE][0]) &&
 	   isset($iptc_data[Iptc::CREATED_TIME][0]) && !$this->isSet(self::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME, strtotime($iptc_data[Iptc::CREATED_DATE][0].' '.
-													 $iptc_data[Iptc::CREATED_TIME][0]), true);
+													 $iptc_data[Iptc::CREATED_TIME][0]));
   }
 
   /**
@@ -814,13 +848,13 @@ class Metadata {
 
 	// Set XMP read-only fields related to IMG_ data fields
 	if(!$this->isSet(self::IMG_CAMERA_SERIAL) && $xmp_data->isXmpText(Xmp::CAMERA_SERIAL))
-	  $this->setRW(self::IMG_CAMERA_SERIAL, $xmp_data->getXmpText(Xmp::CAMERA_SERIAL), true);
+	  $this->setRW(self::IMG_CAMERA_SERIAL, $xmp_data->getXmpText(Xmp::CAMERA_SERIAL));
 	if(!$this->isSet(self::IMG_LENS_MODEL) && $xmp_data->isXmpText(Xmp::LENS_MODEL))
-	  $this->setRW(self::IMG_LENS_MODEL, $xmp_data->getXmpText(Xmp::LENS_MODEL), true);
+	  $this->setRW(self::IMG_LENS_MODEL, $xmp_data->getXmpText(Xmp::LENS_MODEL));
 	if(!$this->isSet(self::IMG_LENS_SERIAL) && $xmp_data->isXmpText(Xmp::LENS_SERIAL))
-	  $this->setRW(self::IMG_LENS_SERIAL, $xmp_data->getXmpText(Xmp::LENS_SERIAL), true);
+	  $this->setRW(self::IMG_LENS_SERIAL, $xmp_data->getXmpText(Xmp::LENS_SERIAL));
 	if(!$this->isSet(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
-	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE), true);
+	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE));
 	
   }
 

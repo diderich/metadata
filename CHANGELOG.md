@@ -1,8 +1,11 @@
 # CHANGELOG.md
 
-Current version: `v1.0.1`
+Current version: `v1.0.2`
 
 All notable changes to the **HOLIDAY - Metadata** PHP classes for reading and writing metadata from/to JPG image files.
+
+## v1.0.2 - 2022-07-13
+Correced bug in decoding EXIF data where incorrect data type information was used.
 
 ## v1.0.1 - 2022-07-10
 * Improved namespace handing in `XmpDocument` class
