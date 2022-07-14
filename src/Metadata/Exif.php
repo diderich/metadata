@@ -286,7 +286,8 @@ class Exif {
 		}
 		else {
 		  // We have actual data
-		  $ifd_tag_data = self::decodeIFDData(substr($ifd_data_tag, 12 * $tag + 8, self::getIFDTypeSize($ifd_tag_type)),
+		  $ifd_tag_data = self::decodeIFDData(substr($ifd_data_tag, 12 * $tag + 8,
+													 $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type)),
 											  $ifd_tag_type, $byte_align);
 		  $ifd_tag_str = self::getIFDString($ifd_tag_data, $ifd_tag_type);
 		}
@@ -298,7 +299,8 @@ class Exif {
 		}
 		else {
 		  $exif_ary[] = array('block' => $block_name, 'tag' => $ifd_tag_id, 'data' => $ifd_tag_str,
-							  'ptr' => $ifd_block_pos + 12 * $tag, 'size' => 4);
+							  'ptr' => $ifd_block_pos + 12 * $tag,
+							  'size' => $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type));
 		}
 	  }
 

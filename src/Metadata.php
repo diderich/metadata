@@ -1067,7 +1067,7 @@ class Metadata {
 	if(!$this->isSet(self::IMG_HEIGHT)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)])) {
 		$height = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)];
-		if($height > 0 && $height < 32768) $this->setRW(self::IMG_HEIGHT, $height); else unset($height);
+		$this->setRW(self::IMG_HEIGHT, $height);
 	  }
 	}
 	else {
@@ -1078,7 +1078,7 @@ class Metadata {
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isSet(self::IMG_ISO)) {
 	  // Note: SensitivtyType should be 2-7 or 0
 	  $photo_sensitivity = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)];
-	  if($photo_sensitivity < 65536) $this->setRW(self::IMG_ISO, $photo_sensitivity);
+	  $this->setRW(self::IMG_ISO, $photo_sensitivity);
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]) &&
 	   !$this->isSet(self::IMG_LENS_MAKE))
@@ -1151,7 +1151,7 @@ class Metadata {
 	if(!$this->isSet(self::IMG_WIDTH)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)])) {
 		$width = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)];
-		if($width > 0 && $width < 32768) $this->setRW(self::IMG_WIDTH, $height); else unset($width);
+		$this->setRW(self::IMG_WIDTH, $height);
 	  }
 	}
 	else {
