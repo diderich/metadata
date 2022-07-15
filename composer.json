@@ -2,8 +2,8 @@
 	"name": "diderich/metadata",
 	"description": "HOLIDAY - Metadata / PHP classes for reading and writing metadata from/to JPEG files",
 	"type": "library",
-	"keywords": [ "jpeg", "image", "metadata" ],
-	"license": "GPL-3.0-or-later",
+	"keywords": [ "exif", "jpeg", "image", "metadata", "xmp" ],
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Claude Diderich",
@@ -20,7 +20,6 @@
 	"require": {
 		"php": ">=8.0",
 		"ext-dom": "*",
-		"ext-exif": "*",
 		"ext-xml": "*"
 	}
 }
