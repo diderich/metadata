@@ -743,8 +743,8 @@ class Metadata {
 	  $this->set(self::AUTHOR, $iptc_data[Iptc::AUTHOR][0]);
 	if(isset($iptc_data[Iptc::AUTHOR_TITLE][0]) && !$this->isSet(self::AUTHOR_TITLE))
 	  $this->set(self::AUTHOR_TITLE, $iptc_data[Iptc::AUTHOR_TITLE][0]);
-	if(isset($iptc_data[Iptc::CAPTION][0]) && !$this->isSetLang(self::CAPTION, self::LANG_DEFAULT))
-	  $this->setLang(self::CAPTION, $iptc_data[Iptc::CAPTION][0], self::LANG_DEFAULT);
+	if(isset($iptc_data[Iptc::CAPTION][0]) && !$this->isSet(self::CAPTION, self::LANG_DEFAULT))
+	  $this->set(self::CAPTION, $iptc_data[Iptc::CAPTION][0], self::LANG_DEFAULT);
 	if(isset($iptc_data[Iptc::CAPTION_WRITER][0]) && !$this->isSet(self::CAPTION_WRITER))
 	  $this->set(self::CAPTION_WRITER, $iptc_data[Iptc::CAPTION_WRITER][0]);
 	if(isset($iptc_data[Iptc::CATEGORY][0]) && !$this->isSet(self::CATEGORY))

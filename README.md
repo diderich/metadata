@@ -215,9 +215,9 @@ The following limitations currently exist and are acknowledged as such:
 The author is not aiming a removing these limitations in the future.
 
 # Important note
-Files containing caption/description data in mode than one language may not be correctly read/saved by most (it not all)
-photo editing data. To the author's knowledge, no of-the-shelve software currently supports multiple concurrent
-languages, as described by the *XMP Specification* (referenced as *Lang Alt*). See
+Files containing caption/description data in more than one language may not be correctly read/saved by most (it not all)
+photo editing software, like Photoshop. To the author's knowledge, no of-the-shelve software currently supports multiple
+concurrent languages, as described by the *XMP Specification* (referenced as *Lang Alt*). See
 https://iptc.org/standards/photo-metadata/interoperability-tests/ for more details about interoperability.
 
 
