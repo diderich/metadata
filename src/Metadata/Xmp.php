@@ -3,7 +3,7 @@
    * Xmp.php - Encode and decode XMP data from JPG segment APP1
    * 
    * @package   Holiday\Metadata
-   * @version   1.0
+   * @version   1.1
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -121,12 +121,9 @@ class Xmp {
   {
 	if($xmp_dom === false) return false;
 
-	// Decode XML document
+	// Encode XML document
 	$xmp_data = $xmp_dom->getDom()->saveXML();
 	if($xmp_data === false) throw new Exception(_('Error encoding XMP metdata as XML'), Exception::DATA_FORMAT_ERROR);
-	$xmp_data = html_entity_decode($xmp_data, ENT_NOQUOTES, 'UTF-8');
-	
-	if(empty($xmp_data)) return false;
 	$xmp_data = html_entity_decode($xmp_data, ENT_NOQUOTES, 'UTF-8');
 	
 	// Build XMP block

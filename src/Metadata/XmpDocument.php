@@ -3,7 +3,7 @@
    * XmpDocument.php - Functions for reading and writing XMP specific data
    * 
    * @package   Holiday\Metadata
-   * @version   1.0
+   * @version   1.1
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -28,6 +28,10 @@ class XmpDocument {
   const NS_PHOTOSHOP = 'photoshop';
   const NS_PHOTOMECHANIC = 'photomechanic';
 
+  /** Supported Languages */
+  const LANG_ALL = 'x-all';                     /** All languages */
+  const LANG_DEFAULT = 'x-default';             /** Default language: English */
+  
   /** Private variables */
   private array $nsPriorityAry;            /** Prioritized array of name spaces for core metadata */
 
@@ -51,8 +55,6 @@ class XmpDocument {
 					'GettyImagesGIFT' => 'http://xmp.gettyimages.com/gift/1.0/',
 					'exifEX' => 'http://cipa.jp/exif/1.0/',
 					'plus' => 'http://ns.useplus.org/ldf/xmp/1.0/',
-					'stEvt' => 'http://ns.adobe.com/xap/1.0/sType/ResourceEvent#',
-					'stRef' => 'http://ns.adobe.com/xap/1.0/sType/ResourceRef#',
 					'xmpMM' => 'http://ns.adobe.com/xap/1.0/mm/',
 					'xmpRights' => 'http://ns.adobe.com/xap/1.0/rights/');
 	$this->dom = $dom;
@@ -133,11 +135,12 @@ class XmpDocument {
   /**
    * Get Attribute / Node / rdf:Seq / rdf:Alt value
    *
-   * @param  string $name Node name, including prefix
+   * @param  string       $name Node name, including prefix
+   * @param  string|false $lang Language of entry
    * @return string|false First node value found, or false, if not found
    * @throw \Holiday\Metadata\Exception
    */
-  public function getXmpText(string $name): string|false
+  public function getXmpText(string $name, string|false $lang = self::LANG_DEFAULT): string|false
   {
 	if(strpos($name, ':') === false)
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
@@ -145,13 +148,46 @@ class XmpDocument {
 	list($prefix, $name) = explode(':', $name, 2);
 
 	// Seach first in specified name space (if any)
-	$result = $this->getXmpTextNS($prefix, $name);
+	$result = $this->getXmpTextNS($prefix, $name, lang: $lang);
+	if(is_array($result)) 
+	  throw new Exception(_('Multiple language support not yet implemented'), Exception::NOT_IMPLEMENTED);
 	if($result !== false) return $result;
 	
 	// Search in other name spaces according to priority (if core element)
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $prefix) {
-		$result = $this->getXmpTextNS($prefix, $name);
+		$result = $this->getXmpTextNS($prefix, $name, lang: $lang);
+		if(is_array($result)) 
+		  throw new Exception(_('Multiple language support not yet implemented'), Exception::NOT_IMPLEMENTED);
+		if($result !== false) return $result;
+	  }
+	}
+	return false;
+  }
+
+  /**
+   * Get rdf:Alt value
+   *
+   * @param  string $name Node name, including prefix
+   * @param  string $lang Language of entry
+   * @return array|false First node value found, or false, if not found
+   * @throw \Holiday\Metadata\Exception
+   */
+  public function getXmpLangAlt(string $name, string $lang = self::LANG_DEFAULT): array|false
+  {
+	if(strpos($name, ':') === false)
+	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
+
+	list($prefix, $name) = explode(':', $name, 2);
+
+	// Seach first in specified name space (if any)
+	$result = $this->getXmpLangAltNS($prefix, $name, lang: $lang);
+	if($result !== false) return $result;
+	
+	// Search in other name spaces according to priority (if core element)
+	if(in_array($prefix, $this->nsPriorityAry)) {
+	  foreach($this->nsPriorityAry as $prefix) {
+		$result = $this->getXmpLangAltNS($prefix, $name, lang: $lang);
 		if($result !== false) return $result;
 	  }
 	}
@@ -280,22 +316,49 @@ class XmpDocument {
    *
    * @param string           $name Node name, including prefix
    * @param string|int|false $data Node value
+   * @param string|false     $lang Language of entry
    * @throw \Holiday\Metadata\Exception
    */
-  public function setXmpAlt(string $name, string|int|false $data): void
+  public function setXmpAlt(string $name, string|int|false $data, string|false $lang = self::LANG_DEFAULT): void
   {
 	if(self::existXmpAttribute($this->dom, Xmp::DESCRIPTION, $name))
 	  throw new Exception(_('Cannot set')." 'rdf:Alt' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
 
 	list($prefix, $name) = explode(':', $name, 2);
-	$this->setXmpLiNS('Alt', $prefix, $name, $data, lang: true, update_only: false);
+	$this->setXmpLiNS('Alt', $prefix, $name, $data, lang: $lang, update_only: false);
 
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
 		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
-		  $this->setXmpLiNS('Alt', $ns_prefix, $name, $data, lang: true, update_only: true);
+		  $this->setXmpLiNS('Alt', $ns_prefix, $name, $data, lang: $lang, update_only: true);
+		}
+	  }
+	}
+  }
+
+    /**
+   * Set/Update req:Alt tag entries and updating values in other namespaces
+   *
+   * @param string      $name Node name, including prefix
+   * @param array|false $data Array of node values indexed by language
+   * @throw \Holiday\Metadata\Exception
+   */
+  public function setXmpLangAlt(string $name, array|false $data): void
+  {
+	if(self::existXmpAttribute($this->dom, Xmp::DESCRIPTION, $name))
+	  throw new Exception(_('Cannot set')." 'rdf:Alt' "._('node value if an attribute with the same name exists'),
+						  Exception::INVALID_FIELD_ID, $name);
+
+	list($prefix, $name) = explode(':', $name, 2);
+	$this->setXmpLiLangNS($prefix, $name, $data);
+	
+	// Update nodes is associated namespaces
+	if(in_array($prefix, $this->nsPriorityAry)) {
+	  foreach($this->nsPriorityAry as $ns_prefix) {
+		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		  $this->setXmpLiLangNS($ns_prefix, $name, $data);
 		}
 	  }
 	}
@@ -313,10 +376,10 @@ class XmpDocument {
 	if(self::existXmpAttribute($this->dom, Xmp::DESCRIPTION, $name))
 	  throw new Exception(_('Cannot set')." 'rdf:Bag' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
-
+	
 	list($prefix, $name) = explode(':', $name, 2);
 	$this->setXmpLiNS('Bag', $prefix, $name, $data, lang: false, update_only: false);
-
+	
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
@@ -326,7 +389,39 @@ class XmpDocument {
 	  }
 	}
   }
+  
+  /**
+   * Add an element listing all languages found throughout the DOM
+   */
+  public function addLanguages(): void
+  {
+	$languages = $this->recFindLanguages($this->dom->documentElement);
+	if(!empty($languages)) $this->setXmpBag('dc:language', $languages);
+  }
 
+  /**
+   * Recursively traverse a DOM, finding any node that has an attribute 'xml:lang
+   *
+   * @access private
+   * @param  \DOMElement $dom DOM Node
+   * @return array      Array of languages found
+   */
+  private function recFindLanguages(\DOMElement $dom): array
+  {
+	$result = array();
+	if($dom->hasAttribute('xml:lang')) {
+	  $lang = $dom->getAttribute('xml:lang');
+	  if($lang !== 'x-default') $result[$lang] = $lang;
+	}
+	if($dom->hasChildNodes()) {
+	  foreach($dom->childNodes as $child) {
+		if($child->nodeType == XML_ELEMENT_NODE)
+		  $result = array_merge($result, $this->recFindLanguages($child));
+	  }
+	}
+	return $result;
+  }
+  
   /**
    * Add a history entry indicating that the data has been updated (in xmpMM:History
    *
@@ -342,9 +437,9 @@ class XmpDocument {
 
 	// Ensure that rdf:Description has stEvt and stRef namespace attributes set
 	if(!$desc->hasAttribute('xmlns:stEvt'))
-	   $desc->setAttribute('stEvt', 'http://ns.adobe.com/xap/1.0/sType/ResourceEvent#');
+	   $desc->setAttribute('xmlns:stEvt', 'http://ns.adobe.com/xap/1.0/sType/ResourceEvent#');
 	if(!$desc->hasAttribute('xmlns:stRef'))
-	   $desc->setAttribute('stRef','http://ns.adobe.com/xap/1.0/sType/ResourceRef#');
+	   $desc->setAttribute('xmlns:stRef','http://ns.adobe.com/xap/1.0/sType/ResourceRef#');
 
 	// Create new history entry, if none exists
 	$history = self::getXmpFirstNodeByName($desc, Xmp::EDIT_HISTORY);
@@ -379,50 +474,108 @@ class XmpDocument {
    * @access protected
    * @param  string       $ns   Name space
    * @param  string       $name Node name, without prefix
-   * @return string|false Node value
+   * @param string|false  $lang Language of entry
+   * @return string|array|false Node value or array, if $lang === LANG_ALL
    * @throw \Holiday\Metadata\Exception
    */
-  protected function getXmpTextNS(string $ns, string $name): string|false
+  protected function getXmpTextNS(string $ns, string $name, string|false $lang = self::LANG_DEFAULT): string|array|false
   {
 	// Search text as attribute of any rdf:Description node
 	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
 	if($descs === false)
 	  throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'),  Exception::DATA_FORMAT_ERROR);
-
+	
 	// Search for Name as Attribute
-	foreach($descs as $desc) {
-	  $result = $desc->getAttribute("$ns:$name");
-	  if(!empty($result)) return $result;
+	if($lang === false) {
+	  foreach($descs as $desc) {
+		$result = $desc->getAttribute("$ns:$name");
+		if(!empty($result)) return $result;
+	  }
 	}
-
+	
 	// Try find Name as Node rather than Attribute
 	$node = self::getXmpFirstNodeByName($this->dom, "$ns:$name");
 	if($node === false) return false;
-
+	
 	//Try rdf:Alt - We only read the first list element
+	$lang_result = array();
 	$child_alt = self::getXmpFirstNodeByName($node, 'rdf:Alt');
 	if($child_alt !== false) {
-	  $subchild = self::getXmpFirstNodeByName($child_alt, 'rdf:li');
-	  if($subchild === false)
-		throw new Exception(_('Cannot find')." 'rdf:li' "._('child of')." 'rdf:Alt' "._('node'),
-							Exception::DATA_FORMAT_ERROR, $name);
-	  return (string)$subchild->nodeValue;
+	  $subchildren = self::getXmpAllNodeByName($child_alt, 'rdf:li');
+	  if($subchildren === false) return false;
+	  foreach($subchildren as $subchild) {
+		if($lang === false) return (string)$subchild->nodeValue;
+		if($lang === self::LANG_ALL) {
+		  if($subchild->hasAttribute('xml:lang')) {
+			$lang_result[$subchild->getAttribute('xml:lang')] = (string)$subchild->nodeValue;
+		  }
+		  else {
+			if(!isset($lang_result[self::LANG_DEFAULT])) {
+			  $lang_result[self::LANG_DEFAULT] = (string)$subchild->nodeValue;
+			}
+		  }
+		}
+		else {	
+		  if($subchild->getAttribute('xml:lang') === $lang) return (string)$subchild->nodeValue;
+		}
+	  }
+	}
+	return empty($lang_result) ? false : $lang_result;
+  }
+  
+  /**
+   * Get Attribute / Node / rdf:Seq / rdf:Alt value in specific name space
+   *
+   * @access protected
+   * @param  string      $ns   Name space
+   * @param  string      $name Node name, without prefix
+   * @param  string      $lang Language to retrieve, or all
+   * @return array|false Array of nodes, indexed by language
+   * @throw \Holiday\Metadata\Exception
+   */
+  protected function getXmpLangAltNS(string $ns, string $name, string $lang): array|false
+  {
+	// Search text as attribute of any rdf:Description node
+	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
+	if($descs === false)
+	  throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'),  Exception::DATA_FORMAT_ERROR);
+	
+	// Search for Name as Attribute
+	foreach($descs as $desc) {
+	  $result = $desc->getAttribute("$ns:$name");
+	  if(!empty($result))
+		throw new Exception(_('Found attribute with the same name as')." 'rdf:Alt' "._('element'),
+							Exception::DATA_FORMAT_ERROR);
 	}
 	
-	// Try rdf:Seq - We only read the first list element
-	$child_seq = self::getXmpFirstNodeByName($node, 'rdf:Seq');
-	if($child_seq !== false) {
-	  $subchild = self::getXmpFirstNodeByName($child_seq, 'rdf:li');
-	  if($subchild === false)
-		throw new Exception(_('Cannot find')." 'rdf:li' "._('child of')." 'rdf:Seq' "._('node'),
+	// Try find Name as Node rather than Attribute
+	$node = self::getXmpFirstNodeByName($this->dom, "$ns:$name");
+	if($node === false) return false;
+	
+	// Read rdf:Alt - We only read the first list element
+	$lang_result = array();
+	$child_alt = self::getXmpFirstNodeByName($node, 'rdf:Alt');
+	if($child_alt !== false) {
+	  $subchildren = self::getXmpAllNodeByName($child_alt, 'rdf:li');
+	  if($subchildren === false)
+		throw new Exception(_('Cannot find')." 'rdf:li' "._('child of')." 'rdf:Alt' "._('node in lang'),
 							Exception::DATA_FORMAT_ERROR, $name);
-	  return (string)$subchild->nodeValue;
+	  foreach($subchildren as $subchild) {
+		if($subchild->hasAttribute('xml:lang')) {
+		  if($subchild->getAttribute('xml:lang') === $lang || $lang === self::LANG_ALL) {
+			$lang_result[$subchild->getAttribute('xml:lang')] = (string)$subchild->nodeValue;
+		  }
+		}
+		else {
+		  if(!isset($lang_result[self::LANG_DEFAULT])) {
+			$lang_result[self::LANG_DEFAULT] = (string)$subchild->nodeValue;
+		  }
+		}
+	  }
 	}
-
-	// Return value of node
-	return (string)$node->nodeValue;
+	return empty($lang_result) ? false : $lang_result;
   }
-
+  
   /**
    * Get array of Bag node values
    *
@@ -544,77 +697,164 @@ class XmpDocument {
    * Set values in a rdf:li of rd:f$tag children of node $node
    *
    * @access protected
-   * @param  string                  $tag        Tag identifier of child node
-   * @param  string                  $name       Node name, with prefix
-   * @param  array|string|int|false  $data       Node value(s)
-   * @param  bool                    $lang       Set xml:lang language attribute to x-default
-   * @param  bool                    $pdate_only Only update value, do not create new nodes
+   * @param  string                 $tag        Tag identifier of child node
+   * @param  string                 $ns         Node prefix
+   * @param  string                 $name       Node name, without prefix
+   * @param  array|string|int|false $data       Node value(s)
+   * @param  string|false           $lang       Set xml:lang language attribute to x-default
+   * @param  bool                   $pdate_only Only update value, do not create new nodes
    * @throw \Holiday\Metadata\Exception
    */
   protected function setXmpLiNS(string $tag, string $ns, string $name, array|string|int|false $data,
-								bool $lang = false, bool $update_only = false): void
+								string|false $lang = self::LANG_DEFAULT, bool $update_only = false): void
   {
+	// Find node
 	$name = "$ns:$name";
-
 	$node = self::getXmpFirstNodeByName($this->dom, $name);
-	if($data === false) {
-	  if($node !== false) $this->deleteXmpChildren($node->parentNode);
-	  return;
-	}
-
+	
 	// If node does not exist and we update only, then exit
 	if($node === false && $update_only) return;
 	
-	// If node does not exists, create a new one
+	// If node does not exists and we do not only update, create a new one
 	if($node === false) {
 	  // Check if $name is an attribute
-	  $descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION);
-	  $root = false;
-	  foreach($descs as $desc) {
-		if($desc->hasAttribute("xmlns:$ns")) {
-		  $root = $desc;
-		}
-	  }
+	  $root = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
 	  if($root === false)
 		throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'), Exception::DATA_FORMAT_ERROR, $ns);
 	  
 	  $new_child = $this->dom->createElement($name);
 	  $node = $root->appendChild($new_child);
 	}
-	
-	// Delete all sub-nodes
-	$this->deleteXmpChildren($node);
-	
-	// Add new tag rdf:$tag
-	$new_child = $this->dom->createElement("rdf:$tag");
-	$child = $node->appendChild($new_child);
-	if(is_array($data)) {
-	  foreach($data as $value) {
-		$new_child = $this->dom->createElement('rdf:li');
-	  if($lang) $new_child->setAttribute('xml:lang', 'x-default');
-		$grandchild = $child->appendChild($new_child);
-		$grandchild->nodeValue = $value;
+
+	// Check if $node has children that are not of tye rdf:$tag
+	if($node->childNodes->count() !== 0) {
+	  $remove_children = array();
+	  foreach($node->childNodes as $child) {
+		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:$tag") {
+		  throw new Exception(_('Incorrect element tag found'), Exception::DATA_FORMAT_ERROR, $child->nodeName);
+		}
+		$remove_children[] = $child;
+	  }
+	  if(!empty($remove_children)) {
+		foreach($remove_children as $remove_child) {
+		  $node->removeChild($remove_child);
+		}
 	  }
 	}
-	else {
-	  $new_child = $this->dom->createElement('rdf:li');
-	  if($lang) $new_child->setAttribute('xml:lang', 'x-default');
-	  $grandchild = $child->appendChild($new_child);
-	  $grandchild->nodeValue = $data;
+
+	// Check if $node has no children of type rdf:$tag
+	$rdf_tag = self::getXmpFirstNodeByName($node, "rdf:$tag");
+	if($rdf_tag === false) {
+	  $new_child = $this->dom->createElement("rdf:$tag");
+	  $rdf_tag = $node->appendChild($new_child);
+	}
+	
+	// Delete all sub-nodes of $rdf_tag that are in the specified language (if any language specified)
+	$all_rdf_li = self::getXmpAllNodeByName($rdf_tag, 'rdf:li');
+	if($all_rdf_li !== false) {
+	  $remove_children = array();
+	  foreach($all_rdf_li as $rdf_li) {
+		if($lang === false || $rdf_li->getAttribute('xml:lang') === $lang) {
+		  $remove_children[] = $rdf_li;
+		}
+	  }
+	  if(!empty($remove_children)) {
+		foreach($remove_children as $remove_child) {
+		  $rdf_tag->removeChild($remove_child);
+		}
+	  }
+	}
+	
+	// Add new rdf:li tags
+	if($data !== false) {
+	  if(is_array($data)) {
+		foreach($data as $value) {
+		  $new_child = $this->dom->createElement('rdf:li');
+		  if($lang !== false) $new_child->setAttribute('xml:lang', $lang);
+		  $rdf_li = $rdf_tag->appendChild($new_child);
+		  $rdf_li->nodeValue = $value;
+		}
+	  }
+	  else {
+		$new_child = $this->dom->createElement('rdf:li');
+		if($lang !== false) $new_child->setAttribute('xml:lang', $lang);
+		$rdf_li = $rdf_tag->appendChild($new_child);
+		$rdf_li->nodeValue = $data;
+	  }
 	}
   }
-
+  
   /**
-   * Delete all child nodes of a node
+   * Set values in a rdf:li of rd:f$tag children of node $node
    *
    * @access protected
-   * @param  \DOMDocument|\DOMElement|\DOMNode $dom Node
+   * @param  string      $ns   Node prefix
+   * @param  string      $name Node name, without prefix
+   * @param  array|false $data Array of node values, indexed by language
    * @throw \Holiday\Metadata\Exception
    */
-  protected function deleteXmpChildren(\DOMDocument|\DOMElement|\DOMNode $node): void
+  protected function setXmpLiLangNS(string $ns, string $name, array|false $data): void
   {
-	while($node->hasChildNodes()) {
-	  $node->removeChild($node->firstChild);
+	// Find node
+	$name = "$ns:$name";
+	$node = self::getXmpFirstNodeByName($this->dom, $name);
+	
+	// If node does not exists, create a new one
+	if($node === false) {
+	  // Check if $name is an attribute
+	  $root = self::getXmpFirstNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
+	  if($root === false)
+		throw new Exception(_('Cannot find')." 'rdf:Description' "._('node'), Exception::DATA_FORMAT_ERROR, $ns);
+	  
+	  $new_child = $this->dom->createElement($name);
+	  $node = $root->appendChild($new_child);
+	}
+
+	// Check if $node has children that are not of tye rdf:Alt
+	if($node->childNodes->count() !== 0) {
+	  $remove_children = array();
+	  foreach($node->childNodes as $child) {
+		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:Alt") {
+		  throw new Exception(_('Incorrect element tag found'), Exception::DATA_FORMAT_ERROR, $child->nodeName);
+		}
+		$remove_children[] = $child;
+	  }
+	  if(!empty($remove_children)) {
+		foreach($remove_children as $remove_child) {
+		  $node->removeChild($remove_child);
+		}
+	  }
+	}
+
+	// Check if $node has no children of type rdf:Alt
+	$rdf_tag = self::getXmpFirstNodeByName($node, "rdf:Alt");
+	if($rdf_tag === false) {
+	  $new_child = $this->dom->createElement("rdf:Alt");
+	  $rdf_tag = $node->appendChild($new_child);
+	}
+	
+	// Delete all sub-nodes of $rdf_tag
+	$all_rdf_li = self::getXmpAllNodeByName($rdf_tag, 'rdf:li');
+	if($all_rdf_li !== false) {
+	  $remove_children = array();
+	  foreach($all_rdf_li as $rdf_li) {
+		$remove_children[] = $rdf_li;
+	  }
+	  if(!empty($remove_children)) {
+		foreach($remove_children as $remove_child) {
+		  $rdf_tag->removeChild($remove_child);
+		}
+	  }
+	}
+	
+	// Add new rdf:li tags
+	if($data !== false) {
+	  foreach($data as $lang => $value) {
+		$new_child = $this->dom->createElement('rdf:li');
+		$new_child->setAttribute('xml:lang', $lang);
+		$rdf_li = $rdf_tag->appendChild($new_child);
+		$rdf_li->nodeValue = $value;
+	  }
 	}
   }
 

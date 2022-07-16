@@ -1,0 +1,52 @@
+PROCESSING EXAMPLE IMAGE USING \Holiday\Metadata CLASS: img.example.jpg
+---
+CAPTION:
+   x-default: Demo Caption, démonstration en français, Deutsche Übersetzung
+CREDIT      : Demo Credit
+PLACE       : Demo City, Switzerland
+CREATED     : 10.05.2022
+EVENT       : Demo Event
+KEYWORDS    : Demo Keyword A, Demo Keyword B, Demo Keyword C, Peo: Additional Person
+PEOPLE      : Demo Person A, Demo Person B, Demo Person C
+
+EXTENDING KEYWORD TAGS:
+KEYWORDS    : Demo Keyword A, Demo Keyword B, Demo Keyword C
+PEOPLE      : Demo Person A, Demo Person B, Demo Person C,  Additional Person
+
+NEW CAPTION:
+   x-default: DEMO CITY, SWITZERLAND - MAY 10: Demo Caption, démonstration en français, Deutsche Übersetzung (Photo by Demo Credit)
+NEW EVENT   : DEMO EVENT
+
+PASTED CAPTION:
+   x-default: Demo Caption, démonstration en français, Deutsche Übersetzung
+PASTED EVENT: Demo Event
+
+PROCESSING EXAMPLE IMAGE USING \Holiday\Metadata CLASS: img.mlexample.jpg
+---
+CAPTION:
+   x-default: Denkmal zu Ehren von Salonom Gessner (1730-1788), einem idyllischen Dichter und Maler aus Zürich, am Klöntalersee im Klöntal am Dienstag, 12. Juli 2022 bei Klöntal, Schweiz
+   en-us    : Monument in honor of Salonom Gessner (1730-1788), an idyllic poet and painter from Zurich,  at the Klöntalersee in the Klöntal valley on Tuesday, July 12, 2022 near Klöntal, Switzerland
+CREDIT      : Claude Diderich
+PLACE       : Klöntal, Schweiz
+CREATED     : 12.07.2022
+KEYWORDS    : Spaziergang, Monument, Tal, Berg, Gessner, Stein
+
+EXTENDING KEYWORD TAGS:
+KEYWORDS    : Spaziergang, Monument, Tal, Berg, Gessner, Stein
+
+NEW CAPTION:
+   x-default: KLöNTAL, SCHWEIZ - JULY 12: Denkmal zu Ehren von Salonom Gessner (1730-1788), einem idyllischen Dichter und Maler aus Zürich, am Klöntalersee im Klöntal am Dienstag, 12. Juli 2022 bei Klöntal, Schweiz (Photo by Claude Diderich)
+   en-us    : Monument in honor of Salonom Gessner (1730-1788), an idyllic poet and painter from Zurich,  at the Klöntalersee in the Klöntal valley on Tuesday, July 12, 2022 near Klöntal, Switzerland
+NEW EVENT   : Event was empty
+
+PASTED CAPTION:
+   x-default: Denkmal zu Ehren von Salonom Gessner (1730-1788), einem idyllischen Dichter und Maler aus Zürich, am Klöntalersee im Klöntal am Dienstag, 12. Juli 2022 bei Klöntal, Schweiz
+   en-us    : Monument in honor of Salonom Gessner (1730-1788), an idyllic poet and painter from Zurich,  at the Klöntalersee in the Klöntal valley on Tuesday, July 12, 2022 near Klöntal, Switzerland
+PASTED EVENT: 
+
+
+EXCEPTION CATCHED
+---
+CODE:    11
+MESSAGE: File not found
+DATA:    invalid.file.name.jpg

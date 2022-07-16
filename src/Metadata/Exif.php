@@ -3,7 +3,7 @@
    * Exif.php - Decode EXIF data from JPG segment APP1
    * 
    * @package   Holiday\Metadata
-   * @version   1.0
+   * @version   1.1
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -388,15 +388,7 @@ class Exif {
 	case self::TYPE_URAT:
 	  return array('num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
 				   'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align));
-	  if($byte_align === self::EXIF_BYTE_ALIGN_LE)
-		$value = unpack('Vnum/Vdenom', $data);
-	  else
-		$value = unpack('Nnum/Ndenom', $data);
 	case self::TYPE_SRAT:
-	  if($byte_align === self::EXIF_BYTE_ALIGN_LE)
-		$value = unpack('Vnum/Vdenom', $data);
-	  else
-		$value = unpack('Nnum/Ndenom', $data);
 	  $value = array('num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
 					 'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align));
 	  if($value['num'] > 2147483648) $value['num'] -= 4294967296;
@@ -420,11 +412,11 @@ class Exif {
    * Return IFD value as formatted text string
    *
    * @access protected
-   * @param  string $data IFD data
-   * @param  int    $type Data type according to TIFF 6.0 specification
+   * @param  string|int|array $data IFD data
+   * @param  int              $type Data type according to TIFF 6.0 specification
    * @return string Formatted IFD data
    */
-  protected static function getIFDString(string|in|array $data, int $type): string
+  protected static function getIFDString(string|int|array $data, int $type): string
   {
 	switch($type) {
 	case self::TYPE_UBYTE:
@@ -433,7 +425,7 @@ class Exif {
 	case self::TYPE_SSHORT:
 	case self::TYPE_ULONG:
 	case self::TYPE_SLONG:
-	  return $data;
+	  return (string)$data;
 	case self::TYPE_ASCII:
 	  return trim($data);
 	case self::TYPE_URAT:

@@ -3,7 +3,7 @@
    * Jpeg.php - JPG metadata encode and decoding functions (IPTC and XMP fields)
    * 
    * @package   Holiday\Metadata
-   * @version   1.0
+   * @version   1.1
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -198,7 +198,8 @@ class Jpeg {
   private function getIptcSegment(): string
   {
 	$segment = '';
-	for($pos = 0; $pos < count($this->header); $pos++) {
+	$nb_header = count($this->header);
+	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Iptc::IPTC_TYPE &&
 		 strncmp($this->header[$pos]['data'], Iptc::IPTC_HEADER, Iptc::IPTC_HEADER_LEN) === 0) {
 		$segment .= substr($this->header[$pos]['data'], Iptc::IPTC_HEADER_LEN);
@@ -283,7 +284,8 @@ class Jpeg {
    */
   private function getXmpSegment(): string
   {
-	for($pos = 0; $pos < count($this->header); $pos++) {
+	$nb_header = count($this->header);
+	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Xmp::XMP_TYPE &&
 		 strncmp($this->header[$pos]['data'], Xmp::XMP_HEADER, Xmp::XMP_HEADER_LEN) === 0){
 		return substr($this->header[$pos]['data'], Xmp::XMP_HEADER_LEN);
@@ -320,7 +322,8 @@ class Jpeg {
 	$this->xmp_data = $xmp_data;
 	
 	// Find existing segment and repace or delete it
-	for($pos = 0; $pos < count($this->header); $pos++) {
+	$nb_header = count($this->header);
+	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Xmp::XMP_TYPE &&
 		 strncmp($this->header[$pos]['data'], Xmp::XMP_HEADER, Xmp::XMP_HEADER_LEN) === 0) {
 		if($xmp_data === false || $xmp_block === false) {
@@ -350,7 +353,8 @@ class Jpeg {
   private function getExifSegments(): array
   {
 	$exif_segments = array();
-	for($pos = 0; $pos < count($this->header); $pos++) {
+	$nb_header = count($this->header);
+	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Exif::EXIF_TYPE &&
 		 (strncmp($this->header[$pos]['data'], "Exif\x00\x00", 6) === 0 ||
 		  strncmp($this->header[$pos]['data'], "Exif\x00\xFF", 6) === 0)) {

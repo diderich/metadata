@@ -3,7 +3,7 @@
    * example.php - Image file metadata handing exampe file
    * 
    * @project   Holiday\Metadata
-   * @version   1.0
+   * @version   1.1
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/GPL-3.0 GPL-3.0
@@ -28,7 +28,7 @@ spl_autoload_register('my__autoload');
 
 
 /*** EXAMPLE ***/
-$testfiles_ary = array('img.example.jpg');
+$testfiles_ary = array('img.example.jpg', 'img.mlexample.jpg');
 
 /**
  * Use of class Metadata
@@ -36,35 +36,52 @@ $testfiles_ary = array('img.example.jpg');
 $metadata = new \Holiday\Metadata();
 
 foreach($testfiles_ary as $filename) {
-  echo "PROCESSING EXAMPLE IMAGE USING \\Holiday\\Metadata: $filename".PHP_EOL;
+  echo "PROCESSING EXAMPLE IMAGE USING \\Holiday\\Metadata CLASS: $filename".PHP_EOL;
   echo "---".PHP_EOL;
 
-  // Read metadata in a transparent way and extend tagged keywords to their respective fields
-  $metadata->read($filename, extend: true);
+  // Read metadata in a transparent way not extend tagged keywords
+  $metadata->read($filename, extend: false);
+
 
   // Read some of the metadata (assuming metadata is available)
-  $caption = $metadata->get(\Holiday\Metadata::CAPTION);
+  $caption = $metadata->get(\Holiday\Metadata::CAPTION, lang: \Holiday\Metadata::LANG_DEFAULT);
+  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, lang: \Holiday\Metadata::LANG_ALL);
   $date_created = $metadata->get(\Holiday\Metadata::CREATED_DATETIME);
   $credit = $metadata->get(\Holiday\Metadata::CREDIT);
   $city = $metadata->get(\Holiday\Metadata::CITY);
   $country = $metadata->get(\Holiday\Metadata::COUNTRY);
-  $people = $metadata->get(\Holiday\Metadata::PEOPLE);
   $keywords = $metadata->get(\Holiday\Metadata::KEYWORDS);
+  $people = $metadata->get(\Holiday\Metadata::PEOPLE);
   $event = $metadata->get(\Holiday\Metadata::EVENT);
-  if($caption !== false) echo "CAPTION:  $caption".PHP_EOL;
-  if($credit !== false) echo "CREDIT:   $credit".PHP_EOL;
-  if($city !== false && $country !== false) echo "PLACE:    $city, $country".PHP_EOL;
-  if($date_created !== false) echo "CREATED:  ".date('d.m.Y', $date_created).PHP_EOL;
-  if($event !== false) echo "EVENT:    $event".PHP_EOL;
-  if($keywords !== false) echo "KEYWORDS: ".implode(', ', $keywords).PHP_EOL;
-  if($people !== false) echo "PEOPLE:   ".implode(', ', $people).PHP_EOL;
+  if(!empty($caption_ary)) {
+    echo "CAPTION:".PHP_EOL;
+    foreach($caption_ary as $lang => $text) {
+	  $lang = substr($lang.'          ', 0, 9); 
+	  echo "   $lang: $text".PHP_EOL;
+	}
+  }
+  if($credit !== false) echo "CREDIT      : $credit".PHP_EOL;
+  if($city !== false && $country !== false) echo "PLACE       : $city, $country".PHP_EOL;
+  if($date_created !== false) echo "CREATED     : ".date('d.m.Y', $date_created).PHP_EOL;
+  if($event !== false) echo "EVENT       : $event".PHP_EOL;
+  if($keywords !== false) echo "KEYWORDS    : ".implode(', ', $keywords).PHP_EOL;
+  if($people !== false) echo "PEOPLE      : ".implode(', ', $people).PHP_EOL;
   echo PHP_EOL;
-  
+
+  // Read metadata in a transparent way and extend tagged keywords to their respective fields
+  $metadata->read($filename, extend: true);
+  echo "EXTENDING KEYWORD TAGS:".PHP_EOL;
+  $keywords = $metadata->get(\Holiday\Metadata::KEYWORDS);
+  $people = $metadata->get(\Holiday\Metadata::PEOPLE);
+  if($keywords !== false) echo "KEYWORDS    : ".implode(', ', $keywords).PHP_EOL;
+  if($people !== false) echo "PEOPLE      : ".implode(', ', $people).PHP_EOL;
+  echo PHP_EOL;
+
   // Re-format caption and update information
   if($caption !== false && $date_created !== false && $city !== false && $country !== false && $credit !== false) {
 	$caption = strtoupper($city).', '.strtoupper($country).' - '.strtoupper(date('F d', $date_created)).': '.
 	  $caption.' (Photo by '.$credit.')';
-	$metadata->set(\Holiday\Metadata::CAPTION, $caption);
+	$metadata->set(\Holiday\Metadata::CAPTION, $caption, lang: \Holiday\Metadata::LANG_DEFAULT);
   }
   else {
 	echo "NOT ALL INFORMATION AVAILABLE TO UPDATE CAPTION".PHP_EOL;
@@ -73,7 +90,7 @@ foreach($testfiles_ary as $filename) {
 	$metadata->set(\Holiday\Metadata::EVENT, strtoupper($event));
   }
   else {
-	$metadata->set(\Holiday\Metadata::EVENT, 'New demo event name');
+	$metadata->set(\Holiday\Metadata::EVENT, 'Event was empty');
   }
 
   // Write metadata back to the image file
@@ -81,8 +98,15 @@ foreach($testfiles_ary as $filename) {
 
   // Read-back the data and display modified caption
   $metadata->read("new.$filename");
-  echo "NEW CAPTION: ".$metadata->get(\Holiday\Metadata::CAPTION).PHP_EOL;
-  echo "NEW EVENT:   ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
+  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION);
+  if(!empty($caption_ary)) {
+	echo "NEW CAPTION:".PHP_EOL;
+    foreach($caption_ary as $lang => $text) {
+	  $lang = substr($lang.'          ', 0, 9);
+	  echo "   $lang: $text".PHP_EOL;
+	}
+  }
+  echo "NEW EVENT   : ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
 
   // Paste original data to new file
   $metadata->read("$filename");
@@ -90,8 +114,15 @@ foreach($testfiles_ary as $filename) {
 
     // Read-back the data and display original caption
   $metadata->read("new.$filename");
-  echo "PASTED CAPTION: ".$metadata->get(\Holiday\Metadata::CAPTION).PHP_EOL;
-  echo "PASTED EVENT:   ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
+  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION);
+  if(!empty($caption_ary)) {
+	echo "PASTED CAPTION:".PHP_EOL;
+    foreach($caption_ary as $lang => $text) {
+	  $lang = substr($lang.'          ', 0, 9);
+	  echo "   $lang: $text".PHP_EOL;
+	}
+  }
+  echo "PASTED EVENT: ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
 }
 
 /**
