@@ -209,7 +209,7 @@ The following limitations currently exist and are acknowledged as such:
   Iptc4xmpCore, dc, aux, xmp, photoshop, and photomechanic, if a data entry exists in those name spaces. Other name
   spaces, for example, used by other applications, are not updated/synchronized. This may result in inconsistent data.
 * EXIF/APP1: Although all data read is returned, only the data considered relevant is decoded. For example, thumbnails
-  or markernotes are not decoded. Data not decoded is return as a human readable hexadecimal string.
+  or markernotes are not decoded. Data not decoded is returned as a human readable hexadecimal string.
 * EXIF/APP1: Due to the complexity of writing EXIF/APP1 data, the IPTC/NAA records in the EXIF IFD are not updated. They
   are overwritten with \x00.
 The author is not aiming a removing these limitations in the future.

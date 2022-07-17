@@ -119,7 +119,7 @@ class Iptc {
 	foreach($new_iptc_data as $key => $new_iptc_elt) {
 	  if($encoding === false && self::isEditable($new_iptc_data[$key]['tag']) &&
 		 mb_detect_encoding($new_iptc_data[$key]['data'], ['ASCII', 'UTF-8'], strict: true) === false) {
-		$new_iptc_data[$key]['data'] = utf8_encode($new_iptc_data[$key]['data']);
+		$new_iptc_data[$key]['data'] = mb_convert_encoding($new_iptc_data[$key]['data'], 'UTF-8', 'ISO-8859-1');
 	  }
 	}
 	array_unshift($new_iptc_data, array('tag' => self::DATA_ENCODING, 'data' => self::IPTC_DATA_ENCODING_UTF8));
@@ -264,7 +264,7 @@ class Iptc {
 	foreach($data_iptc as $key => $iptc_elt) {
 	  if($encoding == false && self::isEditable($data_iptc[$key]['tag']) &&
 		 mb_detect_encoding($data_iptc[$key]['data'], ['ASCII', 'UTF-8'], strict: true) === false) {
-		$data_iptc[$key]['data'] = utf8_encode($data_iptc[$key]['data']);
+		$data_iptc[$key]['data'] =  mb_convert_encoding($data_iptc[$key]['data'], 'UTF-8', 'ISO-8859-1');
 	  }
 	}
 	return $data_iptc;
