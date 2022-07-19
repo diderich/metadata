@@ -983,8 +983,7 @@ class Metadata {
 	$xmp_data->setXmpSeq(Xmp::AUTHOR, $this->get(self::AUTHOR));
 	$xmp_data->setXmpText(Xmp::PS_AUTHOR_TITLE, $this->get(self::AUTHOR_TITLE));
 	$xmp_data->setXmpLangAlt(Xmp::CAPTION, $this->getLang(self::CAPTION, self::LANG_ALL));
-	if($xmp_data->isXmpText(Xmp::PS_CAPTION_WRITER))
-	  $xmp_data->setXmpText(Xmp::PS_CAPTION_WRITER, $this->get(self::CAPTION_WRITER));
+	$xmp_data->setXmpText(Xmp::PS_CAPTION_WRITER, $this->get(self::CAPTION_WRITER));
 	$xmp_data->setXmpText(Xmp::PS_CATEGORY, $this->get(self::CATEGORY));
 	$xmp_data->setXmpText(Xmp::CITY, $this->get(self::CITY));
 	if($xmp_data->isXmpText(Xmp::PS_CITY)) $xmp_data->setXmpText(Xmp::PS_CITY, $this->get(self::CITY));
@@ -993,10 +992,9 @@ class Metadata {
 	if($xmp_data->isXmpText(Xmp::PS_COUNTRY)) $xmp_data->setXmpText(Xmp::PS_COUNTRY, $this->get(self::COUNTRY));
 	$xmp_data->setXmpText(Xmp::COUNTRY_CODE, $this->get(self::COUNTRY_CODE));
 	$xmp_data->setXmpText(Xmp::CREDIT, $this->get(self::CREDIT));
-	if($xmp_data->isXmpText(Xmp::PM_EDIT_STATUS))
-	  $xmp_data->setXmpText(Xmp::PM_EDIT_STATUS, $this->get(self::EDIT_STATUS));
+	$xmp_data->setXmpText(Xmp::PM_EDIT_STATUS, $this->get(self::EDIT_STATUS));
 	$xmp_data->setXmpText(Xmp::GENRE, self::arrayToString($this->get(self::GENRE)));
-	if($xmp_data->isXmpText(Xmp::PS_HEADLINE)) $xmp_data->setXmpText(Xmp::PS_HEADLINE, $this->get(self::HEADLINE));
+	$xmp_data->setXmpText(Xmp::PS_HEADLINE, $this->get(self::HEADLINE));
 	$xmp_data->setXmpText(Xmp::INSTRUCTIONS, $this->get(self::INSTRUCTIONS));
 	$xmp_data->setXmpBag(Xmp::KEYWORDS, $this->get(self::KEYWORDS));
 	$xmp_data->setXmpText(Xmp::LOCATION, $this->get(self::LOCATION));
@@ -1023,8 +1021,7 @@ class Metadata {
 	$xmp_data->setXmpBag(Xmp::ORG_NAME, $this->get(self::ORG_NAME));
 	$xmp_data->setXmpBag(Xmp::PERSON, $this->get(self::PERSON));
 	$xmp_data->setXmpText(Xmp::RATING, (string)$this->get(self::RATING));
-	if($xmp_data->isXmpText(Xmp::PS_TRANSFER_REF))
-	  $xmp_data->setXmpText(Xmp::PS_TRANSFER_REF, $this->get(self::TRANSFER_REF));
+	$xmp_data->setXmpText(Xmp::PS_TRANSFER_REF, $this->get(self::TRANSFER_REF));
 
 	// Add/Update languages supported
 	$xmp_data->addLanguages();
