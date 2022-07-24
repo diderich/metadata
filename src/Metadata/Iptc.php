@@ -22,6 +22,8 @@ use Holiday\Metadata;
 class Iptc {
 
   /** IPTC application record tags: IPTC Core Metadata 1.3 / most relevant ones */
+  const DATA_ENCODING = '1:090';  /** Read only: Coded Character Set - Max 32 characters */
+
   const AUTHOR = '2:080';         /** By-Line (Author) - Max 32 Characters */
   const AUTHOR_TITLE = '2:085';   /** By-Line Title (Author Position) - Max 32 characters */
   const CAPTION = '2:120';        /** Caption/Abstract - Max 2000 Characters */
@@ -47,7 +49,6 @@ class Iptc {
   const SUBJECT_CODE = '2:012';   /** Subject Reference - 13 to 236 characters */
   const SUPP_CATEGORY = '2:020';  /** Supplemental Category - Max 32 characters */
   const TRANSFER_REF = '2:103';   /** Original Transmission Reference - Max 32 characters */
-  const DATA_ENCODING = '1:090';  /** Read only: Coded Character Set - Max 32 characters */
 
   const IPTC_TYPE = 'APP13';
   const IPTC_HEADER = "Photoshop 3.0\x00";

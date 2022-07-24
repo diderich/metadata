@@ -269,33 +269,31 @@ class Metadata {
    */
   public function set(int $field_id, string|int|float|array|false $field_value, string|false $lang = false): void
   {
-	$this->setRW($field_id, $field_value, $lang, ignore_write: false);
+	if($field_id < self::FIELD_ID_WRITE_FIRST || $field_id > self::FIELD_ID_WRITE_LAST)
+	  throw new Exception(_('Field is not writable'), Exception::INVALID_FIELD_WRITE, $field_id);
+	$this->setRW($field_id, $field_value, $lang);
   }
   
   /**
-   * Save data associated with a given field identifier
+   * Save data associated with a given field identifier, even for fields that are read-only
    *
    * @access private
    * @param  int                          $field_id     Field identifier
    * @param  string|int|float|array|false $field_value  Field value
    * @param  string|false                 $lang         Language of value set (if language is supported by value)
-   * @param  bool                         $ignore_write Ignore write check
    * @throw  Exception
    */
-  private function setRW(int $field_id, string|int|float|array|false $field_value, string|false $lang = false,
-						 bool $ignore_write = true): void
+  private function setRW(int $field_id, string|int|float|array|false $field_value, string|false $lang = false): void
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
-	if(!$ignore_write && ($field_id < self::FIELD_ID_WRITE_FIRST || $field_id > self::FIELD_ID_WRITE_LAST))
-	  throw new Exception(_('Field is not writable'), Exception::INVALID_FIELD_WRITE, $field_id);
 
 	if($lang !== false) { self::setLang($field_id, $field_value, $lang); return; }
 
 	if(!self::isValidFieldType($field_id, $field_value) &&
 	   !(self::fieldType($field_id) === self::TYPE_ARY && !is_array($field_value)) && $field_value !== false)
-	  throw new Exception(_('Invalid type of field value identifier specified'),
-						  Exception::INVALID_FIELD_ID, $field_id);
+	  throw new Exception(_('Invalid type of field value identifier specified'),  Exception::INVALID_FIELD_ID, 
+						  $field_id);
 	
 	// Setting field to false is identical to dropping field
 	if($field_value === false) { $this->drop($field_id, $field_value, $lang); return; }
@@ -323,15 +321,6 @@ class Metadata {
 	else {
 	  $this->data[$field_id] = $field_value;
 	}
-  }
-
-  /**
-   * Get All: FOR TESTING ONLY
-   *
-   */
-  public function getData(): array|false
-  {
-	return $this->data;
   }
 
   /**
@@ -391,8 +380,11 @@ class Metadata {
 	if($lang !== false) return $this->isSetLang($field_id, $field_value, $lang);
 	if($field_value === false) return isset($this->data[$field_id]);
 	if(isset($this->data[$field_id])) {
-	  $field_pos = array_search($field_value, $this->data[$field_id], strict: true);
-	  return !($field_pos === false);
+	  if(is_array($this->data[$field_id])) {
+		$field_pos = array_search($field_value, $this->data[$field_id], strict: true);
+		return !($field_pos === false);
+	  }
+	  return true;
 	}
 	return false;
   }
@@ -607,6 +599,7 @@ class Metadata {
 	case self::IMG_SOFTWARE:
 	case self::IMG_TYPE_FMT:
 	  return self::TYPE_STR;
+	  
 	default:
 	  return self::TYPE_INVALID;
 	}

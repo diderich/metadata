@@ -176,6 +176,7 @@ class Jpeg {
 
 	// Write EOI for JPEG and close files
 	fwrite($handle, "\xFF\xD9");
+	if(function_exists('fsync')) fsync($handle); // NEW: php 8.1
 	fclose($handle);
   }
 

@@ -11,11 +11,6 @@
    * @see       https://exiftool.org/TagNames/XMP.html
    */
 
-  /**
-   * NOTE
-   * - Data in the tiff: and exif: namespaces is not read from XMP as it is supposed to be contained in the EXIF segment
-   */
-
 namespace Holiday\Metadata;
 use Holiday\Metadata;
 
