@@ -98,7 +98,7 @@ foreach($testfiles_ary as $filename) {
 
   // Read-back the data and display modified caption
   $metadata->read("new.$filename");
-  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION);
+  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, \Holiday\Metadata::LANG_ALL);
   if(!empty($caption_ary)) {
 	echo "NEW CAPTION:".PHP_EOL;
     foreach($caption_ary as $lang => $text) {
@@ -114,7 +114,7 @@ foreach($testfiles_ary as $filename) {
 
     // Read-back the data and display original caption
   $metadata->read("new.$filename");
-  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION);
+  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, \Holiday\Metadata::LANG_ALL);
   if(!empty($caption_ary)) {
 	echo "PASTED CAPTION:".PHP_EOL;
     foreach($caption_ary as $lang => $text) {

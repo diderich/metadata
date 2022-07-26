@@ -254,7 +254,7 @@ class Metadata {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
 
-	if($lang !== false) return self::getLang($field_id, $lang);
+	if(self::isLang($field_id)) return self::getLang($field_id, $lang);
 	if(isset($this->data[$field_id])) return $this->data[$field_id];
 	return false;
   }
@@ -288,7 +288,7 @@ class Metadata {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
 
-	if($lang !== false) { self::setLang($field_id, $field_value, $lang); return; }
+	if(self::isLang($field_id)) { self::setLang($field_id, $field_value, $lang); return; }
 
 	if(!self::isValidFieldType($field_id, $field_value) &&
 	   !(self::fieldType($field_id) === self::TYPE_ARY && !is_array($field_value)) && $field_value !== false)
@@ -353,7 +353,7 @@ class Metadata {
 	if(self::fieldType($field_id) !== self::TYPE_ARY && $field_value !== false) 
 	  throw new Exception(_('Only individual values of arrays can be dropped'), Exception::INVALID_FIELD_ID, $field_id);
 	
-	if($lang !== false) { $this->dropLang($field_id, $field_value, $lang); return; }
+	if(self::isLang($field_id)) { $this->dropLang($field_id, $field_value, $lang); return; }
 	if($field_value !== false) {
 	  $field_pos = array_search($field_value, $this->data[$field_id], strict: true);
 	  unset($this->data[$field_id][$field_pos]);
@@ -372,12 +372,12 @@ class Metadata {
    * @return bool Is field already set
    * @throw Exception
    */
-  public function isSet(int $field_id, string|int|float|false $field_value = false, string|false $lang = false): bool
+  public function isset(int $field_id, string|int|float|false $field_value = false, string|false $lang = false): bool
   {
 	if(self::fieldType($field_id) === self::TYPE_INVALID)
 	  throw new Exception(_('Invalid field identifier specified'), Exception::INVALID_FIELD_ID, $field_id);
 
-	if($lang !== false) return $this->isSetLang($field_id, $field_value, $lang);
+	if(self::isLang($field_id)) return $this->issetLang($field_id, $field_value, $lang);
 	if($field_value === false) return isset($this->data[$field_id]);
 	if(isset($this->data[$field_id])) {
 	  if(is_array($this->data[$field_id])) {
@@ -395,20 +395,25 @@ class Metadata {
    *
    * @param  int                   $field_id   Field identifier
    * @param string|int|float|false $fiel_value Field value
-   * @param string                 $lang       Language of value set (if language is supported by value)
+   * @param string|false           $lang       Language of value set (if language is supported by value)
    * @return bool Is field already set
    * @throw Exception
    */
-  private function isSetLang(int $field_id, string|int|float|false $field_value = false,
-							 string $lang = self::LANG_DEFAULT): bool
+  private function issetLang(int $field_id, string|int|float|false $field_value = false,
+							 string|false $lang = false): bool
   {
 	if(!self::isLang($field_id))
 	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $field_id);
 
 	if($field_value === false) return isset($this->data[$field_id][$lang]);
+	if($lang === false) $lang = self::LANG_DEFAULT;
+
 	if(isset($this->data[$field_id][$lang])) {
-	  $field_pos = array_search($field_value, $this->data[$field_id][$lang], strict: true);
-	  return !($field_pos === false);
+	  if(is_array($this->data[$field_id][$lang])) {
+		$field_pos = array_search($field_value, $this->data[$field_id][$lang], strict: true);
+		return !($field_pos === false);
+	  }
+	  return true;
 	}
 	return false;
   }
@@ -416,18 +421,19 @@ class Metadata {
   /**
    * Save data associated with a given field identifier is a specific language
    *
-   * @param int $field_id Field identifier
-   * @param string|int|float|array|false $field_value  Field value
-   * @param string $lang Language of value set (if language is supported by value)
+   * @param int                          $field_id    Field identifier
+   * @param string|int|float|array|false $field_value Field value
+   * @param string|false                 $lang        Language of value set
    * @throw Exception
    */
-  private function setLang(int $field_id, string|int|float|array|false $field_value, string $lang): void
+  private function setLang(int $field_id, string|int|float|array|false $field_value, string|false $lang): void
   {
 	if(!self::isLang($field_id))
 	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $field_id);
 
 	// Setting field to false is identical to dropping field
 	if($field_value === false) { self::dropLang($field_id, $field_value, $lang); return; }
+	if($lang === false) $lang = self::LANG_DEFAULT;
 
 	// Add/update field value
 	if(is_array($field_value)) {
@@ -445,16 +451,17 @@ class Metadata {
   /**
    * Return data associated with a given field is a specific language or 'false', if not value can be found
    *
-   * @param  int    $field_id Field identifier
-   * @param  string $lang     Language of value set (if language is supported by value)
+   * @param  int          $field_id Field identifier
+   * @param  string|false $lang     Language of value set
    * @return string|int|float|array|false Field value
    * @throw  Exception
    */
-  private function getLang(int $field_id, string $lang): string|int|float|array|false
+  private function getLang(int $field_id, string|false $lang): string|int|float|array|false
   {
 	if(!self::isLang($field_id))
 	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $field_id);
 
+	if($lang === false) $lang = self::LANG_DEFAULT;
 	if(isset($this->data[$field_id])) {
 	  if($lang === self::LANG_ALL) return $this->data[$field_id];
 	  if(isset($this->data[$field_id][$lang])) return $this->data[$field_id][$lang];
@@ -467,14 +474,15 @@ class Metadata {
    *
    * @param int                    $field_id   Field identifier
    * @param string|int|float|false $fiel_value Field value
-   * @param string                 $lang       Language of value set (if language is supported by value)
+   * @param string|false           $lang       Language of value set (if language is supported by value)
    * @throw Exception
    */
-  private function dropLang(int $field_id, string|int|float|false $field_value, string $lang): void
+  private function dropLang(int $field_id, string|int|float|false $field_value, string|false $lang): void
   {
 	if(!self::isLang($field_id))
 	  throw new Exception(_('Field does not support multi-lingual data'), Exception::INVALID_FIELD_DATA, $field_id);
 
+	if($lang === false) $lang = self::LANG_DEFAULT;
 	if($lang === self::LANG_ALL) {
 	  if($field_value !== false) {
 		foreach($this->data[$field_id] as $field_lang => $value) {
@@ -732,58 +740,58 @@ class Metadata {
 	if($iptc_data === false) return;
 
 	// Set IPTC writable fields (if they have not yet bee set)
-	if(isset($iptc_data[Iptc::AUTHOR][0]) && !$this->isSet(self::AUTHOR))
+	if(isset($iptc_data[Iptc::AUTHOR][0]) && !$this->isset(self::AUTHOR))
 	  $this->set(self::AUTHOR, $iptc_data[Iptc::AUTHOR][0]);
-	if(isset($iptc_data[Iptc::AUTHOR_TITLE][0]) && !$this->isSet(self::AUTHOR_TITLE))
+	if(isset($iptc_data[Iptc::AUTHOR_TITLE][0]) && !$this->isset(self::AUTHOR_TITLE))
 	  $this->set(self::AUTHOR_TITLE, $iptc_data[Iptc::AUTHOR_TITLE][0]);
-	if(isset($iptc_data[Iptc::CAPTION][0]) && !$this->isSet(self::CAPTION, self::LANG_DEFAULT))
+	if(isset($iptc_data[Iptc::CAPTION][0]) && !$this->isset(self::CAPTION, self::LANG_DEFAULT))
 	  $this->set(self::CAPTION, $iptc_data[Iptc::CAPTION][0], self::LANG_DEFAULT);
-	if(isset($iptc_data[Iptc::CAPTION_WRITER][0]) && !$this->isSet(self::CAPTION_WRITER))
+	if(isset($iptc_data[Iptc::CAPTION_WRITER][0]) && !$this->isset(self::CAPTION_WRITER))
 	  $this->set(self::CAPTION_WRITER, $iptc_data[Iptc::CAPTION_WRITER][0]);
-	if(isset($iptc_data[Iptc::CATEGORY][0]) && !$this->isSet(self::CATEGORY))
+	if(isset($iptc_data[Iptc::CATEGORY][0]) && !$this->isset(self::CATEGORY))
 	  $this->set(self::CATEGORY, $iptc_data[Iptc::CATEGORY][0]);
-	if(isset($iptc_data[Iptc::CITY][0]) && !$this->isSet(self::CITY))
+	if(isset($iptc_data[Iptc::CITY][0]) && !$this->isset(self::CITY))
 	  $this->set(self::CITY, $iptc_data[Iptc::CITY][0]);
-	if(isset($iptc_data[Iptc::COUNTRY][0]) && !$this->isSet(self::COUNTRY))
+	if(isset($iptc_data[Iptc::COUNTRY][0]) && !$this->isset(self::COUNTRY))
 	  $this->set(self::COUNTRY, $iptc_data[Iptc::COUNTRY][0]);
-	if(isset($iptc_data[Iptc::COUNTRY_CODE][0]) && !$this->isSet(self::COUNTRY_CODE))
+	if(isset($iptc_data[Iptc::COUNTRY_CODE][0]) && !$this->isset(self::COUNTRY_CODE))
 	  $this->set(self::COUNTRY_CODE, $iptc_data[Iptc::COUNTRY_CODE][0]);
-	if(isset($iptc_data[Iptc::CREDIT][0]) && !$this->isSet(self::CREDIT))
+	if(isset($iptc_data[Iptc::CREDIT][0]) && !$this->isset(self::CREDIT))
 	  $this->set(self::CREDIT, $iptc_data[Iptc::CREDIT][0]);
-	if(isset($iptc_data[Iptc::EDIT_STATUS][0]) && !$this->isSet(self::EDIT_STATUS))
+	if(isset($iptc_data[Iptc::EDIT_STATUS][0]) && !$this->isset(self::EDIT_STATUS))
 	  $this->set(self::EDIT_STATUS, $iptc_data[Iptc::EDIT_STATUS][0]);
-	if(isset($iptc_data[Iptc::GENRE][0]) && !$this->isSet(self::GENRE))
+	if(isset($iptc_data[Iptc::GENRE][0]) && !$this->isset(self::GENRE))
 	  $this->set(self::GENRE, $this->stringToArray($iptc_data[Iptc::GENRE][0]));
-	if(isset($iptc_data[Iptc::HEADLINE][0]) && !$this->isSet(self::HEADLINE))
+	if(isset($iptc_data[Iptc::HEADLINE][0]) && !$this->isset(self::HEADLINE))
 	  $this->set(self::HEADLINE, $iptc_data[Iptc::HEADLINE][0]);
-	if(isset($iptc_data[Iptc::INSTRUCTIONS][0]) && !$this->isSet(self::INSTRUCTIONS))
+	if(isset($iptc_data[Iptc::INSTRUCTIONS][0]) && !$this->isset(self::INSTRUCTIONS))
 	  $this->set(self::INSTRUCTIONS, $iptc_data[Iptc::INSTRUCTIONS][0]);
-	if(isset($iptc_data[Iptc::KEYWORDS]) && !$this->isSet(self::KEYWORDS))
+	if(isset($iptc_data[Iptc::KEYWORDS]) && !$this->isset(self::KEYWORDS))
 	  $this->set(self::KEYWORDS, $iptc_data[Iptc::KEYWORDS]);
-	if(isset($iptc_data[Iptc::LOCATION][0]) && !$this->isSet(self::LOCATION))
+	if(isset($iptc_data[Iptc::LOCATION][0]) && !$this->isset(self::LOCATION))
 	  $this->set(self::LOCATION, $iptc_data[Iptc::LOCATION][0]);
-	if(isset($iptc_data[Iptc::OBJECT][0]) && !$this->isSet(self::OBJECT))
+	if(isset($iptc_data[Iptc::OBJECT][0]) && !$this->isset(self::OBJECT))
 	  $this->set(self::OBJECT, $iptc_data[Iptc::OBJECT][0]);
-	if(isset($iptc_data[Iptc::PRIORITY][0]) && !$this->isSet(self::PRIORITY))
+	if(isset($iptc_data[Iptc::PRIORITY][0]) && !$this->isset(self::PRIORITY))
 	  $this->set(self::PRIORITY, (int)$iptc_data[Iptc::PRIORITY][0]);
-	if(isset($iptc_data[Iptc::SOURCE][0]) && !$this->isSet(self::SOURCE))
+	if(isset($iptc_data[Iptc::SOURCE][0]) && !$this->isset(self::SOURCE))
 	  $this->set(self::SOURCE, $iptc_data[Iptc::SOURCE][0]);
-	if(isset($iptc_data[Iptc::STATE][0]) && !$this->isSet(self::STATE))
+	if(isset($iptc_data[Iptc::STATE][0]) && !$this->isset(self::STATE))
 	  $this->set(self::STATE, $iptc_data[Iptc::STATE][0]);
-	if(isset($iptc_data[Iptc::SUBJECT_CODE]) && !$this->isSet(self::SUBJECT_CODE))
+	if(isset($iptc_data[Iptc::SUBJECT_CODE]) && !$this->isset(self::SUBJECT_CODE))
 	  $this->set(self::SUBJECT_CODE, $iptc_data[Iptc::SUBJECT_CODE]);
-	if(isset($iptc_data[Iptc::SUPP_CATEGORY][0]) && !$this->isSet(self::SUPP_CATEGORY_A))
+	if(isset($iptc_data[Iptc::SUPP_CATEGORY][0]) && !$this->isset(self::SUPP_CATEGORY_A))
 	  $this->set(self::SUPP_CATEGORY_A, $iptc_data[Iptc::SUPP_CATEGORY][0]);
-	if(isset($iptc_data[Iptc::SUPP_CATEGORY][1]) && !$this->isSet(self::SUPP_CATEGORY_B))
+	if(isset($iptc_data[Iptc::SUPP_CATEGORY][1]) && !$this->isset(self::SUPP_CATEGORY_B))
 	  $this->set(self::SUPP_CATEGORY_B, $iptc_data[Iptc::SUPP_CATEGORY][1]);
-	if(isset($iptc_data[Iptc::SUPP_CATEGORY][2]) && !$this->isSet(self::SUPP_CATEGORY_C))
+	if(isset($iptc_data[Iptc::SUPP_CATEGORY][2]) && !$this->isset(self::SUPP_CATEGORY_C))
 	  $this->set(self::SUPP_CATEGORY_C, $iptc_data[Iptc::SUPP_CATEGORY][2]);
-	if(isset($iptc_data[Iptc::TRANSFER_REF][0]) && !$this->isSet(self::TRANSFER_REF))
+	if(isset($iptc_data[Iptc::TRANSFER_REF][0]) && !$this->isset(self::TRANSFER_REF))
 	  $this->set(self::TRANSFER_REF, $iptc_data[Iptc::TRANSFER_REF][0]);
 
 	// Set IPTC read-only fields
 	if(isset($iptc_data[Iptc::CREATED_DATE][0]) &&
-	   isset($iptc_data[Iptc::CREATED_TIME][0]) && !$this->isSet(self::CREATED_DATETIME))
+	   isset($iptc_data[Iptc::CREATED_TIME][0]) && !$this->isset(self::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME, strtotime($iptc_data[Iptc::CREATED_DATE][0].' '.
 													 $iptc_data[Iptc::CREATED_TIME][0]));
   }
@@ -797,41 +805,41 @@ class Metadata {
   private function exportIptc(): void
   {
 	$iptc_data = array();
-	if($this->isSet(self::AUTHOR)) $iptc_data[Iptc::AUTHOR][0] = $this->get(self::AUTHOR);
-	if($this->isSet(self::AUTHOR_TITLE)) $iptc_data[Iptc::AUTHOR_TITLE][0] = $this->get(self::AUTHOR_TITLE);
-	if($this->isSet(self::CAPTION, self::LANG_DEFAULT))
+	if($this->isset(self::AUTHOR)) $iptc_data[Iptc::AUTHOR][0] = $this->get(self::AUTHOR);
+	if($this->isset(self::AUTHOR_TITLE)) $iptc_data[Iptc::AUTHOR_TITLE][0] = $this->get(self::AUTHOR_TITLE);
+	if($this->isset(self::CAPTION, self::LANG_DEFAULT))
 	  $iptc_data[Iptc::CAPTION][0] = $this->get(self::CAPTION, self::LANG_DEFAULT);
-	if($this->isSet(self::CAPTION_WRITER))
+	if($this->isset(self::CAPTION_WRITER))
 	  $iptc_data[Iptc::CAPTION_WRITER][0] = $this->get(self::CAPTION_WRITER);
-	if($this->isSet(self::CATEGORY)) $iptc_data[Iptc::CATEGORY][0] = $this->get(self::CATEGORY);
-	if($this->isSet(self::CITY)) $iptc_data[Iptc::CITY][0] = $this->get(self::CITY);
-	if($this->isSet(self::COPYRIGHT)) $iptc_data[Iptc::COPYRIGHT][0] = $this->get(self::COPYRIGHT);
-	if($this->isSet(self::COUNTRY)) $iptc_data[Iptc::COUNTRY][0] = $this->get(self::COUNTRY);
-	if($this->isSet(self::COUNTRY_CODE)) $iptc_data[Iptc::COUNTRY_CODE][0] = $this->get(self::COUNTRY_CODE);
-	if($this->isSet(self::CREDIT)) $iptc_data[Iptc::CREDIT][0] = $this->get(self::CREDIT);
-	if($this->isSet(self::EDIT_STATUS)) $iptc_data[Iptc::EDIT_STATUS][0] = $this->get(self::EDIT_STATUS);
-	if($this->isSet(self::GENRE)) $iptc_data[Iptc::GENRE][0] = $this->arrayToString($this->get(self::GENRE));
-	if($this->isSet(self::HEADLINE)) $iptc_data[Iptc::HEADLINE][0] = $this->get(self::HEADLINE);
-	if($this->isSet(self::INSTRUCTIONS)) $iptc_data[Iptc::INSTRUCTIONS][0] = $this->get(self::INSTRUCTIONS);
-	if($this->isSet(self::KEYWORDS)) $iptc_data[Iptc::KEYWORDS] = $this->get(self::KEYWORDS);
-	if($this->isSet(self::LOCATION)) $iptc_data[Iptc::LOCATION][0] = $this->get(self::LOCATION);
-	if($this->isSet(self::OBJECT)) $iptc_data[Iptc::OBJECT][0] = $this->get(self::OBJECT);
-	if($this->isSet(self::PRIORITY)) $iptc_data[Iptc::PRIORITY][0] = $this->get(self::PRIORITY);
-	if($this->isSet(self::SOURCE)) $iptc_data[Iptc::SOURCE][0] = $this->get(self::SOURCE);
-	if($this->isSet(self::STATE)) $iptc_data[Iptc::STATE][0] = $this->get(self::STATE);
-	if($this->isSet(self::SUBJECT_CODE)) $iptc_data[Iptc::SUBJECT_CODE] = $this->get(self::SUBJECT_CODE);
-	if($this->isSet(self::CATEGORY)) $iptc_data[Iptc::CATEGORY][0] = $this->get(self::CATEGORY);
-	if($this->isSet(self::SUPP_CATEGORY_A))
+	if($this->isset(self::CATEGORY)) $iptc_data[Iptc::CATEGORY][0] = $this->get(self::CATEGORY);
+	if($this->isset(self::CITY)) $iptc_data[Iptc::CITY][0] = $this->get(self::CITY);
+	if($this->isset(self::COPYRIGHT)) $iptc_data[Iptc::COPYRIGHT][0] = $this->get(self::COPYRIGHT);
+	if($this->isset(self::COUNTRY)) $iptc_data[Iptc::COUNTRY][0] = $this->get(self::COUNTRY);
+	if($this->isset(self::COUNTRY_CODE)) $iptc_data[Iptc::COUNTRY_CODE][0] = $this->get(self::COUNTRY_CODE);
+	if($this->isset(self::CREDIT)) $iptc_data[Iptc::CREDIT][0] = $this->get(self::CREDIT);
+	if($this->isset(self::EDIT_STATUS)) $iptc_data[Iptc::EDIT_STATUS][0] = $this->get(self::EDIT_STATUS);
+	if($this->isset(self::GENRE)) $iptc_data[Iptc::GENRE][0] = $this->arrayToString($this->get(self::GENRE));
+	if($this->isset(self::HEADLINE)) $iptc_data[Iptc::HEADLINE][0] = $this->get(self::HEADLINE);
+	if($this->isset(self::INSTRUCTIONS)) $iptc_data[Iptc::INSTRUCTIONS][0] = $this->get(self::INSTRUCTIONS);
+	if($this->isset(self::KEYWORDS)) $iptc_data[Iptc::KEYWORDS] = $this->get(self::KEYWORDS);
+	if($this->isset(self::LOCATION)) $iptc_data[Iptc::LOCATION][0] = $this->get(self::LOCATION);
+	if($this->isset(self::OBJECT)) $iptc_data[Iptc::OBJECT][0] = $this->get(self::OBJECT);
+	if($this->isset(self::PRIORITY)) $iptc_data[Iptc::PRIORITY][0] = $this->get(self::PRIORITY);
+	if($this->isset(self::SOURCE)) $iptc_data[Iptc::SOURCE][0] = $this->get(self::SOURCE);
+	if($this->isset(self::STATE)) $iptc_data[Iptc::STATE][0] = $this->get(self::STATE);
+	if($this->isset(self::SUBJECT_CODE)) $iptc_data[Iptc::SUBJECT_CODE] = $this->get(self::SUBJECT_CODE);
+	if($this->isset(self::CATEGORY)) $iptc_data[Iptc::CATEGORY][0] = $this->get(self::CATEGORY);
+	if($this->isset(self::SUPP_CATEGORY_A))
 	  $iptc_data[Iptc::SUPP_CATEGORY][0] = $this->get(self::SUPP_CATEGORY_A);
-	if(!$this->isSet(self::SUPP_CATEGORY_A) && $this->isSet(self::SUPP_CATEGORY_B))
+	if(!$this->isset(self::SUPP_CATEGORY_A) && $this->isset(self::SUPP_CATEGORY_B))
 	  $iptc_data[Iptc::SUPP_CATEGORY][0] = '';
-	if($this->isSet(self::SUPP_CATEGORY_B))
+	if($this->isset(self::SUPP_CATEGORY_B))
 	  $iptc_data[Iptc::SUPP_CATEGORY][1] = $this->get(self::SUPP_CATEGORY_B);
-	if(!$this->isSet(self::SUPP_CATEGORY_B) && $this->isSet(self::SUPP_CATEGORY_C))
+	if(!$this->isset(self::SUPP_CATEGORY_B) && $this->isset(self::SUPP_CATEGORY_C))
 	  $iptc_data[Iptc::SUPP_CATEGORY][1] = '';
-	if($this->isSet(self::SUPP_CATEGORY_C))
+	if($this->isset(self::SUPP_CATEGORY_C))
 	  $iptc_data[Iptc::SUPP_CATEGORY][2] = $this->get(self::SUPP_CATEGORY_C);
-	if($this->isSet(self::TRANSFER_REF)) $iptc_data[Iptc::TRANSFER_REF][0] = $this->get(self::TRANSFER_REF);
+	if($this->isset(self::TRANSFER_REF)) $iptc_data[Iptc::TRANSFER_REF][0] = $this->get(self::TRANSFER_REF);
 
 	if(empty($iptc_data)) $this->jpeg->setIptcData(false); else $this->jpeg->setIptcData($iptc_data);
   }
@@ -855,108 +863,108 @@ class Metadata {
 	if($xmp_data === false) return;
 
 	// Set XMP writable fields (if they have not yet bee set)
-	if(!$this->isSet(self::AUTHOR) && $xmp_data->isXmpText(Xmp::AUTHOR))
+	if(!$this->isset(self::AUTHOR) && $xmp_data->isXmpText(Xmp::AUTHOR))
 	  $this->set(self::AUTHOR, $xmp_data->getXmpText(Xmp::AUTHOR));
-	if(!$this->isSet(self::AUTHOR_TITLE) && $xmp_data->isXmpText(Xmp::PS_AUTHOR_TITLE))
+	if(!$this->isset(self::AUTHOR_TITLE) && $xmp_data->isXmpText(Xmp::PS_AUTHOR_TITLE))
 	  $this->set(self::AUTHOR_TITLE, $xmp_data->getXmpText(Xmp::PS_AUTHOR_TITLE));
 	$this->setLang(self::CAPTION, $xmp_data->getXmpLangAlt(Xmp::CAPTION, self::LANG_ALL), self::LANG_ALL);
-	if(!$this->isSet(self::CATEGORY) && $xmp_data->isXmpText(Xmp::PS_CATEGORY))
+	if(!$this->isset(self::CATEGORY) && $xmp_data->isXmpText(Xmp::PS_CATEGORY))
 	  $this->set(self::CATEGORY, $xmp_data->getXmpText(Xmp::PS_CATEGORY));
-	if(!$this->isSet(self::CITY) && $xmp_data->isXmpText(Xmp::CITY))
+	if(!$this->isset(self::CITY) && $xmp_data->isXmpText(Xmp::CITY))
 	  $this->set(self::CITY, $xmp_data->getXmpText(Xmp::CITY));
-	if(!$this->isSet(self::COPYRIGHT) && $xmp_data->isXmpText(Xmp::COPYRIGHT))
+	if(!$this->isset(self::COPYRIGHT) && $xmp_data->isXmpText(Xmp::COPYRIGHT))
 	  $this->set(self::COPYRIGHT, $xmp_data->getXmpText(Xmp::COPYRIGHT));
-	if(!$this->isSet(self::COUNTRY) && $xmp_data->isXmpText(Xmp::COUNTRY))
+	if(!$this->isset(self::COUNTRY) && $xmp_data->isXmpText(Xmp::COUNTRY))
 	  $this->set(self::COUNTRY, $xmp_data->getXmpText(Xmp::COUNTRY));
-	if(!$this->isSet(self::COUNTRY) && $xmp_data->isXmpText(Xmp::PS_COUNTRY))
+	if(!$this->isset(self::COUNTRY) && $xmp_data->isXmpText(Xmp::PS_COUNTRY))
 	  $this->set(self::COUNTRY, $xmp_data->getXmpText(Xmp::PS_COUNTRY));
-	if(!$this->isSet(self::COUNTRY_CODE) && $xmp_data->isXmpText(Xmp::COUNTRY_CODE))
+	if(!$this->isset(self::COUNTRY_CODE) && $xmp_data->isXmpText(Xmp::COUNTRY_CODE))
 	  $this->set(self::COUNTRY_CODE, $xmp_data->getXmpText(Xmp::COUNTRY_CODE));
-	if(!$this->isSet(self::CREDIT) && $xmp_data->isXmpText(Xmp::CREDIT))
+	if(!$this->isset(self::CREDIT) && $xmp_data->isXmpText(Xmp::CREDIT))
 	  $this->set(self::CREDIT, $xmp_data->getXmpText(Xmp::CREDIT));
-	if(!$this->isSet(self::GENRE) && $xmp_data->isXmpText(Xmp::GENRE))
+	if(!$this->isset(self::GENRE) && $xmp_data->isXmpText(Xmp::GENRE))
 	  $this->set(self::GENRE, $this->stringToArray($xmp_data->getXmpText(Xmp::GENRE)));
-	if(!$this->isSet(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
+	if(!$this->isset(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
 	  $this->set(self::HEADLINE, $xmp_data->getXmpText(Xmp::PS_HEADLINE));
-	if(!$this->isSet(self::INSTRUCTIONS) && $xmp_data->isXmpText(Xmp::INSTRUCTIONS))
+	if(!$this->isset(self::INSTRUCTIONS) && $xmp_data->isXmpText(Xmp::INSTRUCTIONS))
 	  $this->set(self::INSTRUCTIONS, $xmp_data->getXmpText(Xmp::INSTRUCTIONS));
-	if(!$this->isSet(self::KEYWORDS) && $xmp_data->isXmpBag(Xmp::KEYWORDS))
+	if(!$this->isset(self::KEYWORDS) && $xmp_data->isXmpBag(Xmp::KEYWORDS))
 	  $this->set(self::KEYWORDS, $xmp_data->getXmpBag(Xmp::KEYWORDS));
-	if(!$this->isSet(self::LOCATION) && $xmp_data->isXmpText(Xmp::LOCATION))
+	if(!$this->isset(self::LOCATION) && $xmp_data->isXmpText(Xmp::LOCATION))
 	  $this->set(self::LOCATION, $xmp_data->getXmpText(Xmp::LOCATION));
-	if(!$this->isSet(self::OBJECT) && $xmp_data->isXmpText(Xmp::OBJECT))
+	if(!$this->isset(self::OBJECT) && $xmp_data->isXmpText(Xmp::OBJECT))
 	  $this->set(self::OBJECT, $xmp_data->getXmpText(Xmp::OBJECT));
-	if(!$this->isSet(self::PRIORITY) && $xmp_data->isXmpText(Xmp::PS_PRIORITY))
+	if(!$this->isset(self::PRIORITY) && $xmp_data->isXmpText(Xmp::PS_PRIORITY))
 	  $this->set(self::PRIORITY, (int)$xmp_data->getXmpText(Xmp::PS_PRIORITY));
-	if(!$this->isSet(self::SCENES) && $xmp_data->isXmpBag(Xmp::SCENES))
+	if(!$this->isset(self::SCENES) && $xmp_data->isXmpBag(Xmp::SCENES))
 	  $this->set(self::SCENES, $xmp_data->getXmpBag(Xmp::SCENES));
-	if(!$this->isSet(self::SOURCE) && $xmp_data->isXmpText(Xmp::SOURCE))
+	if(!$this->isset(self::SOURCE) && $xmp_data->isXmpText(Xmp::SOURCE))
 	  $this->set(self::SOURCE, $xmp_data->getXmpText(Xmp::SOURCE));
-	if(!$this->isSet(self::SOURCE) && $xmp_data->isXmpText(Xmp::PS_SOURCE))
+	if(!$this->isset(self::SOURCE) && $xmp_data->isXmpText(Xmp::PS_SOURCE))
 	  $this->set(self::SOURCE, $xmp_data->getXmpText(Xmp::PS_SOURCE));
-	if(!$this->isSet(self::SUBJECT_CODE) && $xmp_data->isXmpBag(Xmp::SUBJECT_CODE))
+	if(!$this->isset(self::SUBJECT_CODE) && $xmp_data->isXmpBag(Xmp::SUBJECT_CODE))
 	  $this->set(self::SUBJECT_CODE, $xmp_data->getXmpBag(Xmp::SUBJECT_CODE));
-	if(!$this->isSet(self::USAGE_TERMS) && $xmp_data->isXmpText(Xmp::USAGE_TERMS))
+	if(!$this->isset(self::USAGE_TERMS) && $xmp_data->isXmpText(Xmp::USAGE_TERMS))
 	  $this->set(self::USAGE_TERMS, $xmp_data->getXmpText(Xmp::USAGE_TERMS));
-	if(!$this->isSet(self::EVENT) && $xmp_data->isXmpText(Xmp::EVENT))
+	if(!$this->isset(self::EVENT) && $xmp_data->isXmpText(Xmp::EVENT))
 	  $this->set(self::EVENT, $xmp_data->getXmpText(Xmp::EVENT));
-	if(!$this->isSet(self::ORG_CODE) && $xmp_data->isXmpBag(Xmp::ORG_CODE))
+	if(!$this->isset(self::ORG_CODE) && $xmp_data->isXmpBag(Xmp::ORG_CODE))
 	  $this->set(self::ORG_CODE, $xmp_data->getXmpBag(Xmp::ORG_CODE));
-	if(!$this->isSet(self::ORG_NAME) && $xmp_data->isXmpBag(Xmp::ORG_NAME))
+	if(!$this->isset(self::ORG_NAME) && $xmp_data->isXmpBag(Xmp::ORG_NAME))
 	  $this->set(self::ORG_NAME, $xmp_data->getXmpBag(Xmp::ORG_NAME));
-	if(!$this->isSet(self::PERSON) && $xmp_data->isXmpBag(Xmp::PERSON))
+	if(!$this->isset(self::PERSON) && $xmp_data->isXmpBag(Xmp::PERSON))
 	  $this->set(self::PERSON, $xmp_data->getXmpBag(Xmp::PERSON));
-	if(!$this->isSet(self::RATING) && $xmp_data->isXmpText(Xmp::RATING))
+	if(!$this->isset(self::RATING) && $xmp_data->isXmpText(Xmp::RATING))
 	  $this->set(self::RATING, (int)$xmp_data->getXmpText(Xmp::RATING));
 
 	// Set PhotoShop specific XMP writeables fields
-	if(!$this->isSet(self::AUTHOR_TITLE) && $xmp_data->isXmpText(Xmp::PS_AUTHOR_TITLE))
+	if(!$this->isset(self::AUTHOR_TITLE) && $xmp_data->isXmpText(Xmp::PS_AUTHOR_TITLE))
 	  $this->set(self::AUTHOR_TITLE, $xmp_data->getXmpText(Xmp::PS_AUTHOR_TITLE));
-	if(!$this->isSet(self::CAPTION_WRITER) && $xmp_data->isXmpText(Xmp::PS_CAPTION_WRITER))
+	if(!$this->isset(self::CAPTION_WRITER) && $xmp_data->isXmpText(Xmp::PS_CAPTION_WRITER))
 	  $this->set(self::CAPTION_WRITER, $xmp_data->getXmpText(Xmp::PS_CAPTION_WRITER));
-	if(!$this->isSet(self::CATEGORY) && $xmp_data->isXmpText(Xmp::PS_CATEGORY))
+	if(!$this->isset(self::CATEGORY) && $xmp_data->isXmpText(Xmp::PS_CATEGORY))
 	  $this->set(self::CATEGORY, $xmp_data->getXmpText(Xmp::PS_CATEGORY));
-	if(!$this->isSet(self::CITY) && $xmp_data->isXmpText(Xmp::PS_CITY))
+	if(!$this->isset(self::CITY) && $xmp_data->isXmpText(Xmp::PS_CITY))
 	  $this->set(self::CITY, $xmp_data->getXmpText(Xmp::PS_CITY));
-	if(!$this->isSet(self::COUNTRY) && $xmp_data->isXmpText(Xmp::PS_COUNTRY))
+	if(!$this->isset(self::COUNTRY) && $xmp_data->isXmpText(Xmp::PS_COUNTRY))
 	  $this->set(self::COUNTRY, $xmp_data->getXmpText(Xmp::PS_COUNTRY));
-	if(!$this->isSet(self::EDIT_STATUS) && $xmp_data->isXmpText(Xmp::PM_EDIT_STATUS))
+	if(!$this->isset(self::EDIT_STATUS) && $xmp_data->isXmpText(Xmp::PM_EDIT_STATUS))
 	  $this->set(self::EDIT_STATUS, $xmp_data->getXmpText(Xmp::PM_EDIT_STATUS));
-	if(!$this->isSet(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
+	if(!$this->isset(self::HEADLINE) && $xmp_data->isXmpText(Xmp::PS_HEADLINE))
 	  $this->set(self::HEADLINE, $xmp_data->getXmpText(Xmp::PS_HEADLINE));
-	if(!$this->isSet(self::SOURCE) && $xmp_data->isXmpText(Xmp::PS_SOURCE))
+	if(!$this->isset(self::SOURCE) && $xmp_data->isXmpText(Xmp::PS_SOURCE))
 	  $this->set(self::SOURCE, $xmp_data->getXmpText(Xmp::PS_SOURCE));
-	if(!$this->isSet(self::STATE) && $xmp_data->isXmpText(Xmp::PS_STATE))
+	if(!$this->isset(self::STATE) && $xmp_data->isXmpText(Xmp::PS_STATE))
 	  $this->set(self::STATE, $xmp_data->getXmpText(Xmp::PS_STATE));
 	if($xmp_data->isXmpBag(Xmp::PS_SUPP_CATEGORY)) {
 	  $supp_categories = $xmp_data->getXmpBag(Xmp::PS_SUPP_CATEGORY);
-	  if(!$this->isSet(self::SUPP_CATEGORY_A) && isset($supp_categories[0]))
+	  if(!$this->isset(self::SUPP_CATEGORY_A) && isset($supp_categories[0]))
 		$this->set(self::SUPP_CATEGORY_A, $supp_categories[0]);
-	  if(!$this->isSet(self::SUPP_CATEGORY_B) && isset($supp_categories[1]))
+	  if(!$this->isset(self::SUPP_CATEGORY_B) && isset($supp_categories[1]))
 		$this->set(self::SUPP_CATEGORY_B, $supp_categories[1]);
-	  if(!$this->isSet(self::SUPP_CATEGORY_C) && isset($supp_categories[2]))
+	  if(!$this->isset(self::SUPP_CATEGORY_C) && isset($supp_categories[2]))
 		$this->set(self::SUPP_CATEGORY_C, $supp_categories[2]);
 	}
-	if(!$this->isSet(self::PRIORITY) && $xmp_data->isXmpText(Xmp::PS_PRIORITY))
+	if(!$this->isset(self::PRIORITY) && $xmp_data->isXmpText(Xmp::PS_PRIORITY))
 	  $this->set(self::PRIORITY, (int)$xmp_data->getXmpText(Xmp::PS_PRIORITY));
-	if(!$this->isSet(self::TRANSFER_REF) && $xmp_data->isXmpText(Xmp::PS_TRANSFER_REF))
+	if(!$this->isset(self::TRANSFER_REF) && $xmp_data->isXmpText(Xmp::PS_TRANSFER_REF))
 	  $this->set(self::TRANSFER_REF, $xmp_data->getXmpText(Xmp::PS_TRANSFER_REF));
 	
 	
 	// Set XMP read-only fields
-	if(!$this->isSet(self::CREATED_DATETIME) && $xmp_data->isXmpText(Xmp::CREATED_DATETIME))
+	if(!$this->isset(self::CREATED_DATETIME) && $xmp_data->isXmpText(Xmp::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME, strtotime($xmp_data->getXmpText(Xmp::CREATED_DATETIME)));
-	if(!$this->isSet(self::CREATED_DATETIME) && $xmp_data->isXmpText(Xmp::PS_CREATED_DATETIME))
+	if(!$this->isset(self::CREATED_DATETIME) && $xmp_data->isXmpText(Xmp::PS_CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME, strtotime($xmp_data->getXmpText(Xmp::PS_CREATED_DATETIME)));
 
 	// Set XMP read-only fields related to IMG_ data fields
-	if(!$this->isSet(self::IMG_CAMERA_SERIAL) && $xmp_data->isXmpText(Xmp::CAMERA_SERIAL))
+	if(!$this->isset(self::IMG_CAMERA_SERIAL) && $xmp_data->isXmpText(Xmp::CAMERA_SERIAL))
 	  $this->setRW(self::IMG_CAMERA_SERIAL, $xmp_data->getXmpText(Xmp::CAMERA_SERIAL));
-	if(!$this->isSet(self::IMG_LENS_MODEL) && $xmp_data->isXmpText(Xmp::LENS_MODEL))
+	if(!$this->isset(self::IMG_LENS_MODEL) && $xmp_data->isXmpText(Xmp::LENS_MODEL))
 	  $this->setRW(self::IMG_LENS_MODEL, $xmp_data->getXmpText(Xmp::LENS_MODEL));
-	if(!$this->isSet(self::IMG_LENS_SERIAL) && $xmp_data->isXmpText(Xmp::LENS_SERIAL))
+	if(!$this->isset(self::IMG_LENS_SERIAL) && $xmp_data->isXmpText(Xmp::LENS_SERIAL))
 	  $this->setRW(self::IMG_LENS_SERIAL, $xmp_data->getXmpText(Xmp::LENS_SERIAL));
-	if(!$this->isSet(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
+	if(!$this->isset(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
 	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE));
 	
   }
@@ -1001,11 +1009,11 @@ class Metadata {
 	$xmp_data->setXmpBag(Xmp::SUBJECT_CODE, $this->get(self::SUBJECT_CODE));
 
 	$supp_cat = array();
-	if($this->isSet(self::SUPP_CATEGORY_A)) $supp_cat[0] = $this->get(self::SUPP_CATEGORY_A);
-	if(!$this->isSet(self::SUPP_CATEGORY_A) && $this->isSet(self::SUPP_CATEGORY_B)) $supp_cat[0] = '';
-	if($this->isSet(self::SUPP_CATEGORY_B)) $supp_cat[1]  = $this->get(self::SUPP_CATEGORY_B);
-	if(!$this->isSet(self::SUPP_CATEGORY_B) && $this->isSet(self::SUPP_CATEGORY_C)) $supp_cat[1] = '';
-	if($this->isSet(self::SUPP_CATEGORY_C)) $supp_cat[2] = $this->get(self::SUPP_CATEGORY_C);
+	if($this->isset(self::SUPP_CATEGORY_A)) $supp_cat[0] = $this->get(self::SUPP_CATEGORY_A);
+	if(!$this->isset(self::SUPP_CATEGORY_A) && $this->isset(self::SUPP_CATEGORY_B)) $supp_cat[0] = '';
+	if($this->isset(self::SUPP_CATEGORY_B)) $supp_cat[1]  = $this->get(self::SUPP_CATEGORY_B);
+	if(!$this->isset(self::SUPP_CATEGORY_B) && $this->isset(self::SUPP_CATEGORY_C)) $supp_cat[1] = '';
+	if($this->isset(self::SUPP_CATEGORY_C)) $supp_cat[2] = $this->get(self::SUPP_CATEGORY_C);
 	$supp_cat = empty($supp_cat) ? false : $supp_cat;
 	$xmp_data->setXmpBag(Xmp::PS_SUPP_CATEGORY, $supp_cat);
 	$xmp_data->setXmpAlt(Xmp::USAGE_TERMS, $this->get(self::USAGE_TERMS));
@@ -1088,19 +1096,19 @@ class Metadata {
 
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)])) {
 	  $aperture = self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FNUMBER)]);
-	  if(!$this->isSet(self::IMG_APERTURE)) $this->setRW(self::IMG_APERTURE, $aperture);
-	  if(!$this->isSet(self::IMG_APERTURE_FMT)) $this->setRW(self::IMG_APERTURE_FMT, 'f/'.number_format($aperture, 1));
+	  if(!$this->isset(self::IMG_APERTURE)) $this->setRW(self::IMG_APERTURE, $aperture);
+	  if(!$this->isset(self::IMG_APERTURE_FMT)) $this->setRW(self::IMG_APERTURE_FMT, 'f/'.number_format($aperture, 1));
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]) && !$this->isSet(self::IMG_CAMERA_MAKE))
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]) && !$this->isset(self::IMG_CAMERA_MAKE))
 	  $this->setRW(self::IMG_CAMERA_MAKE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MAKE)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MODEL)]) &&
-	   !$this->isSet(self::IMG_CAMERA_MODEL))
+	   !$this->isset(self::IMG_CAMERA_MODEL))
 	  $this->setRW(self::IMG_CAMERA_MODEL, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_CAMERA_MODEL)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]) &&
-	   !$this->isSet(self::IMG_CAMERA_SERIAL))
+	   !$this->isset(self::IMG_CAMERA_SERIAL))
 	  $this->setRW(self::IMG_CAMERA_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) &&
-	   !$this->isSet(self::IMG_COLOR_SPACE_FMT)) {
+	   !$this->isset(self::IMG_COLOR_SPACE_FMT)) {
 	  switch((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) {
 	  case 0x1:
 		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('sRGB')); break;
@@ -1117,12 +1125,12 @@ class Metadata {
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)])) {
 	  $exposure = $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)];
-	  if(!$this->isSet(self::IMG_EXPOSURE)) $this->setRW(self::IMG_EXPOSURE, self::fracToArray($exposure));
-	  if(!$this->isSet(self::IMG_EXPOSURE_FMT))
+	  if(!$this->isset(self::IMG_EXPOSURE)) $this->setRW(self::IMG_EXPOSURE, self::fracToArray($exposure));
+	  if(!$this->isset(self::IMG_EXPOSURE_FMT))
 		$this->setRW(self::IMG_EXPOSURE_FMT, self::nrmFrac($exposure).' '._('second(s)'));
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) &&
-	   !$this->isSet(self::IMG_EXPOSURE_MODE_FMT)) {
+	   !$this->isset(self::IMG_EXPOSURE_MODE_FMT)) {
 	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) {
 	  case 0:
 		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Auto')); break;
@@ -1133,7 +1141,7 @@ class Metadata {
 	  }
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) &&
-	   !$this->isSet(self::IMG_EXPOSURE_PGM_FMT)) {
+	   !$this->isset(self::IMG_EXPOSURE_PGM_FMT)) {
 	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) {
 	  case 0:
 		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Not defined')); break;
@@ -1159,17 +1167,17 @@ class Metadata {
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)])) {
 	  $flash  =$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)];
-	  if(!$this->isSet(self::IMG_FLASH)) $this->setRW(self::IMG_FLASH, (int)$flash);
-	  if(!$this->isSet(self::IMG_FLASH_FMT))
+	  if(!$this->isset(self::IMG_FLASH)) $this->setRW(self::IMG_FLASH, (int)$flash);
+	  if(!$this->isset(self::IMG_FLASH_FMT))
 		$this->setRW(self::IMG_FLASH_FMT, (int)$flash === 1 ? _('Flash') : _('No flash'));
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)])) {
 	  $focal_length = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FOCAL_LENGTH)]);
-	  if(!$this->isSet(self::IMG_FOCAL_LENGTH)) $this->setRW(self::IMG_FOCAL_LENGTH, $focal_length);
-	  if(!$this->isSet(self::IMG_FOCAL_LENGTH_FMT))
+	  if(!$this->isset(self::IMG_FOCAL_LENGTH)) $this->setRW(self::IMG_FOCAL_LENGTH, $focal_length);
+	  if(!$this->isset(self::IMG_FOCAL_LENGTH_FMT))
 		$this->setRW(self::IMG_FOCAL_LENGTH_FMT, $focal_length.' '._('mm'));
 	}
-	if(!$this->isSet(self::IMG_HEIGHT)) {
+	if(!$this->isset(self::IMG_HEIGHT)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)])) {
 		$height = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_HEIGHT)];
 		$this->setRW(self::IMG_HEIGHT, $height);
@@ -1178,24 +1186,24 @@ class Metadata {
 	else {
 	  $height = $this->get(self::IMG_HEIGHT);
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isSet(self::IMG_ISO))
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]) && !$this->isset(self::IMG_ISO))
 	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
-	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isSet(self::IMG_ISO)) {
+	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isset(self::IMG_ISO)) {
 	  // Note: SensitivtyType should be 2-7 or 0
 	  $photo_sensitivity = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)];
 	  $this->setRW(self::IMG_ISO, $photo_sensitivity);
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]) &&
-	   !$this->isSet(self::IMG_LENS_MAKE))
+	   !$this->isset(self::IMG_LENS_MAKE))
 	  $this->setRW(self::IMG_LENS_MAKE, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MODEL)]) &&
-	   !$this->isSet(self::IMG_LENS_MODEL))
+	   !$this->isset(self::IMG_LENS_MODEL))
 	  $this->setRW(self::IMG_LENS_MODEL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MODEL)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]) &&
-	   !$this->isSet(self::IMG_LENS_SERIAL))
+	   !$this->isset(self::IMG_LENS_SERIAL))
 	  $this->setRW(self::IMG_LENS_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) &&
-	   !$this->isSet(self::IMG_METERING_MODE_FMT)) {
+	   !$this->isset(self::IMG_METERING_MODE_FMT)) {
 	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) {
 	  case 1:
 		$this->setRW(self::IMG_METERING_MODE_FMT, _('Average')); break;
@@ -1215,7 +1223,7 @@ class Metadata {
 		$this->setRW(self::IMG_METERING_MODE_FMT, _('Unknown')); break;
 	  }
 	}
-	if(!$this->isSet(self::IMG_RESOLUTION_UNIT)) {
+	if(!$this->isset(self::IMG_RESOLUTION_UNIT)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)])) {
 		$resolution_unit = (int)$exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)];
 		$this->setRW(self::IMG_RESOLUTION_UNIT, $resolution_unit);
@@ -1236,24 +1244,24 @@ class Metadata {
 	}
 	// Note: We give preference to XResolution ofer YResolution
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]) &&
-	   !$this->isSet(self::IMG_RESOLUTION)) {
+	   !$this->isset(self::IMG_RESOLUTION)) {
 	  $resolution = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]);
 	  $this->setRW(self::IMG_RESOLUTION, $resolution);
 	  $this->setRW(self::IMG_RESOLUTION_FMT, $resolution.' '.($resolution_per_cm == 1 ? _('dpcm') : _('dpi')));
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_YRESOLUTION)]) &&
-	   !$this->isSet(self::IMG_RESOLUTION)) {
+	   !$this->isset(self::IMG_RESOLUTION)) {
 	  $resolution = (int)self::calcFrac($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_YRESOLUTION)]);
 	  $this->setRW(self::IMG_RESOLUTION, $resolution);
 	}
-	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]) && !$this->isSet(self::IMG_SOFTWARE))
+	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]) && !$this->isset(self::IMG_SOFTWARE))
 	  $this->setRW(self::IMG_SOFTWARE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_SOFTWARE)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_PROCESSING_SOFTWARE)]) &&
-	   !$this->isSet(self::IMG_SOFTWARE))
+	   !$this->isset(self::IMG_SOFTWARE))
 	  $this->setRW(self::IMG_SOFTWARE, $exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_PROCESSING_SOFTWARE)]);
 	$this->setRW(self::IMG_TYPE, IMG_JPG);
 	$this->setRW(self::IMG_TYPE_FMT, 'jpeg');
-	if(!$this->isSet(self::IMG_WIDTH)) {
+	if(!$this->isset(self::IMG_WIDTH)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)])) {
 		$width = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)];
 		$this->setRW(self::IMG_WIDTH, $height);
@@ -1276,7 +1284,7 @@ class Metadata {
 		$size_fmt .= ' - '.number_format($resolution_per_cm * $width / $resolution, 2).' x '.
 		  number_format($resolution_per_cm * $height / $resolution, 2).' '._('cm');
 	  }
-	  if($this->isSet(self::FILE_SIZE)) {
+	  if($this->isset(self::FILE_SIZE)) {
 		$file_size = $this->get(self::FILE_SIZE);
 		if($file_size > 1024 * 1024)
 		  $size_fmt .= ' ('.number_format($file_size / 1024 / 1024, 0).' MB)';
@@ -1289,11 +1297,11 @@ class Metadata {
 	}
 
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_DATE_TIME_ORIGINAL)]) &&
-	   !$this->isSet(self::CREATED_DATETIME))
+	   !$this->isset(self::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME,
 				   strtotime($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_DATE_TIME_ORIGINAL)]));
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CREATE_DATE)]) &&
-	   !$this->isSet(self::CREATED_DATETIME))
+	   !$this->isset(self::CREATED_DATETIME))
 	  $this->setRW(self::CREATED_DATETIME,
 				   strtotime($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CREATE_DATE)]));
   }
@@ -1308,13 +1316,13 @@ class Metadata {
   protected function exportExif(): void
   {
 	$exif_ary = array();
-	if($this->isSet(self::CAPTION))
+	if($this->isset(self::CAPTION))
 	  $exif_ary[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_IMAGE_DESCRIPTION)] = $this->get(self::CAPTION);
-	if($this->isSet(self::COPYRIGHT))
+	if($this->isset(self::COPYRIGHT))
 	  $exif_ary[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_COPYRIGHT)] = $this->get(self::COPYRIGHT);
-	if($this->isSet(self::AUTHOR))
+	if($this->isset(self::AUTHOR))
 	  $exif_ary[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_ARTIST)] = $this->get(self::AUTHOR);
-	if($this->isSet(self::AUTHOR))
+	if($this->isset(self::AUTHOR))
 	  $exif_ary[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_OWNER_NAME)] = $this->get(self::AUTHOR);
 
 	if(!empty($exif_ary)) $this->jpeg->setExifData($exif_ary);
