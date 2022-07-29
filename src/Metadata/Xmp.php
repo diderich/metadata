@@ -63,8 +63,7 @@ class Xmp {
   const LENS_MODEL = "aux:Lens";                          /** Text: Lens description */
   const LENS_SERIAL = "aux:LensSerialNumber";             /** Text: Lens serial number */
   const COLOR_SPACE = "photoshop:ICCProfile";             /** Text: Color Profile */
-
-  /** Text: Color space */
+  const COLOR_MODE = "photoshop:ColorMode";               /** Text: Color Mode */
 
   // History specification
   const EDIT_HISTORY = 'xmpMM:History';                   /** Seq: ResourceEvebt */

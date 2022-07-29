@@ -966,7 +966,20 @@ class Metadata {
 	  $this->setRW(self::IMG_LENS_SERIAL, $xmp_data->getXmpText(Xmp::LENS_SERIAL));
 	if(!$this->isset(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
 	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE));
-	
+	if($xmp_data->isXmpText(Xmp::COLOR_MODE) && $this->isset(self::IMG_COLOR_SPACE_FMT)) {
+	  switch($xmp_data->getXmpText(Xmp::COLOR_MODE)) {
+	  case 0: $color_mode = 'Bitmap'; break;
+	  case 1: $color_mode = 'Grayscale'; break;
+	  case 2: $color_mode = 'Indexed'; break;
+	  case 3: $color_mode = 'RGB'; break;
+	  case 4: $color_mode = 'CMYK'; break;
+	  case 7: $color_mode = 'Multichannel'; break;
+	  case 8: $color_mode = 'Duotone'; break;
+	  case 9: $color_mode = 'Lab'; break;
+      }
+	  if(isset($color_mode))
+		$this->setRW(self::IMG_COLOR_SPACE_FMT, $this->get(self::IMG_COLOR_SPACE_FMT).' / '.$color_mode);
+    }
   }
 
   /**
