@@ -25,16 +25,22 @@ function my__autoload(string $name): void
   if(file_exists("../src/$name.php")) require_once("../src/$name.php");
 }
 spl_autoload_register('my__autoload');
-
+use \Holiday\Metadata;
 
 /*** EXAMPLE ***/
 $testfiles_ary = array('img.example.jpg', 'img.mlexample.jpg');
+$exif_data_ary = array(Metadata::IMG_CAMERA_MAKE => 'CAMERA MAKE', Metadata::IMG_CAMERA_MODEL => 'CAMERA MODEL',
+					   Metadata::IMG_CAMERA_SERIAL => 'CAMERA SERIAL', Metadata::IMG_LENS_MODEL => 'LENS MODEL', 
+					   Metadata::IMG_COLOR_SPACE_FMT => 'COLOR SPACE', Metadata::IMG_ISO => 'ISO SETTING',
+					   Metadata::IMG_APERTURE_FMT => 'APERTURE', Metadata::IMG_EXPOSURE_FMT => 'EXPOSURE',
+					   Metadata::IMG_FOCAL_LENGTH_FMT => 'FOCAL LENGTH', Metadata::IMG_FLASH_FMT => 'FLASH USED',
+					   Metadata::IMG_SIZE_FMT => 'IMAGE SIZE', Metadata::IMG_RESOLUTION_FMT => 'RESOLUTION',
+					   Metadata::IMG_SOFTWARE => 'SOFTWARE');
 
 /**
  * Use of class Metadata
  */
-$metadata = new \Holiday\Metadata();
-
+$metadata = new Metadata();
 foreach($testfiles_ary as $filename) {
   echo "PROCESSING EXAMPLE IMAGE USING \\Holiday\\Metadata CLASS: $filename".PHP_EOL;
   echo "---".PHP_EOL;
@@ -44,15 +50,15 @@ foreach($testfiles_ary as $filename) {
 
 
   // Read some of the metadata (assuming metadata is available)
-  $caption = $metadata->get(\Holiday\Metadata::CAPTION, lang: \Holiday\Metadata::LANG_DEFAULT);
-  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, lang: \Holiday\Metadata::LANG_ALL);
-  $date_created = $metadata->get(\Holiday\Metadata::CREATED_DATETIME);
-  $credit = $metadata->get(\Holiday\Metadata::CREDIT);
-  $city = $metadata->get(\Holiday\Metadata::CITY);
-  $country = $metadata->get(\Holiday\Metadata::COUNTRY);
-  $keywords = $metadata->get(\Holiday\Metadata::KEYWORDS);
-  $people = $metadata->get(\Holiday\Metadata::PEOPLE);
-  $event = $metadata->get(\Holiday\Metadata::EVENT);
+  $caption = $metadata->get(Metadata::CAPTION, lang: Metadata::LANG_DEFAULT);
+  $caption_ary = $metadata->get(Metadata::CAPTION, lang: Metadata::LANG_ALL);
+  $date_created = $metadata->get(Metadata::CREATED_DATETIME);
+  $credit = $metadata->get(Metadata::CREDIT);
+  $city = $metadata->get(Metadata::CITY);
+  $country = $metadata->get(Metadata::COUNTRY);
+  $keywords = $metadata->get(Metadata::KEYWORDS);
+  $people = $metadata->get(Metadata::PEOPLE);
+  $event = $metadata->get(Metadata::EVENT);
   if(!empty($caption_ary)) {
     echo "CAPTION:".PHP_EOL;
     foreach($caption_ary as $lang => $text) {
@@ -68,11 +74,18 @@ foreach($testfiles_ary as $filename) {
   if($people !== false) echo "PEOPLE      : ".implode(', ', $people).PHP_EOL;
   echo PHP_EOL;
 
+  echo "IMAGE DATA".PHP_EOL;
+  foreach($exif_data_ary as $field_id => $field_name) {
+	$data = $metadata->get($field_id);
+	if($data !== false) echo '- '.substr($field_name.'               ', 0, 15).': '.$data.PHP_EOL;
+  }
+  echo PHP_EOL;
+
   // Read metadata in a transparent way and extend tagged keywords to their respective fields
   $metadata->read($filename, extend: true);
   echo "EXTENDING KEYWORD TAGS:".PHP_EOL;
-  $keywords = $metadata->get(\Holiday\Metadata::KEYWORDS);
-  $people = $metadata->get(\Holiday\Metadata::PEOPLE);
+  $keywords = $metadata->get(Metadata::KEYWORDS);
+  $people = $metadata->get(Metadata::PEOPLE);
   if($keywords !== false) echo "KEYWORDS    : ".implode(', ', $keywords).PHP_EOL;
   if($people !== false) echo "PEOPLE      : ".implode(', ', $people).PHP_EOL;
   echo PHP_EOL;
@@ -81,16 +94,16 @@ foreach($testfiles_ary as $filename) {
   if($caption !== false && $date_created !== false && $city !== false && $country !== false && $credit !== false) {
 	$caption = strtoupper($city).', '.strtoupper($country).' - '.strtoupper(date('F d', $date_created)).': '.
 	  $caption.' (Photo by '.$credit.')';
-	$metadata->set(\Holiday\Metadata::CAPTION, $caption, lang: \Holiday\Metadata::LANG_DEFAULT);
+	$metadata->set(Metadata::CAPTION, $caption, lang: Metadata::LANG_DEFAULT);
   }
   else {
 	echo "NOT ALL INFORMATION AVAILABLE TO UPDATE CAPTION".PHP_EOL;
   }
   if($event !== false) {
-	$metadata->set(\Holiday\Metadata::EVENT, strtoupper($event));
+	$metadata->set(Metadata::EVENT, strtoupper($event));
   }
   else {
-	$metadata->set(\Holiday\Metadata::EVENT, 'Event was empty');
+	$metadata->set(Metadata::EVENT, 'Event was empty');
   }
 
   // Write metadata back to the image file
@@ -98,7 +111,7 @@ foreach($testfiles_ary as $filename) {
 
   // Read-back the data and display modified caption
   $metadata->read("new.$filename");
-  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, \Holiday\Metadata::LANG_ALL);
+  $caption_ary = $metadata->get(Metadata::CAPTION, Metadata::LANG_ALL);
   if(!empty($caption_ary)) {
 	echo "NEW CAPTION:".PHP_EOL;
     foreach($caption_ary as $lang => $text) {
@@ -106,7 +119,7 @@ foreach($testfiles_ary as $filename) {
 	  echo "   $lang: $text".PHP_EOL;
 	}
   }
-  echo "NEW EVENT   : ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
+  echo "NEW EVENT   : ".$metadata->get(Metadata::EVENT).PHP_EOL.PHP_EOL;
 
   // Paste original data to new file
   $metadata->read("$filename");
@@ -114,7 +127,7 @@ foreach($testfiles_ary as $filename) {
 
     // Read-back the data and display original caption
   $metadata->read("new.$filename");
-  $caption_ary = $metadata->get(\Holiday\Metadata::CAPTION, \Holiday\Metadata::LANG_ALL);
+  $caption_ary = $metadata->get(Metadata::CAPTION, Metadata::LANG_ALL);
   if(!empty($caption_ary)) {
 	echo "PASTED CAPTION:".PHP_EOL;
     foreach($caption_ary as $lang => $text) {
@@ -122,18 +135,18 @@ foreach($testfiles_ary as $filename) {
 	  echo "   $lang: $text".PHP_EOL;
 	}
   }
-  echo "PASTED EVENT: ".$metadata->get(\Holiday\Metadata::EVENT).PHP_EOL.PHP_EOL;
+  echo "PASTED EVENT: ".$metadata->get(Metadata::EVENT).PHP_EOL.PHP_EOL;
 }
 
 /**
- * Use of exception handling class \Holiday\Metadata\Exception
+ * Use of exception handling class Metadata\Exception
  */
 echo PHP_EOL;
 try {
   $metadata->read('invalid.file.name.jpg');
   echo "FILE WAS SUCCESSFULLY READ ALTHOUGH IT SHOULD NOT EXIST".PHP_EOL;
 }
-catch(\Holiday\Metadata\Exception $exception) {
+catch(Metadata\Exception $exception) {
   echo "EXCEPTION CATCHED".PHP_EOL;
   echo "---".PHP_EOL;
   echo "CODE:    ".$exception->getCode().PHP_EOL;

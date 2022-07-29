@@ -9,6 +9,21 @@ EVENT       : Demo Event
 KEYWORDS    : Demo Keyword A, Demo Keyword B, Demo Keyword C, Peo: Additional Person
 PEOPLE      : Demo Person A, Demo Person B, Demo Person C
 
+IMAGE DATA
+- CAMERA MAKE    : Canon
+- CAMERA MODEL   : Canon EOS-1D X Mark III
+- CAMERA SERIAL  : 043032000222
+- LENS MODEL     : EF24-70mm f/2.8L II USM
+- COLOR SPACE    : Adobe RGB (1998)
+- ISO SETTING    : 200
+- APERTURE       : f/9.0
+- EXPOSURE       : 1/640 second(s)
+- FOCAL LENGTH   : 38 mm
+- FLASH USED     : No flash
+- IMAGE SIZE     : 5211 x 3474 px - 66.18 x 44.12 cm (7 MB)
+- RESOLUTION     : 200 dpi
+- SOFTWARE       : Adobe Photoshop 23.3 (Windows)
+
 EXTENDING KEYWORD TAGS:
 KEYWORDS    : Demo Keyword A, Demo Keyword B, Demo Keyword C
 PEOPLE      : Demo Person A, Demo Person B, Demo Person C,  Additional Person
@@ -30,6 +45,21 @@ CREDIT      : Claude Diderich
 PLACE       : Klöntal, Schweiz
 CREATED     : 12.07.2022
 KEYWORDS    : Spaziergang, Monument, Tal, Berg, Gessner, Stein
+
+IMAGE DATA
+- CAMERA MAKE    : Canon
+- CAMERA MODEL   : Canon EOS-1D X Mark III
+- CAMERA SERIAL  : 043032000222
+- LENS MODEL     : EF28-300mm f/3.5-5.6L IS USM
+- COLOR SPACE    : Adobe RGB (1998)
+- ISO SETTING    : 200
+- APERTURE       : f/3.5
+- EXPOSURE       : 1/80 second(s)
+- FOCAL LENGTH   : 28 mm
+- FLASH USED     : No flash
+- IMAGE SIZE     : 5408 x 3606 px - 45.79 x 30.53 cm (6 MB)
+- RESOLUTION     : 300 dpi
+- SOFTWARE       : Adobe Photoshop 23.4 (Windows)
 
 EXTENDING KEYWORD TAGS:
 KEYWORDS    : Spaziergang, Monument, Tal, Berg, Gessner, Stein

@@ -186,7 +186,7 @@ All class files are commended in a phpDocumenter (https://www.phpdoc.org/) compl
 The metadata class can be installed using composer
 
 ```shell
-composer require diderich/meta
+composer require diderich/metadata
 ```
 
 # Testing
@@ -205,7 +205,7 @@ of the JPEG file. Issus without accompanying JPEG data will be closed by the aut
 The following limitations currently exist and are acknowledged as such:
 * IPTC/APP13: Only Latin 1 and UTF-8 encoded data can be read. Other data formats will throw an exception.
 * XMP/APP1: The classes Xmp and/or XmpDocument may nor recognize all poorly/incorrectly formatted XMP/APP1 data.
-* XMP/APP1: If an data element TAG is updated in the namespace NS, then it will also be updated in the namespaces
+* XMP/APP1: If a data element TAG is updated in the namespace NS, then it will also be updated in the namespaces
   Iptc4xmpCore, dc, aux, xmp, photoshop, and photomechanic, if a data entry exists in those name spaces. Other name
   spaces, for example, used by other applications, are not updated/synchronized. This may result in inconsistent data.
 * EXIF/APP1: Although all data read is returned, only the data considered relevant is decoded. For example, thumbnails

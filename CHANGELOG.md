@@ -1,9 +1,12 @@
 # CHANGELOG.md
 
-Current version: `v1.1.0`
+Current version: `v1.1.1`
 
 Notable changes to **Metadata** - A PHP class for reading and writing *Photo Metadata* from JPEG files in a transparent
 way:
+
+## v1.1.1 - 2022-07-29
+Corrected bug decoding XMP data. Added display of image data (i.e., EXIF data) to the test example.
 
 ## v1.1.0 - 2022-07-15
 Support for multi-lingual captions, that is, the CAPTION field, added. Not that using other languages than the default

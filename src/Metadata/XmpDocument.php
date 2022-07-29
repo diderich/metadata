@@ -140,7 +140,7 @@ class XmpDocument {
    * @return string|false First node value found, or false, if not found
    * @throw \Holiday\Metadata\Exception
    */
-  public function getXmpText(string $name, string|false $lang = self::LANG_DEFAULT): string|false
+  public function getXmpText(string $name, string|false $lang = false): string|false
   {
 	if(strpos($name, ':') === false)
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
@@ -168,12 +168,12 @@ class XmpDocument {
   /**
    * Get rdf:Alt value
    *
-   * @param  string $name Node name, including prefix
-   * @param  string $lang Language of entry
-   * @return array|false First node value found, or false, if not found
+   * @param  string       $name Node name, including prefix
+   * @param  string|false $lang Language of entry
+   * @return array|false  First node value found, or false, if not found
    * @throw \Holiday\Metadata\Exception
    */
-  public function getXmpLangAlt(string $name, string $lang = self::LANG_DEFAULT): array|false
+  public function getXmpLangAlt(string $name, string|false $lang = false): array|false
   {
 	if(strpos($name, ':') === false)
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
@@ -319,7 +319,7 @@ class XmpDocument {
    * @param string|false     $lang Language of entry
    * @throw \Holiday\Metadata\Exception
    */
-  public function setXmpAlt(string $name, string|int|false $data, string|false $lang = self::LANG_DEFAULT): void
+  public function setXmpAlt(string $name, string|int|false $data, string|false $lang = false): void
   {
 	if(self::existXmpAttribute($this->dom, Xmp::DESCRIPTION, $name))
 	  throw new Exception(_('Cannot set')." 'rdf:Alt' "._('node value if an attribute with the same name exists'),
@@ -478,7 +478,7 @@ class XmpDocument {
    * @return string|array|false Node value or array, if $lang === LANG_ALL
    * @throw \Holiday\Metadata\Exception
    */
-  protected function getXmpTextNS(string $ns, string $name, string|false $lang = self::LANG_DEFAULT): string|array|false
+  protected function getXmpTextNS(string $ns, string $name, string|false $lang = false): string|array|false
   {
 	// Search text as attribute of any rdf:Description node
 	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
@@ -504,8 +504,16 @@ class XmpDocument {
 	  $subchildren = self::getXmpAllNodeByName($child_alt, 'rdf:li');
 	  if($subchildren === false) return false;
 	  foreach($subchildren as $subchild) {
-		if($lang === false) return (string)$subchild->nodeValue;
-		if($lang === self::LANG_ALL) {
+		if($lang === false) {
+		  if($subchild->hasAttribute('xml:lang')) {
+			if($subchild->getAttribute('xml:lang') === self::LANG_DEFAULT) 
+			  return (string)$subchild->nodeValue;
+		  }
+		  else {
+			return (string)$subchild->nodeValue;
+		  }
+		}
+		elseif($lang === self::LANG_ALL) {
 		  if($subchild->hasAttribute('xml:lang')) {
 			$lang_result[$subchild->getAttribute('xml:lang')] = (string)$subchild->nodeValue;
 		  }
@@ -516,7 +524,13 @@ class XmpDocument {
 		  }
 		}
 		else {	
-		  if($subchild->getAttribute('xml:lang') === $lang) return (string)$subchild->nodeValue;
+		  if($subchild->hasAttribute('xml:lang')) {
+			if($subchild->getAttribute('xml:lang') === $lang) 
+			  return (string)$subchild->nodeValue;
+		  }
+		  else {
+			return (string)$subchild->nodeValue;
+		  }
 		}
 	  }
 	}
@@ -527,13 +541,13 @@ class XmpDocument {
    * Get Attribute / Node / rdf:Seq / rdf:Alt value in specific name space
    *
    * @access protected
-   * @param  string      $ns   Name space
-   * @param  string      $name Node name, without prefix
-   * @param  string      $lang Language to retrieve, or all
-   * @return array|false Array of nodes, indexed by language
+   * @param  string       $ns   Name space
+   * @param  string       $name Node name, without prefix
+   * @param  string|false $lang Language to retrieve, or all
+   * @return array|false  Array of nodes, indexed by language
    * @throw \Holiday\Metadata\Exception
    */
-  protected function getXmpLangAltNS(string $ns, string $name, string $lang): array|false
+  protected function getXmpLangAltNS(string $ns, string $name, string|false $lang): array|false
   {
 	// Search text as attribute of any rdf:Description node
 	$descs = self::getXmpAllNodeByName($this->dom, Xmp::DESCRIPTION, $ns);
@@ -706,7 +720,7 @@ class XmpDocument {
    * @throw \Holiday\Metadata\Exception
    */
   protected function setXmpLiNS(string $tag, string $ns, string $name, array|string|int|false $data,
-								string|false $lang = self::LANG_DEFAULT, bool $update_only = false): void
+								string|false $lang = false, bool $update_only = false): void
   {
 	// Find node
 	$name = "$ns:$name";
@@ -956,7 +970,10 @@ class XmpDocument {
 	}
 	
 	// Re-load to ensure namespaces are recognized
+	// -- Disable warning messages from loadXML only
+	$old_error_reporting = error_reporting(error_reporting() & ~E_WARNING);
 	$status = $this->dom->loadXML($this->dom->saveXML());
+	error_reporting($old_error_reporting);
 	if($status === false)
 	  throw new Exception(_('Internal error during XML re-validation'), Exception::INTERNAL_ERROR);
   }

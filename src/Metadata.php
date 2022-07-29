@@ -21,7 +21,7 @@ use \Holiday\Metadata\Exception;
 
 class Metadata {
   
-  const VERSION = '1.1.0';
+  const VERSION = '1.1.1';
 
   /** Fielt types */
   const TYPE_INVALID = 0;
@@ -1118,7 +1118,7 @@ class Metadata {
 		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Wide Gamut RGB')); break;
 	  case 0xfffe:
 		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('ICC Profile')); break;
-	  case 0xfffe:
+	  case 0xffff:
 		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Uncalibrated')); break;
 		
 	  }
