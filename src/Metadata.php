@@ -38,7 +38,7 @@ class Metadata {
 
   /** IPTC/XMP fields: read/write */
   public const FIELD_ID_WRITE_FIRST  = 100;     /** First field identifier that can be modified */
-  public const FIELD_ID_WRITE_LAST   = 132;     /** Last field identifier that can be modified */
+  public const FIELD_ID_WRITE_LAST   = 133;     /** Last field identifier that can be modified */
   
   public const AUTHOR                = 101;     /** String: Creator (name of photographer) */
   public const PHOTOGRAPHER          = 101;     /** - String: Creator (name of photographer) */
@@ -78,6 +78,7 @@ class Metadata {
   public const SUPP_CATEGORY_C       = 130;     /** String: Supplemental Category 3 */
   public const TRANSFER_REF          = 131;     /** String: Original Transmission Reference - Max 32 characters */
   public const USAGE_TERMS           = 132;     /** String: Rights Usage Terms */
+  public const WEB_SOR               = 133;     /** String: Web Statement of Rights */
   
   /** IPTC/XMP fiels: read only */
   public const CREATED_DATETIME      = 201;     /** Int: Timestamp when photo was created */
@@ -577,6 +578,7 @@ class Metadata {
 	 self::SUPP_CATEGORY_C,
 	 self::TRANSFER_REF,
 	 self::USAGE_TERMS,
+	 self::WEB_SOR,
 	 self::IMG_APERTURE_FMT,
 	 self::IMG_CAMERA_MAKE,
 	 self::IMG_CAMERA_MODEL,
@@ -891,6 +893,8 @@ class Metadata {
 	  $this->set(self::SUBJECT_CODE, $xmp_data->getXmpBag(Xmp::SUBJECT_CODE));
 	if(!$this->isset(self::USAGE_TERMS) && $xmp_data->isXmpText(Xmp::USAGE_TERMS))
 	  $this->set(self::USAGE_TERMS, $xmp_data->getXmpText(Xmp::USAGE_TERMS));
+	if(!$this->isset(self::WEB_SOR) && $xmp_data->isXmpText(Xmp::WEB_SOR))
+	  $this->set(self::WEB_SOR, $xmp_data->getXmpText(Xmp::WEB_SOR));
 	if(!$this->isset(self::EVENT) && $xmp_data->isXmpText(Xmp::EVENT))
 	  $this->set(self::EVENT, $xmp_data->getXmpText(Xmp::EVENT));
 	if(!$this->isset(self::ORG_CODE) && $xmp_data->isXmpBag(Xmp::ORG_CODE))
@@ -1016,6 +1020,7 @@ class Metadata {
 	$supp_cat = empty($supp_cat) ? false : $supp_cat;
 	$xmp_data->setXmpBag(Xmp::PS_SUPP_CATEGORY, $supp_cat);
 	$xmp_data->setXmpAlt(Xmp::USAGE_TERMS, $this->get(self::USAGE_TERMS));
+	$xmp_data->setXmpText(Xmp::WEB_SOR, $this->get(self::WEB_SOR));
 	$xmp_data->setXmpAlt(Xmp::EVENT, $this->get(self::EVENT));
 	$xmp_data->setXmpBag(Xmp::ORG_CODE, $this->get(self::ORG_CODE));
 	$xmp_data->setXmpBag(Xmp::ORG_NAME, $this->get(self::ORG_NAME));

@@ -37,6 +37,7 @@ class Xmp {
   public const STATE = "Iptc4xmpCore:ProvinceState";         /** Text: Providence/State */
   public const SUBJECT_CODE = "Iptc4xmpCore:SubjectCode";    /** Bag: Subject code */
   public const USAGE_TERMS = "xmpRights:UsageTerms";         /** Alt Lang: Rights Usage Terms */
+  public const WEB_SOR = "xmpRights:WebStatement";           /** Text: Web Statement of Rights */
   public const PM_EDIT_STATUS = "photomechanic:EditStatus";  /** Text: Edit status */
   public const PS_AUTHOR_TITLE = "photoshop:AuthorsPosition";/** Text: Creator's job title */
   public const PS_CAPTION_WRITER = "photoshop:CaptionWriter";/** Text: Caption Writer */
