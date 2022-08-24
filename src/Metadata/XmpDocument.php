@@ -3,7 +3,7 @@
    * XmpDocument.php - Functions for reading and writing XMP specific data
    * 
    * @package   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -17,47 +17,44 @@ use Holiday\Metadata;
 
 class XmpDocument {
 
-  /** DOMDocument to which to add functions */
-  private \DOMDocument $dom;
-
   /** Namespaces that may contain IPTC Code Metadata 1.3 (in descending order of preference) */
-  const NS_IPTC4XMPCORE = 'Iptc4xmpCore';
-  const NS_DC = 'dc';
-  const NS_AUX = 'aux';
-  const NS_XMP = 'xmp';
-  const NS_PHOTOSHOP = 'photoshop';
-  const NS_PHOTOMECHANIC = 'photomechanic';
+  public const NS_IPTC4XMPCORE = 'Iptc4xmpCore';
+  public const NS_DC = 'dc';
+  public const NS_AUX = 'aux';
+  public const NS_XMP = 'xmp';
+  public const NS_PHOTOSHOP = 'photoshop';
+  public const NS_PHOTOMECHANIC = 'photomechanic';
 
-  /** Supported Languages */
-  const LANG_ALL = 'x-all';                     /** All languages */
-  const LANG_DEFAULT = 'x-default';             /** Default language: English */
+  /** Languages (non exchaustive) */
+  private const LANG_ALL = 'x-all';         /** All languages */
+  private const LANG_DEFAULT = 'x-default'; /** Default language: English */
   
   /** Private variables */
-  private array $nsPriorityAry;            /** Prioritized array of name spaces for core metadata */
+  private array $nsPriorityAry;             /** Prioritized array of name spaces for core metadata */
 
   /**
    * Constructor
    *
    * @param DOMDocument DOM of XMP data
    */
-  public function __construct(\DOMDocument $dom)
+  public function __construct(private \DOMDocument $dom)
   {
-	$this->nsPriorityAry = array(self::NS_IPTC4XMPCORE, self::NS_DC, self::NS_AUX, self::NS_XMP, self::NS_PHOTOSHOP,
-								 self::NS_PHOTOMECHANIC);
+	$this->nsPriorityAry = [self::NS_IPTC4XMPCORE, self::NS_DC, self::NS_AUX, self::NS_XMP, self::NS_PHOTOSHOP,
+							self::NS_PHOTOMECHANIC];
+	
 	// All namespaces supported by default, others may be added before use using 'setXmpNamespace'
-	$all_ns = array('Iptc4xmpCore' => 'http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/',
-					'aux' => 'http://ns.adobe.com/exif/1.0/aux/',
-					'dc' => 'http://purl.org/dc/elements/1.1/',
-					'xmp' => 'http://ns.adobe.com/xap/1.0/',
-					'photoshop' => 'http://ns.adobe.com/photoshop/1.0/',
-					'photomechanic' => 'http://ns.camerabits.com/photomechanic/1.0/',
-					'Iptc4xmpExt' => 'http://iptc.org/std/Iptc4xmpExt/2008-02-29/',
-					'GettyImagesGIFT' => 'http://xmp.gettyimages.com/gift/1.0/',
-					'exifEX' => 'http://cipa.jp/exif/1.0/',
-					'plus' => 'http://ns.useplus.org/ldf/xmp/1.0/',
-					'xmpMM' => 'http://ns.adobe.com/xap/1.0/mm/',
-					'xmpRights' => 'http://ns.adobe.com/xap/1.0/rights/');
-	$this->dom = $dom;
+	$all_ns = ['Iptc4xmpCore' => 'http://iptc.org/std/Iptc4xmpCore/1.0/xmlns/',
+			   'aux' => 'http://ns.adobe.com/exif/1.0/aux/',
+			   'dc' => 'http://purl.org/dc/elements/1.1/',
+			   'xmp' => 'http://ns.adobe.com/xap/1.0/',
+			   'photoshop' => 'http://ns.adobe.com/photoshop/1.0/',
+			   'photomechanic' => 'http://ns.camerabits.com/photomechanic/1.0/',
+			   'Iptc4xmpExt' => 'http://iptc.org/std/Iptc4xmpExt/2008-02-29/',
+			   'GettyImagesGIFT' => 'http://xmp.gettyimages.com/gift/1.0/',
+			   'exifEX' => 'http://cipa.jp/exif/1.0/',
+			   'plus' => 'http://ns.useplus.org/ldf/xmp/1.0/',
+			   'xmpMM' => 'http://ns.adobe.com/xap/1.0/mm/',
+			   'xmpRights' => 'http://ns.adobe.com/xap/1.0/rights/'];
 	$this->validateXmpDocument($all_ns);
   }
 
@@ -142,10 +139,10 @@ class XmpDocument {
    */
   public function getXmpText(string $name, string|false $lang = false): string|false
   {
-	if(strpos($name, ':') === false)
+	if(!str_contains($name, ':'))
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 
 	// Seach first in specified name space (if any)
 	$result = $this->getXmpTextNS($prefix, $name, lang: $lang);
@@ -175,10 +172,10 @@ class XmpDocument {
    */
   public function getXmpLangAlt(string $name, string|false $lang = false): array|false
   {
-	if(strpos($name, ':') === false)
+	if(!str_contains($name, ':'))
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 
 	// Seach first in specified name space (if any)
 	$result = $this->getXmpLangAltNS($prefix, $name, lang: $lang);
@@ -203,10 +200,10 @@ class XmpDocument {
    */
   public function getXmpBag(string $name): array|false
   {
-	if(strpos($name, ':') === false)
+	if(!str_contains($name, ':'))
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 
 	// Seach first in specified name space (if any)
 	$result = $this->getXmpBagNS($prefix, $name);
@@ -269,18 +266,17 @@ class XmpDocument {
    */
   public function setXmpText(string $name, string|int|false $data): void
   {
-	if(strpos($name, ':') === false)
+	if(!str_contains($name, ':'))
 	  throw new Exception(_('Node name without prefix found'), Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$this->setXmpTextNS($prefix, $name, $data, update_only: false);
 
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
-		if($this->isXmpText("$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		if($this->isXmpText("$ns_prefix:$name") && $ns_prefix !== $prefix)
 		  $this->setXmpTextNS($prefix, $name, $data, update_only: true);
-		}
 	  }
 	}
   }
@@ -298,15 +294,14 @@ class XmpDocument {
 	  throw new Exception(_('Cannot set')." 'rdf:Seq' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$this->setXmpLiNS('Seq', $prefix, $name, $data, lang: false, update_only: false);
 
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
-		if($this->isXmpLi('Seq', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		if($this->isXmpLi('Seq', "$ns_prefix:$name") && $ns_prefix !== $prefix)
 		  $this->setXmpLiNS('Seq', $ns_prefix, $name, $data, lang: false, update_only: true);
-		}
 	  }
 	}
   }
@@ -325,15 +320,14 @@ class XmpDocument {
 	  throw new Exception(_('Cannot set')." 'rdf:Alt' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$this->setXmpLiNS('Alt', $prefix, $name, $data, lang: $lang, update_only: false);
 
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
-		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix)
 		  $this->setXmpLiNS('Alt', $ns_prefix, $name, $data, lang: $lang, update_only: true);
-		}
 	  }
 	}
   }
@@ -351,15 +345,14 @@ class XmpDocument {
 	  throw new Exception(_('Cannot set')." 'rdf:Alt' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
 
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$this->setXmpLiLangNS($prefix, $name, $data);
 	
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
-		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		if($this->isXmpLi('Alt', "$ns_prefix:$name") && $ns_prefix !== $prefix) 
 		  $this->setXmpLiLangNS($ns_prefix, $name, $data);
-		}
 	  }
 	}
   }
@@ -377,15 +370,14 @@ class XmpDocument {
 	  throw new Exception(_('Cannot set')." 'rdf:Bag' "._('node value if an attribute with the same name exists'),
 						  Exception::INVALID_FIELD_ID, $name);
 	
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$this->setXmpLiNS('Bag', $prefix, $name, $data, lang: false, update_only: false);
 	
 	// Update nodes is associated namespaces
 	if(in_array($prefix, $this->nsPriorityAry)) {
 	  foreach($this->nsPriorityAry as $ns_prefix) {
-		if($this->isXmpLi('Bag', "$ns_prefix:$name") && $ns_prefix !== $prefix) {
+		if($this->isXmpLi('Bag', "$ns_prefix:$name") && $ns_prefix !== $prefix)
 		  $this->setXmpLiNS('Bag', $ns_prefix, $name, $data, lang: false, update_only: true);
-		}
 	  }
 	}
   }
@@ -408,7 +400,7 @@ class XmpDocument {
    */
   private function recFindLanguages(\DOMElement $dom): array
   {
-	$result = array();
+	$result = [];
 	if($dom->hasAttribute('xml:lang')) {
 	  $lang = $dom->getAttribute('xml:lang');
 	  if($lang !== 'x-default') $result[$lang] = $lang;
@@ -498,7 +490,7 @@ class XmpDocument {
 	if($node === false) return false;
 	
 	//Try rdf:Alt - We only read the first list element
-	$lang_result = array();
+	$lang_result = [];
 	$child_alt = self::getXmpFirstNodeByName($node, 'rdf:Alt');
 	if($child_alt !== false) {
 	  $subchildren = self::getXmpAllNodeByName($child_alt, 'rdf:li');
@@ -567,7 +559,7 @@ class XmpDocument {
 	if($node === false) return false;
 	
 	// Read rdf:Alt - We only read the first list element
-	$lang_result = array();
+	$lang_result = [];
 	$child_alt = self::getXmpFirstNodeByName($node, 'rdf:Alt');
 	if($child_alt !== false) {
 	  $subchildren = self::getXmpAllNodeByName($child_alt, 'rdf:li');
@@ -576,14 +568,12 @@ class XmpDocument {
 							Exception::DATA_FORMAT_ERROR, $name);
 	  foreach($subchildren as $subchild) {
 		if($subchild->hasAttribute('xml:lang')) {
-		  if($subchild->getAttribute('xml:lang') === $lang || $lang === self::LANG_ALL) {
+		  if($subchild->getAttribute('xml:lang') === $lang || $lang === self::LANG_ALL)
 			$lang_result[$subchild->getAttribute('xml:lang')] = (string)$subchild->nodeValue;
-		  }
 		}
 		else {
-		  if(!isset($lang_result[self::LANG_DEFAULT])) {
+		  if(!isset($lang_result[self::LANG_DEFAULT]))
 			$lang_result[self::LANG_DEFAULT] = (string)$subchild->nodeValue;
-		  }
 		}
 	  }
 	}
@@ -610,11 +600,10 @@ class XmpDocument {
 	  throw new Exception(_('Cannot find')." 'rdf:Bag' "._('node'), Exception::DATA_FORMAT_ERROR, $name);
 
 	// Find all rdf:li elements
-	$result = array();
+	$result = [];
 	$grandchildren = $child->getElementsByTagName('li');
 	foreach($grandchildren as $grandchild) {
-	  if($grandchild->prefix === 'rdf' && !empty($grandchild->nodeValue))
-		$result[] = $grandchild->nodeValue;
+	  if($grandchild->prefix === 'rdf' && !empty($grandchild->nodeValue)) $result[] = $grandchild->nodeValue;
 	}
 	return !empty($result) ? $result : false;
   }
@@ -669,22 +658,18 @@ class XmpDocument {
 	  $node = self::getXmpFirstNodeByName($this->dom, $name);
 	  if($node !== false) {
 		// Update node value
-		if($data === false) {
+		if($data === false)
 		  $node->parentNode->removeChild($node);
-		}
-		else {
+		else
 		  $node->nodeValue = (string)$data;
-		}
-		
 	  }
 	  else {
 		if($data !== false && !$update_only){
 		  // Search for rdf:Description in the relevant name space to add attribute to
 		  $status = false;
 		  foreach($descs as $desc) {
-			if($desc->hasAttribute("xmlns:$ns")) {
+			if($desc->hasAttribute("xmlns:$ns"))
 			  $status = $desc->setAttribute($name, (string)$data);
-			}
 		  }
 		  if($status === false)
 			throw new Exception(_('Error creating new attribute'), Exception::INTERNAL_ERROR, $name);
@@ -693,16 +678,14 @@ class XmpDocument {
 	}
 	
 	// Check if there exist alternate nodes with the same name
-	list($prefix, $suffix) = explode(':', $name);
+	[$prefix, $suffix] = explode(':', $name);
 	$nodes = $this->dom->getElementsByTagName($suffix);
 	foreach($nodes as $node) {
 	  if($node->prefix !== $prefix) {
-		if($data === false) {
+		if($data === false)
 		  $node->parentNode->removeChild($node);
-		}
-		else {
+		else
 		  $node->nodeValue = (string)$data;
-		}
 	  }
 	}
   }
@@ -742,7 +725,7 @@ class XmpDocument {
 
 	// Check if $node has children that are not of tye rdf:$tag
 	if($node->childNodes->count() !== 0) {
-	  $remove_children = array();
+	  $remove_children = [];
 	  foreach($node->childNodes as $child) {
 		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:$tag") {
 		  throw new Exception(_('Incorrect element tag found'), Exception::DATA_FORMAT_ERROR, $child->nodeName);
@@ -750,9 +733,7 @@ class XmpDocument {
 		$remove_children[] = $child;
 	  }
 	  if(!empty($remove_children)) {
-		foreach($remove_children as $remove_child) {
-		  $node->removeChild($remove_child);
-		}
+		foreach($remove_children as $remove_child) $node->removeChild($remove_child);
 	  }
 	}
 
@@ -766,16 +747,13 @@ class XmpDocument {
 	// Delete all sub-nodes of $rdf_tag that are in the specified language (if any language specified)
 	$all_rdf_li = self::getXmpAllNodeByName($rdf_tag, 'rdf:li');
 	if($all_rdf_li !== false) {
-	  $remove_children = array();
+	  $remove_children = [];
 	  foreach($all_rdf_li as $rdf_li) {
-		if($lang === false || $rdf_li->getAttribute('xml:lang') === $lang) {
+		if($lang === false || $rdf_li->getAttribute('xml:lang') === $lang)
 		  $remove_children[] = $rdf_li;
-		}
 	  }
 	  if(!empty($remove_children)) {
-		foreach($remove_children as $remove_child) {
-		  $rdf_tag->removeChild($remove_child);
-		}
+		foreach($remove_children as $remove_child) $rdf_tag->removeChild($remove_child);
 	  }
 	}
 	
@@ -826,17 +804,14 @@ class XmpDocument {
 
 	// Check if $node has children that are not of tye rdf:Alt
 	if($node->childNodes->count() !== 0) {
-	  $remove_children = array();
+	  $remove_children = [];
 	  foreach($node->childNodes as $child) {
-		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:Alt") {
+		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:Alt")
 		  throw new Exception(_('Incorrect element tag found'), Exception::DATA_FORMAT_ERROR, $child->nodeName);
-		}
 		$remove_children[] = $child;
 	  }
 	  if(!empty($remove_children)) {
-		foreach($remove_children as $remove_child) {
-		  $node->removeChild($remove_child);
-		}
+		foreach($remove_children as $remove_child) $node->removeChild($remove_child);
 	  }
 	}
 
@@ -850,14 +825,10 @@ class XmpDocument {
 	// Delete all sub-nodes of $rdf_tag
 	$all_rdf_li = self::getXmpAllNodeByName($rdf_tag, 'rdf:li');
 	if($all_rdf_li !== false) {
-	  $remove_children = array();
-	  foreach($all_rdf_li as $rdf_li) {
-		$remove_children[] = $rdf_li;
-	  }
+	  $remove_children = [];
+	  foreach($all_rdf_li as $rdf_li) $remove_children[] = $rdf_li;
 	  if(!empty($remove_children)) {
-		foreach($remove_children as $remove_child) {
-		  $rdf_tag->removeChild($remove_child);
-		}
+		foreach($remove_children as $remove_child) $rdf_tag->removeChild($remove_child);
 	  }
 	}
 	
@@ -885,7 +856,7 @@ class XmpDocument {
 											  string $name, string $att_name): bool
   {
 	// Search node with name $name
-	list($prefix, $name) = explode(':', $name, 2);
+	[$prefix, $name] = explode(':', $name, 2);
 	$nodes = $dom->getElementsByTagName($name);
 	foreach($nodes as $node) {
 	  if($node->prefix === $prefix && $node->hasAttribute($att_name)) return true;
@@ -905,8 +876,8 @@ class XmpDocument {
 												  string $name, string $ns = ''): \DOMElement|false
   {
 	$prefix = '';
-	if(strpos($name, ':') !== false) list($prefix, $name) = explode(':', $name, 2);
-	if(strpos($ns, ':') !== false) list($ns, $dummy) = explode(':', $ns, 2);
+	if(str_contains($name, ':')) [$prefix, $name] = explode(':', $name, 2);
+	if(str_contains($ns, ':')) [$ns, $dummy] = explode(':', $ns, 2);
 	$childs = $dom->getElementsByTagName($name);
 	foreach($childs as $child) {
 	  if(empty($prefix) || $child->prefix === $prefix) {
@@ -927,10 +898,10 @@ class XmpDocument {
   protected static function getXmpAllNodeByName(\DOMDocument|\DOMElement|\DOMNode $dom, string $name,
 												string $ns = ''): array|false
   {
-	$result = array();
+	$result = [];
 	$prefix = '';
-	if(strpos($name, ':') !== false) list($prefix, $name) = explode(':', $name, 2);
-	if(strpos($ns, ':') !== false) list($ns, $dummy) = explode(':', $ns, 2);
+	if(str_contains($name, ':')) [$prefix, $name] = explode(':', $name, 2);
+	if(str_contains($ns, ':')) [$ns, $dummy] = explode(':', $ns, 2);
 	$childs = $dom->getElementsByTagName($name);
 	foreach($childs as $child) {
 	  if(empty($prefix) || $child->prefix === $prefix)  {
@@ -965,16 +936,13 @@ class XmpDocument {
 	}
 	
 	// For each namespace not found, add a rdf:Document section xmlns:$ns="$uri"
-	foreach($ns_ary as $ns => $uri) {
-	  $this->setXmpNamespace($ns, $uri);
-	}
+	foreach($ns_ary as $ns => $uri) $this->setXmpNamespace($ns, $uri);
 	
 	// Re-load to ensure namespaces are recognized
 	// -- Disable warning messages from loadXML only
 	$old_error_reporting = error_reporting(error_reporting() & ~E_WARNING);
 	$status = $this->dom->loadXML($this->dom->saveXML());
 	error_reporting($old_error_reporting);
-	if($status === false)
-	  throw new Exception(_('Internal error during XML re-validation'), Exception::INTERNAL_ERROR);
+	if($status === false) throw new Exception(_('Internal error during XML re-validation'), Exception::INTERNAL_ERROR);
   }
 }

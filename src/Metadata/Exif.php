@@ -3,7 +3,7 @@
    * Exif.php - Decode EXIF data from JPG segment APP1
    * 
    * @package   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -27,57 +27,57 @@ use Holiday\Metadata;
 class Exif {
 
   /** Tag names */
-  const IFD_ROOT = 'IFD';                   /** IFD0/IFD1: Root IFD bock(s) */
-  const IFD_IFD0 = 'IFD0';
-  const IFD_EXIF = 'EXIF';
+  public const IFD_ROOT = 'IFD';                   /** IFD0/IFD1: Root IFD bock(s) */
+  public const IFD_IFD0 = 'IFD0';
+  public const IFD_EXIF = 'EXIF';
 
   // - IFD Pointers
-  const TAG_PTR_SUB_IFD = 0x014a;
-  const TAG_PTR_GLOBAL_PARAMETERS_IFD = 0x0190;
-  const TAG_PTR_KODAK_IFD = 0x8290;
-  const TAG_PTR_JPL_CARTO_IFD = 0x85d7;
-  const TAG_PTR_EXIF_IFD = 0x8769;
-  const TAG_PTR_LEAF_SUB_IFD = 0x888a;
-  const TAG_PTR_KDC_IFD = 0xfe00;
+  public const TAG_PTR_SUB_IFD = 0x014a;
+  public const TAG_PTR_GLOBAL_PARAMETERS_IFD = 0x0190;
+  public const TAG_PTR_KODAK_IFD = 0x8290;
+  public const TAG_PTR_JPL_CARTO_IFD = 0x85d7;
+  public const TAG_PTR_EXIF_IFD = 0x8769;
+  public const TAG_PTR_LEAF_SUB_IFD = 0x888a;
+  public const TAG_PTR_KDC_IFD = 0xfe00;
 	  
   // - IFD0 (image)
-  const TAG_IFD0_PROCESSING_SOFTWARE = 0x000b;
-  const TAG_IFD0_IMAGE_DESCRIPTION = 0x010e;
-  const TAG_IFD0_CAMERA_MAKE = 0x010f;
-  const TAG_IFD0_CAMERA_MODEL = 0x0110;
-  const TAG_IFD0_ORIENTATION = 0x0112;
-  const TAG_IFD0_XRESOLUTION = 0x011a;
-  const TAG_IFD0_YRESOLUTION = 0x011b;
-  const TAG_IFD0_RESOLUTION_UNIT = 0x0128;
-  const TAG_IFD0_SOFTWARE = 0x0131;
-  const TAG_IFD0_ARTIST = 0x013b;
-  const TAG_IFD0_COPYRIGHT = 0x8298;
+  public const TAG_IFD0_PROCESSING_SOFTWARE = 0x000b;
+  public const TAG_IFD0_IMAGE_DESCRIPTION = 0x010e;
+  public const TAG_IFD0_CAMERA_MAKE = 0x010f;
+  public const TAG_IFD0_CAMERA_MODEL = 0x0110;
+  public const TAG_IFD0_ORIENTATION = 0x0112;
+  public const TAG_IFD0_XRESOLUTION = 0x011a;
+  public const TAG_IFD0_YRESOLUTION = 0x011b;
+  public const TAG_IFD0_RESOLUTION_UNIT = 0x0128;
+  public const TAG_IFD0_SOFTWARE = 0x0131;
+  public const TAG_IFD0_ARTIST = 0x013b;
+  public const TAG_IFD0_COPYRIGHT = 0x8298;
   
   // - ExifIFD
-  const TAG_EXIF_EXPOSURE_TIME = 0x829a;
-  const TAG_EXIF_FNUMBER = 0x829d;
-  const TAG_EXIF_EXPOSURE_PROGRAM = 0x8822;
-  const TAG_EXIF_ISO_SPEED = 0x8833;
-  const TAG_EXIF_PHOTO_SENSITIVITY = 0x8827;
-  const TAX_EXIF_SENSITIVITY_TYPE = 0x8830;
-  const TAG_EXIF_DATE_TIME_ORIGINAL = 0x9003;
-  const TAG_EXIF_CREATE_DATE = 0x9004;
-  const TAG_EXIF_APERTURE_VALUE = 0x9202;
-  const TAG_EXIF_METERING_MODE = 0x9207;
-  const TAG_EXIF_FLASH = 0x9209;
-  const TAG_EXIF_FOCAL_LENGTH = 0x920a;
-  const TAG_EXIF_COLOR_SPACE = 0xa001;
-  const TAG_EXIF_EXIF_IMAGE_WIDTH = 0xa002;
-  const TAG_EXIF_EXIF_IMAGE_HEIGHT = 0xa003;
-  const TAG_EXIF_EXPOSURE_MODE = 0xa402;
-  const TAG_EXIF_OWNER_NAME = 0xa430;
-  const TAG_EXIF_CAMERA_SERIAL_NUMBER = 0xa431;
-  const TAG_EXIF_LENS_INFO = 0xa432;
-  const TAG_EXIF_LENS_MAKE = 0xa433;
-  const TAG_EXIF_LENS_MODEL = 0xa434;
-  const TAG_EXIF_LENS_SERIAL_NUMBER = 0xa435;
-  const TAG_EXIF_LENS = 0xfdea;
-  const TAG_EXIF_SENSIVITY_TYPE = 0x8830;
+  public const TAG_EXIF_EXPOSURE_TIME = 0x829a;
+  public const TAG_EXIF_FNUMBER = 0x829d;
+  public const TAG_EXIF_EXPOSURE_PROGRAM = 0x8822;
+  public const TAG_EXIF_ISO_SPEED = 0x8833;
+  public const TAG_EXIF_PHOTO_SENSITIVITY = 0x8827;
+  public const TAX_EXIF_SENSITIVITY_TYPE = 0x8830;
+  public const TAG_EXIF_DATE_TIME_ORIGINAL = 0x9003;
+  public const TAG_EXIF_CREATE_DATE = 0x9004;
+  public const TAG_EXIF_APERTURE_VALUE = 0x9202;
+  public const TAG_EXIF_METERING_MODE = 0x9207;
+  public const TAG_EXIF_FLASH = 0x9209;
+  public const TAG_EXIF_FOCAL_LENGTH = 0x920a;
+  public const TAG_EXIF_COLOR_SPACE = 0xa001;
+  public const TAG_EXIF_EXIF_IMAGE_WIDTH = 0xa002;
+  public const TAG_EXIF_EXIF_IMAGE_HEIGHT = 0xa003;
+  public const TAG_EXIF_EXPOSURE_MODE = 0xa402;
+  public const TAG_EXIF_OWNER_NAME = 0xa430;
+  public const TAG_EXIF_CAMERA_SERIAL_NUMBER = 0xa431;
+  public const TAG_EXIF_LENS_INFO = 0xa432;
+  public const TAG_EXIF_LENS_MAKE = 0xa433;
+  public const TAG_EXIF_LENS_MODEL = 0xa434;
+  public const TAG_EXIF_LENS_SERIAL_NUMBER = 0xa435;
+  public const TAG_EXIF_LENS = 0xfdea;
+  public const TAG_EXIF_SENSIVITY_TYPE = 0x8830;
 
   /** Data types */
   private const TYPE_UBYTE = 1;
@@ -98,7 +98,7 @@ class Exif {
   private const EXIF_BYTE_ALIGN_BE = 1;   /** MM: Motorola - Big endian */
 
   /** TIFF identifiers */
-  const EXIF_TYPE = 'APP1';
+  public const EXIF_TYPE = 'APP1';
   private const TIFF_ID = 42;
   
   /**
@@ -112,7 +112,7 @@ class Exif {
   {
 	if(empty($segments)) return false;
 
-	$exif_data_ary = array(); $any_data = false;
+	$exif_data_ary = []; $any_data = false;
 	foreach($segments as $segment_id => $segment) {
 	  $exif_data_ary[$segment_id] = self::decodeSegment($segment);
 	  $exif_data_ary[$segment_id] = empty($exif_data_ary[$segment_id]) ? false : $exif_data_ary[$segment_id];
@@ -152,10 +152,10 @@ class Exif {
 	  }
 	}
 	// Overwrite existing data with \x00 if set
-	$data_ary = array(array('block' => 'IFD0', 'tag' => self::TAG_IFD0_IMAGE_DESCRIPTION),
-					  array('block' => 'IFD0', 'tag' => self::TAG_IFD0_COPYRIGHT),
-					  array('block' => 'EXIF', 'tag' => self::TAG_EXIF_OWNER_NAME),
-					  array('block' => 'IFD0', 'tag' => self::TAG_IFD0_ARTIST));
+	$data_ary = [['block' => 'IFD0', 'tag' => self::TAG_IFD0_IMAGE_DESCRIPTION],
+				 ['block' => 'IFD0', 'tag' => self::TAG_IFD0_COPYRIGHT],
+				 ['block' => 'EXIF', 'tag' => self::TAG_EXIF_OWNER_NAME],
+				 ['block' => 'IFD0', 'tag' => self::TAG_IFD0_ARTIST]];
 	foreach($exif_data_ary as $seg_id => $seg_data) {
 	  foreach($seg_data as $elt) {
 		foreach($data_ary as $data) {
@@ -192,14 +192,11 @@ class Exif {
    */
   private static function byteAlign(string $byte_align_str): int
   {
-	switch($byte_align_str) {
-	case 'II':
-	  return self::EXIF_BYTE_ALIGN_LE;
-	case 'MM':
-	  return self::EXIF_BYTE_ALIGN_BE;
-	default: 
-	  throw new Exception(_('Invalid byte alignment read'), Exception::DATA_FORMAT_ERROR, $byte_align_str);
-	}
+	return match($byte_align_str) {
+	  'II' => self::EXIF_BYTE_ALIGN_LE,
+	  'MM' => self::EXIF_BYTE_ALIGN_BE,
+	  default => throw new Exception(_('Invalid byte alignment read'), Exception::DATA_FORMAT_ERROR, $byte_align_str)
+	};
   }
   
   /**
@@ -247,7 +244,7 @@ class Exif {
   private static function decodeIFDBlock(string $segment, string $ifd_block_name, int $ifd_block_pos,
 										 int $byte_align): array
   {
-	$exif_ary = array();
+	$exif_ary = [];
 	$ifd_block_id = 0;
 	do {
 	  $block_name = $ifd_block_name === self::IFD_ROOT ? $ifd_block_name.$ifd_block_id : $ifd_block_name;
@@ -294,13 +291,13 @@ class Exif {
 
 		// Save data
 		if($ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type) > 4) {
-		  $exif_ary[] = array('block' => $block_name, 'tag' => $ifd_tag_id, 'data' => $ifd_tag_str,
-							  'ptr' => $ifd_tag_data, 'size' => $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type));
+		  $exif_ary[] = ['block' => $block_name, 'tag' => $ifd_tag_id, 'data' => $ifd_tag_str,
+						 'ptr' => $ifd_tag_data, 'size' => $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type)];
 		}
 		else {
-		  $exif_ary[] = array('block' => $block_name, 'tag' => $ifd_tag_id, 'data' => $ifd_tag_str,
-							  'ptr' => $ifd_block_pos + 12 * $tag,
-							  'size' => $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type));
+		  $exif_ary[] = ['block' => $block_name, 'tag' => $ifd_tag_id, 'data' => $ifd_tag_str,
+						 'ptr' => $ifd_block_pos + 12 * $tag,
+						 'size' => $ifd_tag_nb * self::getIFDTypeSize($ifd_tag_type)];
 		}
 	  }
 
@@ -322,26 +319,14 @@ class Exif {
    */
   private static function getIFDTypeSize(int $type): int
   {
-	switch($type) {
-	case self::TYPE_UBYTE:
-	case self::TYPE_SBYTE:
-	case self::TYPE_ASCII:
-	case self::TYPE_UNDEFINED:
-	  return 1;
-	case self::TYPE_USHORT:
-	case self::TYPE_SSHORT:
-	  return 2;
-	case self::TYPE_ULONG:
-	case self::TYPE_SLONG:
-	case self::TYPE_FLOAT:
-	  return 4;
-	case self::TYPE_URAT:
-	case self::TYPE_SRAT:
-	case self::TYPE_DOUBLE:
-	  return 8;
-	default:
-	  throw new Exception(_('Cannot calculate data size of invalid data type'), Exception::DATA_FORMAT_ERROR, $type);
-	}
+	return match($type) {
+	  self::TYPE_UBYTE, self::TYPE_SBYTE, self::TYPE_ASCII, self::TYPE_UNDEFINED => 1,
+	  self::TYPE_USHORT, self::TYPE_SSHORT => 2,
+	  self::TYPE_ULONG, self::TYPE_SLONG, self::TYPE_FLOAT => 4,
+	  self::TYPE_URAT, self::TYPE_SRAT, self::TYPE_DOUBLE => 8,
+	  default => throw new Exception(_('Cannot calculate data size of invalid data type'), 
+                                     Exception::DATA_FORMAT_ERROR, $type)
+	};
   }
 
   /**
@@ -386,11 +371,11 @@ class Exif {
 	  return $value > 2147483648 ? $value - 4294967296 : $value;
 
 	case self::TYPE_URAT:
-	  return array('num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
-				   'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align));
+	  return ['num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
+			  'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align)];
 	case self::TYPE_SRAT:
-	  $value = array('num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
-					 'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align));
+	  $value = ['num' => self::decodeIFDData(substr($data, 0, 4), self::TYPE_ULONG, $byte_align),
+				'denom' => self::decodeIFDData(substr($data, 4, 4), self::TYPE_ULONG, $byte_align)];
 	  if($value['num'] > 2147483648) $value['num'] -= 4294967296;
 	  if($value['denom'] > 2147483648) $value['denom'] -= 4294967296;
 	  return $value;
@@ -418,26 +403,16 @@ class Exif {
    */
   protected static function getIFDString(string|int|array $data, int $type): string
   {
-	switch($type) {
-	case self::TYPE_UBYTE:
-	case self::TYPE_SBYTE:
-	case self::TYPE_USHORT:
-	case self::TYPE_SSHORT:
-	case self::TYPE_ULONG:
-	case self::TYPE_SLONG:
-	  return (string)$data;
-	case self::TYPE_ASCII:
-	  return trim($data);
-	case self::TYPE_URAT:
-	case self::TYPE_SRAT:
-	  return isset($data['num']) && isset($data['denom']) ? $data['num'].'/'.$data['denom'] : 'N/A';
-	case self::TYPE_UNDEFINED:
-	case self::TYPE_FLOAT:
-	case self::TYPE_DOUBLE:
-	  return strlen($data).' '._('bytes of binary data').': '.self::bin2hex($data);
-	default:
-	  throw new Exception(_('Invalid IFD data type found'), Exception::DATA_FORMAT_ERROR);
-	}
+	return match($type) {
+	 self::TYPE_UBYTE, self::TYPE_SBYTE, self::TYPE_USHORT, self::TYPE_SSHORT, self::TYPE_ULONG, self::TYPE_SLONG
+	   => (string)$data,
+	 self::TYPE_ASCII => trim($data),
+	 self::TYPE_URAT, self::TYPE_SRAT
+       => isset($data['num']) && isset($data['denom']) ? $data['num'].'/'.$data['denom'] : 'N/A',
+	 self::TYPE_UNDEFINED, self::TYPE_FLOAT, self::TYPE_DOUBLE 
+	   => strlen($data).' '._('bytes of binary data').': '.self::bin2hex($data),
+	 default => throw new Exception(_('Invalid IFD data type found'), Exception::DATA_FORMAT_ERROR)
+	};
   }
 
   /**
@@ -449,17 +424,16 @@ class Exif {
    */
   protected static function blockName(int $tag): string|false
   {
-	switch($tag) {
-    case self::TAG_PTR_SUB_IFD: return 'SUB';
-    case self::TAG_PTR_GLOBAL_PARAMETERS_IFD: return 'GLOBAL';
-    case self::TAG_PTR_KODAK_IFD: return 'KODAK';
-    case self::TAG_PTR_JPL_CARTO_IFD: return 'JPL';
-    case self::TAG_PTR_EXIF_IFD: return 'EXIF';
-    case self::TAG_PTR_LEAF_SUB_IFD: return 'LEAF';
-    case self::TAG_PTR_KDC_IFD: return 'KDC';
-	default:
-	  return false;
-	}
+	return match($tag) {
+     self::TAG_PTR_SUB_IFD => 'SUB',
+     self::TAG_PTR_GLOBAL_PARAMETERS_IFD => 'GLOBAL',
+     self::TAG_PTR_KODAK_IFD => 'KODAK',
+     self::TAG_PTR_JPL_CARTO_IFD => 'JPL',
+     self::TAG_PTR_EXIF_IFD => 'EXIF',
+     self::TAG_PTR_LEAF_SUB_IFD => 'LEAF',
+     self::TAG_PTR_KDC_IFD => 'KDC',
+	 default => false
+	};
   }
 
   /**
@@ -473,9 +447,7 @@ class Exif {
   {
 	if($bin === false) return '** false **';
 	$str = '';
-	for($pos = 0; $pos < strlen($bin); $pos ++) {
-	  $str .= bin2hex($bin[$pos]).' ';
-	}
+	for($pos = 0; $pos < strlen($bin); $pos ++) $str .= bin2hex($bin[$pos]).' ';
 	return trim($str);
   }
 

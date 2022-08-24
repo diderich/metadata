@@ -3,7 +3,7 @@
    * Exception.php - Metadata error handling
    * 
    * @package   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -15,26 +15,23 @@ use Holiday\Metadata;
 class Exception extends \Exception {
 
   /** Error costants */
-  const INTERNAL_ERROR = 0;
-  const NOT_IMPLEMENTED = 1;
+  public const INTERNAL_ERROR = 0;
+  public const NOT_IMPLEMENTED = 1;
 
   /** - File specific errors */
-  const FILE_ERROR = 10;
-  const FILE_NOT_FOUND = 11;
-  const FILE_TYPE_ERROR = 12;
-  const FILE_CORRUPT = 13;
-  const FILE_COPY_ERROR = 14;
+  public const FILE_ERROR = 10;
+  public const FILE_NOT_FOUND = 11;
+  public const FILE_TYPE_ERROR = 12;
+  public const FILE_CORRUPT = 13;
+  public const FILE_COPY_ERROR = 14;
 
   /** - Data specitic errors */
-  const DATA_NOT_FOUND = 21;
-  const DATA_FORMAT_ERROR = 22;
-  const INVALID_FIELD_ID = 23;
-  const INVALID_FIELD_WRITE = 24;
-  const INVALID_FIELD_DATA = 25;
-  const INVALID_LANG = 26;
-
-  /** Internal variables */
-  protected mixed $data;
+  public const DATA_NOT_FOUND = 21;
+  public const DATA_FORMAT_ERROR = 22;
+  public const INVALID_FIELD_ID = 23;
+  public const INVALID_FIELD_WRITE = 24;
+  public const INVALID_FIELD_DATA = 25;
+  public const INVALID_LANG = 26;
 
   /**
    * Constructor
@@ -44,9 +41,9 @@ class Exception extends \Exception {
    * @param mixed      $data     Exception specific data
    * @param \Throwable $previous Previously thrown exception
    */
-  public function __construct(string $message = '', int $code = 0, mixed $data = null, ?\Throwable $previous = null)
+  public function __construct(string $message = '', int $code = 0, protected mixed $data = null, 
+    ?\Throwable $previous = null)
   {
-	$this->data = $data;
 	parent::__construct($message, $code, $previous);
   }
 

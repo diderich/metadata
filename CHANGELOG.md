@@ -1,9 +1,12 @@
 # CHANGELOG.md
 
-Current version: `v1.1.1`
+Current version: `v1.2.0`
 
 Notable changes to **Metadata** - A PHP class for reading and writing *Photo Metadata* from JPEG files in a transparent
 way:
+
+## v1.2.0 - 2022-08-03
+Updated code to use new features of php 8.0 and make it more consistent with coding recommendations.
 
 ## v1.1.1 - 2022-07-29
 Corrected bug decoding XMP data. Added display of image data (i.e., EXIF data) to the test example.

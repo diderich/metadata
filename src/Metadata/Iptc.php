@@ -3,7 +3,7 @@
    * Iptc.php - Encoding and decode IPTC data from segment APP13
    * 
    * @package   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -22,37 +22,37 @@ use Holiday\Metadata;
 class Iptc {
 
   /** IPTC application record tags: IPTC Core Metadata 1.3 / most relevant ones */
-  const DATA_ENCODING = '1:090';  /** Read only: Coded Character Set - Max 32 characters */
+  public const DATA_ENCODING = '1:090';  /** Read only: Coded Character Set - Max 32 characters */
 
-  const AUTHOR = '2:080';         /** By-Line (Author) - Max 32 Characters */
-  const AUTHOR_TITLE = '2:085';   /** By-Line Title (Author Position) - Max 32 characters */
-  const CAPTION = '2:120';        /** Caption/Abstract - Max 2000 Characters */
-  const CAPTION_WRITER = '2:122'; /** Caption Writer/Editor - Max 32 Characters */
-  const CATEGORY = '2:015';       /** Category - Max 3 characters */
-  const CITY = '2:090';           /** City - Max 32 Characters */
-  const COPYRIGHT = '2:116';      /** Copyright Notice - Max 128 Characters */
-  const COUNTRY = '2:101';        /** Country/Primary Location Name - Max 64 characters */
-  const COUNTRY_CODE = '2:100';   /** Country/Primary Location Code - 3 alphabetic characters */
-  const CREATED_DATE = '2:055';   /** Read only: Date Created - 8 numeric characters CCYYMMDD */
-  const CREATED_TIME = '2:060';   /** Read only: Time Created - 11 characters HHMMSS±HHMM */
-  const CREDIT = '2:110';         /** Credit - Max 32 Characters */
-  const EDIT_STATUS = '2:007';    /** Edit Status - Max 64 characters */
-  const GENRE = '2:004';          /** Genres - Max 64 Characters */
-  const HEADLINE = '2:105';       /** Headline - Max 256 Characters */
-  const INSTRUCTIONS = '2:040';   /** Special Instructions - Max 256 Characters */
-  const KEYWORDS = '2:025';       /** Keywords - Max 64 characters */
-  const LOCATION = '2:092';       /** Sub-Location - Max 32 characters */
-  const OBJECT = '2:005';         /** Object Name (Title) - Max 64 characters */
-  const PRIORITY = '2:010';       /** Urgency - 1 numeric character */
-  const SOURCE = '2:115';         /** Source - Max 32 Characters */
-  const STATE = '2:095';          /** Province/State - Max 32 Characters */
-  const SUBJECT_CODE = '2:012';   /** Subject Reference - 13 to 236 characters */
-  const SUPP_CATEGORY = '2:020';  /** Supplemental Category - Max 32 characters */
-  const TRANSFER_REF = '2:103';   /** Original Transmission Reference - Max 32 characters */
+  public const AUTHOR = '2:080';         /** By-Line (Author) - Max 32 Characters */
+  public const AUTHOR_TITLE = '2:085';   /** By-Line Title (Author Position) - Max 32 characters */
+  public const CAPTION = '2:120';        /** Caption/Abstract - Max 2000 Characters */
+  public const CAPTION_WRITER = '2:122'; /** Caption Writer/Editor - Max 32 Characters */
+  public const CATEGORY = '2:015';       /** Category - Max 3 characters */
+  public const CITY = '2:090';           /** City - Max 32 Characters */
+  public const COPYRIGHT = '2:116';      /** Copyright Notice - Max 128 Characters */
+  public const COUNTRY = '2:101';        /** Country/Primary Location Name - Max 64 characters */
+  public const COUNTRY_CODE = '2:100';   /** Country/Primary Location Code - 3 alphabetic characters */
+  public const CREATED_DATE = '2:055';   /** Read only: Date Created - 8 numeric characters CCYYMMDD */
+  public const CREATED_TIME = '2:060';   /** Read only: Time Created - 11 characters HHMMSS±HHMM */
+  public const CREDIT = '2:110';         /** Credit - Max 32 Characters */
+  public const EDIT_STATUS = '2:007';    /** Edit Status - Max 64 characters */
+  public const GENRE = '2:004';          /** Genres - Max 64 Characters */
+  public const HEADLINE = '2:105';       /** Headline - Max 256 Characters */
+  public const INSTRUCTIONS = '2:040';   /** Special Instructions - Max 256 Characters */
+  public const KEYWORDS = '2:025';       /** Keywords - Max 64 characters */
+  public const LOCATION = '2:092';       /** Sub-Location - Max 32 characters */
+  public const OBJECT = '2:005';         /** Object Name (Title) - Max 64 characters */
+  public const PRIORITY = '2:010';       /** Urgency - 1 numeric character */
+  public const SOURCE = '2:115';         /** Source - Max 32 Characters */
+  public const STATE = '2:095';          /** Province/State - Max 32 Characters */
+  public const SUBJECT_CODE = '2:012';   /** Subject Reference - 13 to 236 characters */
+  public const SUPP_CATEGORY = '2:020';  /** Supplemental Category - Max 32 characters */
+  public const TRANSFER_REF = '2:103';   /** Original Transmission Reference - Max 32 characters */
 
-  const IPTC_TYPE = 'APP13';
-  const IPTC_HEADER = "Photoshop 3.0\x00";
-  const IPTC_HEADER_LEN = 14;
+  public const IPTC_TYPE = 'APP13';
+  public const IPTC_HEADER = "Photoshop 3.0\x00";
+  public const IPTC_HEADER_LEN = 14;
 
   private const IPTC_DATA_ENCODING_UTF8 = "\x1B\x25\x47"; // UTF-8 encoding
   
@@ -86,36 +86,33 @@ class Iptc {
 	// Decode original data
 	$irb_data = self::unpackSegmentToIRB($segment);
 	$iptc_data = self::decodeIRBToIPTC($irb_data);
-	$new_iptc_data = array();
+	$new_iptc_data = [];
 
 	// Recover non-editable data
 	$encoding = false;
 	foreach($iptc_data as $iptc_elt) {
 	  if(!self::isEditable($iptc_elt['tag'])) {
-		if($iptc_elt['tag'] !== self::DATA_ENCODING) {
-		  $new_iptc_data[] = array('tag' => $iptc_elt['tag'], 'data' => $iptc_elt['data']);
-		}
-		else {
+		if($iptc_elt['tag'] !== self::DATA_ENCODING)
+		  $new_iptc_data[] = ['tag' => $iptc_elt['tag'], 'data' => $iptc_elt['data']];
+		else
 		  $encoding = $iptc_elt['data'];
-		}
 	  }
 	}
 	
 	// Set edited data (and look for 'caption', 'copyright', and 'author' data)
-	$found_data = array(self::CAPTION => false, self::COPYRIGHT => false, self::AUTHOR => false);
+	$found_data = [self::CAPTION => false, self::COPYRIGHT => false, self::AUTHOR => false];
 	if($iptc_ary !== false) {
 	  foreach($iptc_ary as $iptc_elt){
 		if(self::isEditable($iptc_elt['tag'])) {
-		  $new_iptc_data[] = array('tag' => $iptc_elt['tag'], 'data' => $iptc_elt['data']);
-		  foreach($found_data as $tag => $value) {
-			if($iptc_elt['tag'] === $tag) $found_data[$tag] = true;
-		  }
+		  $new_iptc_data[] = ['tag' => $iptc_elt['tag'], 'data' => $iptc_elt['data']];
+		  foreach($found_data as $tag => $value) if($iptc_elt['tag'] === $tag) $found_data[$tag] = true;
 		}
 	  }
 	}
+	
 	// Set data encoding to UTF-8 and encode data
 	if($encoding !== false && $encoding !== self::IPTC_DATA_ENCODING_UTF8)
-	  throw new Exception(_('Found IPTC encoding not supported'), Exception::NOT_IMPLEMENTED);
+	  throw new Exception(_('Found not supported IPTC encoding'), Exception::NOT_IMPLEMENTED);
 						  
 	foreach($new_iptc_data as $key => $new_iptc_elt) {
 	  if($encoding === false && self::isEditable($new_iptc_data[$key]['tag']) &&
@@ -123,18 +120,17 @@ class Iptc {
 		$new_iptc_data[$key]['data'] = mb_convert_encoding($new_iptc_data[$key]['data'], 'UTF-8', 'ISO-8859-1');
 	  }
 	}
-	array_unshift($new_iptc_data, array('tag' => self::DATA_ENCODING, 'data' => self::IPTC_DATA_ENCODING_UTF8));
-
+	array_unshift($new_iptc_data, ['tag' => self::DATA_ENCODING, 'data' => self::IPTC_DATA_ENCODING_UTF8]);
 
 	// Ensure that 'caption', 'copyright', and 'author' data contain data, so that their EXIF values never get picked-up
 	foreach($found_data as $tag => $value) {
-	  if($value === false) $new_iptc_data[] = array('tag' => $tag, 'data' => '');
+	  if($value === false) $new_iptc_data[] = ['tag' => $tag, 'data' => ''];
 	}
 
 	// Convert IPTC data into IPTC block
 	$iptc_block = '';
 	foreach($new_iptc_data as $iptc_rec) {
-	  list($rec, $dat) = sscanf($iptc_rec['tag'], '%d:%d');
+	  [$rec, $dat] = sscanf($iptc_rec['tag'], '%d:%d');
 	  $iptc_block .= pack("CCCn", 28, $rec, $dat, strlen($iptc_rec['data'])).$iptc_rec['data'];
 	}
 	
@@ -144,7 +140,7 @@ class Iptc {
 	  if($irb_value['id'] === 0x0404) $iptc_block_pos = $irb_pos;
 	}
 	if($iptc_block_pos === -1) $iptc_block_pos = count($irb_data);
-	$irb_data[$iptc_block_pos] = array('id' => 0x0404, 'name' => "\x00\x00", 'data' => $iptc_block);
+	$irb_data[$iptc_block_pos] = ['id' => 0x0404, 'name' => "\x00\x00", 'data' => $iptc_block];
 	
 	// Pack IRB data into the segment string $irb_packed
 	$irb_packed = '';
@@ -182,7 +178,7 @@ class Iptc {
   private static function unpackSegmentToIRB(string $segment): array
   {
 	$pos = 0;
-	$data_irb = array();
+	$data_irb = [];
 	while($pos <strlen($segment) && ($pos = strpos($segment, "8BIM", $pos)) !== false) {
 
 	  //Skip 8BIM header
@@ -210,7 +206,7 @@ class Iptc {
 	  $pos += $data_len;
 	  
 	  // Save data
-	  $data_irb[] = array('id' => $id, 'name' => $name, 'data' => $data);
+	  $data_irb[] = ['id' => $id, 'name' => $name, 'data' => $data];
 	}
 	return $data_irb;
   }
@@ -225,27 +221,26 @@ class Iptc {
    */
   private static function decodeIRBToIPTC(array $data_irb): array
   {
-	$data_iptc = array();
+	$data_iptc = [];
 	foreach($data_irb as $data_irb_elt) {
 	  if($data_irb_elt['id'] === 0x0404) { // IRB IPTC block
 		$pos = 0;
-	  $data_elt = $data_irb_elt['data'];
+		$data_elt = $data_irb_elt['data'];
 		while($pos < strlen($data_elt)) {
 		  
 		  // Check if there is still data to read
 		  if(strlen(substr($data_elt, $pos)) < 5) break;
 		  $raw = unpack("Ctag/Crec/Cdat/nsize", substr($data_elt, $pos));
 		  $pos += 5;
-
+		  
 		  // Decode data tag
 		  $tag = sprintf("%01d:%03d", $raw['rec'], $raw['dat']);
-		  if(strlen(substr($data_elt, $pos, $raw['size'])) !== $raw['size']) {
+		  if(strlen(substr($data_elt, $pos, $raw['size'])) !== $raw['size'])
 			throw new Exception(_('IPTC data seems to be corrupt while decoding data tag'), Exception::FILE_CORRUPT);
-		  }
 
 		  // Decode and save actual data
 		  $data = substr($data_elt, $pos, $raw['size']);
-		  $data_iptc[] = array('tag' => $tag, 'data' => $data);
+		  $data_iptc[] = ['tag' => $tag, 'data' => $data];
 		  $pos += $raw['size'];
 		}
 	  }
@@ -254,19 +249,16 @@ class Iptc {
 	// Find current encoding
 	$encoding = false;
 	foreach($data_iptc as $iptc_elt) {
-	  if($iptc_elt['tag'] === self::DATA_ENCODING) {
-		$encoding = $iptc_elt['data'];
-	  }
+	  if($iptc_elt['tag'] === self::DATA_ENCODING) $encoding = $iptc_elt['data'];
 	}
 	if($encoding !== false && $encoding !== self::IPTC_DATA_ENCODING_UTF8)
-	  throw new Exception(_('Found IPTC encoding not supported'), Exception::NOT_IMPLEMENTED);
+	  throw new Exception(_('Found not supported IPTC encoding'), Exception::NOT_IMPLEMENTED);
 	
 	// Encode data into UTF-8 format, if the current format is Latin1
 	foreach($data_iptc as $key => $iptc_elt) {
 	  if($encoding == false && self::isEditable($data_iptc[$key]['tag']) &&
-		 mb_detect_encoding($data_iptc[$key]['data'], ['ASCII', 'UTF-8'], strict: true) === false) {
+		 mb_detect_encoding($data_iptc[$key]['data'], ['ASCII', 'UTF-8'], strict: true) === false)
 		$data_iptc[$key]['data'] =  mb_convert_encoding($data_iptc[$key]['data'], 'UTF-8', 'ISO-8859-1');
-	  }
 	}
 	return $data_iptc;
   }
@@ -280,36 +272,32 @@ class Iptc {
    */
   private static function isEditable(string $tag): bool
   {
-	switch($tag) {
-	case self::AUTHOR:
-	case self::AUTHOR_TITLE:
-	case self::CAPTION:
-	case self::CAPTION_WRITER:
-	case self::CATEGORY:
-	case self::CITY:
-	case self::COPYRIGHT:
-	case self::COUNTRY:
-	case self::COUNTRY_CODE:
-	case self::CREDIT:
-	case self::EDIT_STATUS:
-	case self::GENRE:
-	case self::HEADLINE:
-	case self::INSTRUCTIONS:
-	case self::KEYWORDS:
-	case self::LOCATION:
-	case self::OBJECT:
-	case self::PRIORITY:
-	case self::SOURCE:
-	case self::STATE:
-	case self::SUBJECT_CODE:
-	case self::SUPP_CATEGORY:
-	case self::TRANSFER_REF:
-	  return true;
-	default:
-	  return false;
-	}
+	return match($tag) {
+	 self::AUTHOR,
+ 	 self::AUTHOR_TITLE,
+ 	 self::CAPTION,
+ 	 self::CAPTION_WRITER,
+ 	 self::CATEGORY,
+ 	 self::CITY,
+ 	 self::COPYRIGHT,
+ 	 self::COUNTRY,
+ 	 self::COUNTRY_CODE,
+ 	 self::CREDIT,
+ 	 self::EDIT_STATUS,
+ 	 self::GENRE,
+ 	 self::HEADLINE,
+ 	 self::INSTRUCTIONS,
+ 	 self::KEYWORDS,
+ 	 self::LOCATION,
+ 	 self::OBJECT,
+ 	 self::PRIORITY,
+ 	 self::SOURCE,
+ 	 self::STATE,
+ 	 self::SUBJECT_CODE,
+ 	 self::SUPP_CATEGORY,
+ 	 self::TRANSFER_REF => true,
+	 default => false
+	};
   }
-
   
 }
-

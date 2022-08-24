@@ -3,7 +3,7 @@
    * example.php - Image file metadata handing exampe file
    * 
    * @project   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -28,14 +28,14 @@ spl_autoload_register('my__autoload');
 use \Holiday\Metadata;
 
 /*** EXAMPLE ***/
-$testfiles_ary = array('img.example.jpg', 'img.mlexample.jpg');
-$exif_data_ary = array(Metadata::IMG_CAMERA_MAKE => 'CAMERA MAKE', Metadata::IMG_CAMERA_MODEL => 'CAMERA MODEL',
-					   Metadata::IMG_CAMERA_SERIAL => 'CAMERA SERIAL', Metadata::IMG_LENS_MODEL => 'LENS MODEL', 
-					   Metadata::IMG_COLOR_SPACE_FMT => 'COLOR SPACE', Metadata::IMG_ISO => 'ISO SETTING',
-					   Metadata::IMG_APERTURE_FMT => 'APERTURE', Metadata::IMG_EXPOSURE_FMT => 'EXPOSURE',
-					   Metadata::IMG_FOCAL_LENGTH_FMT => 'FOCAL LENGTH', Metadata::IMG_FLASH_FMT => 'FLASH USED',
-					   Metadata::IMG_SIZE_FMT => 'IMAGE SIZE', Metadata::IMG_RESOLUTION_FMT => 'RESOLUTION',
-					   Metadata::IMG_SOFTWARE => 'SOFTWARE');
+$testfiles_ary = ['img.example.jpg', 'img.mlexample.jpg'];
+$exif_data_ary = [Metadata::IMG_CAMERA_MAKE => 'CAMERA MAKE', Metadata::IMG_CAMERA_MODEL => 'CAMERA MODEL',
+				  Metadata::IMG_CAMERA_SERIAL => 'CAMERA SERIAL', Metadata::IMG_LENS_MODEL => 'LENS MODEL', 
+				  Metadata::IMG_COLOR_SPACE_FMT => 'COLOR SPACE', Metadata::IMG_ISO => 'ISO SETTING',
+				  Metadata::IMG_APERTURE_FMT => 'APERTURE', Metadata::IMG_EXPOSURE_FMT => 'EXPOSURE',
+				  Metadata::IMG_FOCAL_LENGTH_FMT => 'FOCAL LENGTH', Metadata::IMG_FLASH_FMT => 'FLASH USED',
+				  Metadata::IMG_SIZE_FMT => 'IMAGE SIZE', Metadata::IMG_RESOLUTION_FMT => 'RESOLUTION',
+				  Metadata::IMG_SOFTWARE => 'SOFTWARE'];
 
 /**
  * Use of class Metadata

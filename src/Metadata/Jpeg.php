@@ -3,7 +3,7 @@
    * Jpeg.php - JPG metadata encode and decoding functions (IPTC and XMP fields)
    * 
    * @package   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -29,7 +29,7 @@ class Jpeg {
    */
   public function __construct()
   {
-	$this->filename = false; $this->header = array(); $this->img = '';
+	$this->filename = false; $this->header = []; $this->img = '';
 	$this->iptc_data = false; $this->xmp_data = false; $this->exif_data = false;
 	$this->data_read = false; $this->read_only = true;
   }
@@ -54,6 +54,7 @@ class Jpeg {
 	// Initrialize all variables
 	self::__construct();
 	$this->read_only = $read_only;
+	$eoi_pos = false;
 
 	// Open image file for reading
 	$handle = fopen($filename, 'rb');
@@ -74,7 +75,7 @@ class Jpeg {
 	}
 	
 	// Read image header data containing metadata)
-	$this->header = array();
+	$this->header = [];
 	$hit_img_data = false;
 	while($data[1] !== "\xD9" && !$hit_img_data && !feof($handle)) {
 
@@ -85,7 +86,7 @@ class Jpeg {
 		$seg_data = $this->dataRead($handle, $size_dec['size'] - 2);
 
 		// Save data segment
-		$this->header[] = array('name' => self::segmentName(ord($data[1])),'tag' => ord($data[1]), 'data' => $seg_data);
+		$this->header[] = ['name' => self::segmentName(ord($data[1])),'tag' => ord($data[1]), 'data' => $seg_data];
 	  }
 
 	  // Check if the segment was the last one
@@ -142,8 +143,7 @@ class Jpeg {
    */
   public function write(string $filename): void
   {
-	if(!$this->data_read)
-	  throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
+	if(!$this->data_read) throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
 	if($this->read_only)
 	  throw new Exception(_('Cannot write file because data was read in read-only mode'), Exception::DATA_NOT_FOUND);
 
@@ -155,8 +155,7 @@ class Jpeg {
 
 	// Write file
 	$handle = fopen($filename, 'wb');
-	if($handle === false)
-	  throw new Exception(_('Could not open file for writing'), Exception::FILE_ERROR, $filename);
+	if($handle === false) throw new Exception(_('Could not open file for writing'), Exception::FILE_ERROR, $filename);
 
 	// Write SOI for JPEG file
 	fwrite($handle, "\xFF\xD8");
@@ -202,9 +201,8 @@ class Jpeg {
 	$nb_header = count($this->header);
 	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Iptc::IPTC_TYPE &&
-		 strncmp($this->header[$pos]['data'], Iptc::IPTC_HEADER, Iptc::IPTC_HEADER_LEN) === 0) {
+		 str_starts_with($this->header[$pos]['data'], Iptc::IPTC_HEADER))
 		$segment .= substr($this->header[$pos]['data'], Iptc::IPTC_HEADER_LEN);
-	  }
 	}
 	return $segment;
   }
@@ -218,11 +216,10 @@ class Jpeg {
   public function getIptcData(): array|false
   {
 	if(!$this->data_read) throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
-
 	if($this->iptc_data === false) return false;
 
 	// Re-format IPTC for easier access: $iptc[$tag] = array($data)
-	$output = array();
+	$output = [];
 	foreach($this->iptc_data as $iptc_elt) $output[$iptc_elt['tag']][] = $iptc_elt['data'];
 	return $output;
   }
@@ -238,11 +235,11 @@ class Jpeg {
 	if(!$this->data_read) throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
 
 	// Re-format IPTC data to internal format and save it for future reference
-	$iptc_ary = array();
+	$iptc_ary = [];
 	if($iptc_data_ary !== false) {
 	  foreach($iptc_data_ary as $tag => $iptc_elt_ary) {
 		foreach($iptc_elt_ary as $iptc_elt) {
-		  $iptc_ary[] = array('tag' => $tag, 'data' => $iptc_elt);
+		  $iptc_ary[] = ['tag' => $tag, 'data' => $iptc_elt];
 		}
 	  }
 	}
@@ -254,26 +251,24 @@ class Jpeg {
 	// Delete all existing IPTC IRB blocks (new ones will replace them)
 	for($pos = 0; $pos < count($this->header); $pos++) {
 	  if($this->header[$pos]['name'] === Iptc::IPTC_TYPE &&
-		 strncmp($this->header[$pos]['data'], Iptc::IPTC_HEADER, Iptc::IPTC_HEADER_LEN) === 0) {
+		 str_starts_with($this->header[$pos]['data'], Iptc::IPTC_HEADER)) {
 		array_splice($this->header, $pos, 1);
 	  }
 	}
 	
 	// Find position where to insert IRB data segment into header
 	$pos = count($this->header) - 1;
-	while($pos >= 0 && ($this->header[$pos]['tag'] > 0xED || $this->header[$pos]['tag'] < 0xE0)) {
-	  $pos--;
-	}
+	while($pos >= 0 && ($this->header[$pos]['tag'] > 0xED || $this->header[$pos]['tag'] < 0xE0)) $pos--;
 	
 	// Output blocks of size maximal 32000
 	while(strlen($irb_packed) > 32000) {
-	  array_splice($this->header, $pos + 1, 0, array('tag' => 0xED, 'name' => Iptc::IPTC_TYPE,
-													 'data' => Iptc::IPTC_HEADER.substr($irb_packed, 0, 32000)));
+	  array_splice($this->header, $pos + 1, 0, ['tag' => 0xED, 'name' => Iptc::IPTC_TYPE,
+												'data' => Iptc::IPTC_HEADER.substr($irb_packed, 0, 32000)]);
 	  $irb_packed = substr_replace($irb_packed, '', 0, 32000);
 	  $pos++;
 	}
 	array_splice($this->header, $pos + 1, 0, "");
-	$this->header[$pos + 1] = array('tag' => 0xED, 'name' => Iptc::IPTC_TYPE, 'data' => Iptc::IPTC_HEADER.$irb_packed);
+	$this->header[$pos + 1] = ['tag' => 0xED, 'name' => Iptc::IPTC_TYPE, 'data' => Iptc::IPTC_HEADER.$irb_packed];
 
   }
 
@@ -288,9 +283,8 @@ class Jpeg {
 	$nb_header = count($this->header);
 	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Xmp::XMP_TYPE &&
-		 strncmp($this->header[$pos]['data'], Xmp::XMP_HEADER, Xmp::XMP_HEADER_LEN) === 0){
+		 str_starts_with($this->header[$pos]['data'], Xmp::XMP_HEADER))
 		return substr($this->header[$pos]['data'], Xmp::XMP_HEADER_LEN);
-	  }
 	}
 	return '';
   }
@@ -304,7 +298,6 @@ class Jpeg {
   public function getXmpData(): XmpDocument|false
   {
 	if(!$this->data_read) throw new Exception(_('No image and metadata read'), Exception::DATA_NOT_FOUND);
-
 	return $this->xmp_data;
   }
 
@@ -326,7 +319,7 @@ class Jpeg {
 	$nb_header = count($this->header);
 	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Xmp::XMP_TYPE &&
-		 strncmp($this->header[$pos]['data'], Xmp::XMP_HEADER, Xmp::XMP_HEADER_LEN) === 0) {
+		 str_starts_with($this->header[$pos]['data'], Xmp::XMP_HEADER)) {
 		if($xmp_data === false || $xmp_block === false) {
 		  // Remove segment
 		  unset($this->header[$pos]);
@@ -343,8 +336,8 @@ class Jpeg {
 	$pos = 0;
 	while($this->header[$pos]['name'] ===  Xmp::XMP_TYPE_PRV || $this->header[$pos]['name'] ===  Xmp::XMP_TYPE)
 	  $pos++;
-	array_splice($this->header, $pos, 0, array(array('tag' => Xmp::XMP_TYPE_TAG, 'name' => Xmp::XMP_TYPE,
-													 'data' => Xmp::XMP_HEADER.$xmp_block)));
+	array_splice($this->header, $pos, 0, [['tag' => Xmp::XMP_TYPE_TAG, 'name' => Xmp::XMP_TYPE,
+										   'data' => Xmp::XMP_HEADER.$xmp_block]]);
 	$this->xmp_data = $xmp_data;
   }
 
@@ -353,14 +346,13 @@ class Jpeg {
    */
   private function getExifSegments(): array
   {
-	$exif_segments = array();
+	$exif_segments = [];
 	$nb_header = count($this->header);
 	for($pos = 0; $pos < $nb_header; $pos++) {
 	  if($this->header[$pos]['name'] === Exif::EXIF_TYPE &&
-		 (strncmp($this->header[$pos]['data'], "Exif\x00\x00", 6) === 0 ||
-		  strncmp($this->header[$pos]['data'], "Exif\x00\xFF", 6) === 0)) {
+		 (str_starts_with($this->header[$pos]['data'], "Exif\x00\x00") ||
+		  str_starts_with($this->header[$pos]['data'], "Exif\x00\xFF")))
 		$exif_segments[$pos] = substr($this->header[$pos]['data'], 6);
-	  }
 	}
 	return $exif_segments;
   }
@@ -378,7 +370,7 @@ class Jpeg {
 	if($this->exif_data === false) return false;
 	
 	// Re-format IPTC for easier access
-	$output = array();
+	$output = [];
 	foreach($this->exif_data as $segment_data) {
 	  foreach($segment_data as $elt) {
 		$output[$elt['block'].':'.substr('0000'.dechex($elt['tag']), -4)] = $elt['data'];
@@ -396,11 +388,11 @@ class Jpeg {
   public function setExifData(array|false $exif_data_ary): void
   {
 	// Re-format IPTC data to internal format
-	$exif_ary = array();
+	$exif_ary = [];
 	if($exif_data_ary !== false) {
 	  foreach($exif_data_ary as $block_tag => $exif_elt) {
-		list($block, $tag) = explode(':', $block_tag);
-		$exif_ary[] = array('block' => $block, 'tag' => hexdec("0x$tag"), 'data' => $exif_elt);
+		[$block, $tag] = explode(':', $block_tag);
+		$exif_ary[] = ['block' => $block, 'tag' => hexdec("0x$tag"), 'data' => $exif_elt];
 	  }
 	}
 	$exif_ary = empty($exif_ary) ? false : $exif_ary;
@@ -408,9 +400,8 @@ class Jpeg {
 	// Encode data and replace old segments
 	if($this->exif_data === false) return;
 	$exif_segments = Exif::encode($this->getExifSegments(), $this->exif_data, $exif_ary);
-	foreach($exif_segments as $segment_pos => $segment_data) {
+	foreach($exif_segments as $segment_pos => $segment_data)
 	  $this->header[$segment_pos]['data'] = "Exif\x00\x00".$segment_data;
-	}
   }
   
   /**
@@ -428,9 +419,7 @@ class Jpeg {
   private function dataRead(mixed $handle, int $length): string
   {
 	$data = '';
-	while(!feof($handle) && strlen($data) < $length) {
-	  $data .= fread($handle, $length - strlen($data));
-	}
+	while(!feof($handle) && strlen($data) < $length) $data .= fread($handle, $length - strlen($data));
 	return $data;
   }
 

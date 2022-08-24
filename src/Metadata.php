@@ -3,7 +3,7 @@
    * Metadata.php - Image file metadata handing
    * 
    * @project   Holiday\Metadata
-   * @version   1.1
+   * @version   1.2
    * @author    Claude Diderich (cdiderich@cdsp.photo)
    * @copyright (c) 2022 by Claude Diderich
    * @license   https://opensource.org/licenses/mit MIT
@@ -21,110 +21,110 @@ use \Holiday\Metadata\Exception;
 
 class Metadata {
   
-  const VERSION = '1.1.1';
+  public const VERSION = '1.2.0';
 
   /** Fielt types */
-  const TYPE_INVALID = 0;
-  const TYPE_STR = 1;
-  const TYPE_INT = 2;
-  const TYPE_FLOAT = 3;
-  const TYPE_ARY = 4;
+  public const TYPE_INVALID = 0;
+  public const TYPE_STR = 1;
+  public const TYPE_INT = 2;
+  public const TYPE_FLOAT = 3;
+  public const TYPE_ARY = 4;
 
   /** File specific fields: read only */
-  const FILE_NAME             = 001;            /** String: Filename */
-  const FILE_EXT              = 002;            /** String: File extension */
-  const FILE_SIZE             = 003;            /** Int: File size */
-  const FILE_DATE             = 004;            /** Int: Last modification date */
+  public const FILE_NAME             = 001;     /** String: Filename */
+  public const FILE_EXT              = 002;     /** String: File extension */
+  public const FILE_SIZE             = 003;     /** Int: File size */
+  public const FILE_DATE             = 004;     /** Int: Last modification date */
 
   /** IPTC/XMP fields: read/write */
-  const FIELD_ID_WRITE_FIRST  = 100;            /** First field identifier that can be modified */
-  const FIELD_ID_WRITE_LAST   = 132;            /** Last field identifier that can be modified */
+  public const FIELD_ID_WRITE_FIRST  = 100;     /** First field identifier that can be modified */
+  public const FIELD_ID_WRITE_LAST   = 132;     /** Last field identifier that can be modified */
   
-  const AUTHOR                = 101;            /** String: Creator (name of photographer) */
-  const PHOTOGRAPHER          = 101;            /** - String: Creator (name of photographer) */
-  const AUTHOR_TITLE          = 102;            /** String: Creator's job title */
-  const PHOTOGRAPHER_TITLE    = 102;            /** - String: Creator's job title */
-  const CAPTION               = 103;            /** String:  Description/Caption */
-  const CAPTION_WRITER        = 104;            /** String: Description writer */
-  const CATEGORY              = 105;            /** String: Category - Max 3 characters */
-  const CITY                  = 106;            /** String: City */
-  const COPYRIGHT             = 107;            /** String: Copyright notice */
-  const COUNTRY               = 108;            /** String: Country name */
-  const COUNTRY_CODE          = 109;            /** String: ISO country code*/
-  const CREDIT                = 110;            /** String: Credit Line */
-  const EDIT_STATUS           = 111;            /** String: Edit Status - Max 64 characters */
-  const EVENT                 = 112;            /** String: Event identifier */
-  const GENRE                 = 113;            /** Array: Genre */
-  const HEADLINE              = 114;            /** String: Headline */
-  const INSTRUCTIONS          = 115;            /** String: Instructions */
-  const KEYWORDS              = 116;            /** Array: Keywords */
-  const LOCATION              = 117;            /** String: Location */
-  const OBJECT                = 118;            /** String: Object name (Title)*/
-  const ORG_CODE              = 119;            /** Array: Code of Organization in image */
-  const NAT                   = 119;            /**  - Array: Nationalities */
-  const ORG_NAME              = 120;            /** Array: Name of Organization in image */
-  const ORG                   = 120;            /**  - Array: Organizations/Teams in image */
-  const PERSON                = 121;            /** Array: Person shown in image */
-  const PEOPLE                = 121;            /** - Array: Person shown in image */
-  const PERSONALITY           = 121;            /** - Array: Person shown in image (Getty terminology) */
-  const PRIORITY              = 122;            /** Int: Urgency - 1 numeric character */
-  const RATING                = 123;            /** Int: Numeric image rating, -1 (rejected), 0..5 */
-  const SCENES                = 124;            /** Array: Scene codes*/
-  const SOURCE                = 125;            /** String: Source */
-  const STATE                 = 126;            /** String: Providence/State */
-  const SUBJECT_CODE          = 127;            /** Array: Subject code */
-  const SUPP_CATEGORY_A       = 128;            /** String: Supplemental Category 1 */
-  const SUPP_CATEGORY_B       = 129;            /** String: Supplemental Category 2 */
-  const SUPP_CATEGORY_C       = 130;            /** String: Supplemental Category 3 */
-  const TRANSFER_REF          = 131;            /** String: Original Transmission Reference - Max 32 characters */
-  const USAGE_TERMS           = 132;            /** String: Rights Usage Terms */
+  public const AUTHOR                = 101;     /** String: Creator (name of photographer) */
+  public const PHOTOGRAPHER          = 101;     /** - String: Creator (name of photographer) */
+  public const AUTHOR_TITLE          = 102;     /** String: Creator's job title */
+  public const PHOTOGRAPHER_TITLE    = 102;     /** - String: Creator's job title */
+  public const CAPTION               = 103;     /** String:  Description/Caption */
+  public const CAPTION_WRITER        = 104;     /** String: Description writer */
+  public const CATEGORY              = 105;     /** String: Category - Max 3 characters */
+  public const CITY                  = 106;     /** String: City */
+  public const COPYRIGHT             = 107;     /** String: Copyright notice */
+  public const COUNTRY               = 108;     /** String: Country name */
+  public const COUNTRY_CODE          = 109;     /** String: ISO country code*/
+  public const CREDIT                = 110;     /** String: Credit Line */
+  public const EDIT_STATUS           = 111;     /** String: Edit Status - Max 64 characters */
+  public const EVENT                 = 112;     /** String: Event identifier */
+  public const GENRE                 = 113;     /** Array: Genre */
+  public const HEADLINE              = 114;     /** String: Headline */
+  public const INSTRUCTIONS          = 115;     /** String: Instructions */
+  public const KEYWORDS              = 116;     /** Array: Keywords */
+  public const LOCATION              = 117;     /** String: Location */
+  public const OBJECT                = 118;     /** String: Object name (Title)*/
+  public const ORG_CODE              = 119;     /** Array: Code of Organization in image */
+  public const NAT                   = 119;     /**  - Array: Nationalities */
+  public const ORG_NAME              = 120;     /** Array: Name of Organization in image */
+  public const ORG                   = 120;     /**  - Array: Organizations/Teams in image */
+  public const PERSON                = 121;     /** Array: Person shown in image */
+  public const PEOPLE                = 121;     /** - Array: Person shown in image */
+  public const PERSONALITY           = 121;     /** - Array: Person shown in image (Getty terminology) */
+  public const PRIORITY              = 122;     /** Int: Urgency - 1 numeric character */
+  public const RATING                = 123;     /** Int: Numeric image rating, -1 (rejected), 0..5 */
+  public const SCENES                = 124;     /** Array: Scene codes*/
+  public const SOURCE                = 125;     /** String: Source */
+  public const STATE                 = 126;     /** String: Providence/State */
+  public const SUBJECT_CODE          = 127;     /** Array: Subject code */
+  public const SUPP_CATEGORY_A       = 128;     /** String: Supplemental Category 1 */
+  public const SUPP_CATEGORY_B       = 129;     /** String: Supplemental Category 2 */
+  public const SUPP_CATEGORY_C       = 130;     /** String: Supplemental Category 3 */
+  public const TRANSFER_REF          = 131;     /** String: Original Transmission Reference - Max 32 characters */
+  public const USAGE_TERMS           = 132;     /** String: Rights Usage Terms */
   
   /** IPTC/XMP fiels: read only */
-  const CREATED_DATETIME      = 201;            /** Int: Timestamp when photo was created */
+  public const CREATED_DATETIME      = 201;     /** Int: Timestamp when photo was created */
 
   /** Image data fields: read only **/
-  const IMG_APERTURE          = 301;            /** Float: Aperture */
-  const IMG_APERTURE_FMT      = 302;            /** String: Aperture (f/X) */
-  const IMG_CAMERA_MAKE       = 303;            /** String: Camera brand */
-  const IMG_CAMERA_MODEL      = 304;            /** String: Camera model */
-  const IMG_CAMERA_SERIAL     = 305;            /** String: Camera serial number */
-  const IMG_COLOR_SPACE_FMT   = 306;            /** String: Color space */
-  const IMG_EXPOSURE          = 307;            /** Array: Exposure */
-  const IMG_EXPOSURE_FMT      = 308;            /** String: Exposure  (1/X second(s))*/
-  const IMG_EXPOSURE_MODE_FMT = 309;            /** String: Exposure mode */
-  const IMG_EXPOSURE_PGM_FMT  = 310;            /** String: Exposure setting */
-  const IMG_FLASH             = 311;            /** Int: Flash used */
-  const IMG_FLASH_FMT         = 312;            /** String: Flash used (Flash | No flash)*/
-  const IMG_FOCAL_LENGTH      = 313;            /** Int: Focal length */
-  const IMG_FOCAL_LENGTH_FMT  = 314;            /** String: Focal length (X mm) */
-  const IMG_HEIGHT            = 315;            /** Int: Image height */
-  const IMG_ISO               = 316;            /** Int: ISO */
-  const IMG_LENS_MAKE         = 317;            /** String: Lens brand */
-  const IMG_LENS_MODEL        = 318;            /** String: Lens name */
-  const IMG_LENS_SERIAL       = 319;            /** String: Lens serial number */
-  const IMG_METERING_MODE_FMT = 320;            /** String: Merering model */
-  const IMG_ORIENTATION       = 321;            /** Int: Orientation */
-  const IMG_RESOLUTION        = 322;            /** Int: Image resolution, in resolution unit */
-  const IMG_RESOLUTION_FMT    = 323;            /** String: Image resolution, in resolution unit */
-  const IMG_RESOLUTION_UNIT   = 324;            /** Int: Resolution unit (1, 3=cm / 2=inch) */
-  const IMG_SIZE_FMT          = 325;            /** String: Formatted image size ( W x H px - X x Y cm (x MB) */
-  const IMG_SOFTWARE          = 326;            /** String: Software used */
-  const IMG_TYPE              = 327;            /** Int: Image type (see imagetypes() for constants) */
-  const IMG_TYPE_FMT          = 328;            /** String: Image type (jpeg) */
-  const IMG_WIDTH             = 329;            /** Int: Image width */
+  public const IMG_APERTURE          = 301;     /** Float: Aperture */
+  public const IMG_APERTURE_FMT      = 302;     /** String: Aperture (f/X) */
+  public const IMG_CAMERA_MAKE       = 303;     /** String: Camera brand */
+  public const IMG_CAMERA_MODEL      = 304;     /** String: Camera model */
+  public const IMG_CAMERA_SERIAL     = 305;     /** String: Camera serial number */
+  public const IMG_COLOR_SPACE_FMT   = 306;     /** String: Color space */
+  public const IMG_EXPOSURE          = 307;     /** Array: Exposure */
+  public const IMG_EXPOSURE_FMT      = 308;     /** String: Exposure  (1/X second(s))*/
+  public const IMG_EXPOSURE_MODE_FMT = 309;     /** String: Exposure mode */
+  public const IMG_EXPOSURE_PGM_FMT  = 310;     /** String: Exposure setting */
+  public const IMG_FLASH             = 311;     /** Int: Flash used */
+  public const IMG_FLASH_FMT         = 312;     /** String: Flash used (Flash | No flash)*/
+  public const IMG_FOCAL_LENGTH      = 313;     /** Int: Focal length */
+  public const IMG_FOCAL_LENGTH_FMT  = 314;     /** String: Focal length (X mm) */
+  public const IMG_HEIGHT            = 315;     /** Int: Image height */
+  public const IMG_ISO               = 316;     /** Int: ISO */
+  public const IMG_LENS_MAKE         = 317;     /** String: Lens brand */
+  public const IMG_LENS_MODEL        = 318;     /** String: Lens name */
+  public const IMG_LENS_SERIAL       = 319;     /** String: Lens serial number */
+  public const IMG_METERING_MODE_FMT = 320;     /** String: Merering model */
+  public const IMG_ORIENTATION       = 321;     /** Int: Orientation */
+  public const IMG_RESOLUTION        = 322;     /** Int: Image resolution, in resolution unit */
+  public const IMG_RESOLUTION_FMT    = 323;     /** String: Image resolution, in resolution unit */
+  public const IMG_RESOLUTION_UNIT   = 324;     /** Int: Resolution unit (1, 3=cm / 2=inch) */
+  public const IMG_SIZE_FMT          = 325;     /** String: Formatted image size ( W x H px - X x Y cm (x MB) */
+  public const IMG_SOFTWARE          = 326;     /** String: Software used */
+  public const IMG_TYPE              = 327;     /** Int: Image type (see imagetypes() for public constants) */
+  public const IMG_TYPE_FMT          = 328;     /** String: Image type (jpeg) */
+  public const IMG_WIDTH             = 329;     /** Int: Image width */
 
   /** Orientation encoding: IMG_ORIENTATION */
-  const IMG_ORI_VERTICAL     = 1;
-  const IMG_ORI_HORIZONTAL   = 2;
-  const IMG_ORI_SQUARE       = 3;
-  const IMG_ORI_UNKNOWN      = -1;
+  public const IMG_ORI_VERTICAL     = 1;
+  public const IMG_ORI_HORIZONTAL   = 2;
+  public const IMG_ORI_SQUARE       = 3;
+  public const IMG_ORI_UNKNOWN      = -1;
 
   /** Languages (non exchaustive) */
-  const LANG_ALL = 'x-all';                     /** Proxy constand including all languages */
-  const LANG_DEFAULT = 'x-default';             /** Default language: English */
-  const LANG_EN = 'en-us';                      /** Language: English */
-  const LANG_DE = 'de-de';                      /** Language: German */
-  const LANG_FR = 'fr-fr';                      /** Language: French */
+  public const LANG_ALL = 'x-all';              /** Proxy public constand including all languages */
+  public const LANG_DEFAULT = 'x-default';      /** Default language: English */
+  public const LANG_EN = 'en-us';               /** Language: English */
+  public const LANG_DE = 'de-de';               /** Language: German */
+  public const LANG_FR = 'fr-fr';               /** Language: French */
 
   /** Private variables */
   protected bool          $data_read;           /** Has data been loaded/read */
@@ -137,8 +137,7 @@ class Metadata {
    */
   public function __construct()
   { 
-	$this->data_read = false; $this->read_only = true;
-	$this->data = array();
+	$this->data_read = false; $this->read_only = true; $this->data = [];
 	$this->jpeg = new Metadata\Jpeg();
   }
 
@@ -160,9 +159,7 @@ class Metadata {
   public function read(string $filename, bool $extend = false, bool $read_only = false): void
   {
 	// Re-initialize data
-	$this->data_read = false;
-	$this->data = array();
-	$this->read_only = $read_only;
+	$this->data_read = false; $this->read_only = $read_only; $this->data = [];
 
 	// Get file specific fields
 	if(!file_exists($filename)) throw new Exception(_('File not found'), Exception::FILE_NOT_FOUND, $filename);
@@ -303,9 +300,7 @@ class Metadata {
 	  if(is_array($field_value)) {
 		// Replace all values
 		$this->drop($field_id, false, $lang);
-		foreach($field_value as $field_subvalue) {
-		  $this->data[$field_id][] = $field_subvalue;
-		}
+		foreach($field_value as $field_subvalue) $this->data[$field_id][] = $field_subvalue;
 	  }
 	  else {
 		if(isset($this->data[$field_id])) {
@@ -331,7 +326,7 @@ class Metadata {
    */
   public function dropAll(string|false $lang = false): void
   {
-	if($lang === false) { $this->data = array(); return; }
+	if($lang === false) { $this->data = []; return; }
 	foreach($this->data as $field_id => $field_value) {
 	  if(self::isLang($field_id) && isset($this->data[$field_id][$lang])) unset($this->data[$field_id][$lang]);
 	  if(!self::isLang($field_id) && isset($this->data[$field_id])) unset($this->data[$field_id]);
@@ -438,9 +433,8 @@ class Metadata {
 	// Add/update field value
 	if(is_array($field_value)) {
 	  foreach($field_value as $lang_value => $data_value) {
-		if($lang === self::LANG_ALL || $lang_value === $lang) {
+		if($lang === self::LANG_ALL || $lang_value === $lang)
 		  $this->data[$field_id][$lang_value] = $data_value;
-		}
 	  }
 	}
 	else {
@@ -517,12 +511,7 @@ class Metadata {
    */
   public static function isLang(int $field_id): bool
   {
-	switch($field_id) {
-	case self::CAPTION:                      // XMP name - dc:description (Lang Alt)
-	  return true;
-	default:
-	  return false;
-	}
+	return match($field_id) { self::CAPTION => true, default => false };
   }
 
   /**
@@ -533,84 +522,84 @@ class Metadata {
    */
   public static function fieldType(int $field_id): int
   {
-	switch($field_id) {
-	case self::GENRE:
-	case self::KEYWORDS:
-	case self::ORG_CODE:
-	case self::ORG_NAME:
-	case self::PERSON:
-	case self::SCENES:
-	case self::SUBJECT_CODE:
-	case self::IMG_EXPOSURE:
-	  return self::TYPE_ARY;
+	return match($field_id) {
+	 self::GENRE,
+	 self::KEYWORDS,
+	 self::ORG_CODE,
+	 self::ORG_NAME,
+	 self::PERSON,
+	 self::SCENES,
+	 self::SUBJECT_CODE,
+	 self::IMG_EXPOSURE
+	 => self::TYPE_ARY,
 
-	case self::FILE_DATE:
-	case self::FILE_SIZE:
-	case self::CREATED_DATETIME:
-	case self::PRIORITY:
-	case self::RATING:
-	case self::IMG_FLASH:
-	case self::IMG_FOCAL_LENGTH:
-	case self::IMG_HEIGHT:
-	case self::IMG_ISO:
-	case self::IMG_ORIENTATION;
-	case self::IMG_RESOLUTION:
-	case self::IMG_RESOLUTION_UNIT:
-	case self::IMG_TYPE:
-	case self::IMG_WIDTH:
-	  return self::TYPE_INT;
+	 self::FILE_DATE,
+	 self::FILE_SIZE,
+	 self::CREATED_DATETIME,
+	 self::PRIORITY,
+	 self::RATING,
+	 self::IMG_FLASH,
+	 self::IMG_FOCAL_LENGTH,
+	 self::IMG_HEIGHT,
+	 self::IMG_ISO,
+	 self::IMG_ORIENTATION,
+	 self::IMG_RESOLUTION,
+	 self::IMG_RESOLUTION_UNIT,
+	 self::IMG_TYPE,
+	 self::IMG_WIDTH
+	 => self::TYPE_INT,
 
-	case self::IMG_APERTURE:
-	  return self::TYPE_FLOAT;
+	 self::IMG_APERTURE
+	 => self::TYPE_FLOAT,
 	  
-	case self::FILE_NAME:
-	case self::FILE_EXT:
-	case self::AUTHOR:
-	case self::AUTHOR_TITLE:
-	case self::CAPTION:
-	case self::CAPTION_WRITER:
-	case self::CATEGORY:
-	case self::CITY:
-	case self::COPYRIGHT:
-	case self::COUNTRY:
-	case self::COUNTRY_CODE:
-	case self::CREDIT:
-	case self::EDIT_STATUS:
-	case self::EVENT:
-	case self::HEADLINE:
-	case self::INSTRUCTIONS:
-	case self::LOCATION:
-	case self::OBJECT:
-	case self::SOURCE:
-	case self::STATE:
-	case self::SUPP_CATEGORY_A:
-	case self::SUPP_CATEGORY_B:
-	case self::SUPP_CATEGORY_C:
-	case self::TRANSFER_REF:
-	case self::USAGE_TERMS:
-	case self::IMG_APERTURE_FMT:
-	case self::IMG_CAMERA_MAKE:
-	case self::IMG_CAMERA_MODEL:
-	case self::IMG_CAMERA_SERIAL;
-	case self::IMG_COLOR_SPACE_FMT:
-	case self::IMG_EXPOSURE_FMT:
-	case self::IMG_EXPOSURE_MODE_FMT:
-	case self::IMG_EXPOSURE_PGM_FMT:
-	case self::IMG_FLASH_FMT:
-	case self::IMG_FOCAL_LENGTH_FMT:
-	case self::IMG_LENS_MAKE:
-	case self::IMG_LENS_MODEL:
-	case self::IMG_LENS_SERIAL:
-	case self::IMG_METERING_MODE_FMT:
-	case self::IMG_RESOLUTION_FMT:
-	case self::IMG_SIZE_FMT:
-	case self::IMG_SOFTWARE:
-	case self::IMG_TYPE_FMT:
-	  return self::TYPE_STR;
+	 self::FILE_NAME,
+	 self::FILE_EXT,
+	 self::AUTHOR,
+	 self::AUTHOR_TITLE,
+	 self::CAPTION,
+	 self::CAPTION_WRITER,
+	 self::CATEGORY,
+	 self::CITY,
+	 self::COPYRIGHT,
+	 self::COUNTRY,
+	 self::COUNTRY_CODE,
+	 self::CREDIT,
+	 self::EDIT_STATUS,
+	 self::EVENT,
+	 self::HEADLINE,
+	 self::INSTRUCTIONS,
+	 self::LOCATION,
+	 self::OBJECT,
+	 self::SOURCE,
+	 self::STATE,
+	 self::SUPP_CATEGORY_A,
+	 self::SUPP_CATEGORY_B,
+	 self::SUPP_CATEGORY_C,
+	 self::TRANSFER_REF,
+	 self::USAGE_TERMS,
+	 self::IMG_APERTURE_FMT,
+	 self::IMG_CAMERA_MAKE,
+	 self::IMG_CAMERA_MODEL,
+	 self::IMG_CAMERA_SERIAL,
+	 self::IMG_COLOR_SPACE_FMT,
+	 self::IMG_EXPOSURE_FMT,
+	 self::IMG_EXPOSURE_MODE_FMT,
+	 self::IMG_EXPOSURE_PGM_FMT,
+	 self::IMG_FLASH_FMT,
+	 self::IMG_FOCAL_LENGTH_FMT,
+	 self::IMG_LENS_MAKE,
+	 self::IMG_LENS_MODEL,
+	 self::IMG_LENS_SERIAL,
+	 self::IMG_METERING_MODE_FMT,
+	 self::IMG_RESOLUTION_FMT,
+	 self::IMG_SIZE_FMT,
+	 self::IMG_SOFTWARE,
+	 self::IMG_TYPE_FMT
+	 => self::TYPE_STR,
 	  
-	default:
-	  return self::TYPE_INVALID;
-	}
+	default
+	=> self::TYPE_INVALID
+	};
   }
 
   /**
@@ -622,18 +611,13 @@ class Metadata {
    */
   public static function isValidFieldType(int $field_id, string|int|float|array|false $field_value): bool
   {
-	switch(self::fieldType($field_id)) {
-	case self::TYPE_STR:
-	  return gettype($field_value) === 'string';
-	case self::TYPE_INT:
-	  return gettype($field_value) === 'integer';
-	case self::TYPE_FLOAT:
-	  return gettype($field_value) === 'double' || gettype($field_value) === 'integer';
-	case self::TYPE_ARY:
-	  return gettype($field_value) === 'array';
-	default:
-	  return false;
-	}
+	return match(self::fieldType($field_id)) {
+	  self::TYPE_STR => gettype($field_value) === 'string',
+	  self::TYPE_INT => gettype($field_value) === 'integer',
+	  self::TYPE_FLOAT => gettype($field_value) === 'double' || gettype($field_value) === 'integer',
+	  self::TYPE_ARY => gettype($field_value) === 'array',
+	  default => false
+	};
   }
 
   /**
@@ -646,7 +630,7 @@ class Metadata {
   public function stringToArray(string|false $input): array|false
   {
 	if($input === false || empty($input)) return false;
-	$output_ary = array();
+	$output_ary = [];
 	$substr_ary = explode(',', $input);
 	foreach($substr_ary as $substr) {
 	  $substr = trim($substr);
@@ -667,7 +651,7 @@ class Metadata {
 	$output = '';
 	foreach($input_ary as $field_value) {
 	  if(!empty($output)) $output .= ', ';
-	  $output .= $field_value;
+	  $output .= trim($field_value);
 	}
 	return $output;
   }
@@ -687,18 +671,21 @@ class Metadata {
   {
 	$kwd_ary = $this->get(self::KEYWORDS);
 	foreach($kwd_ary as $kwd) {
-	  if(strpos($kwd, ':') !== false) {
-		list($field_name, $field_value) = explode(':', $kwd, 2);
+	  if(str_contains($kwd, ':')) {
+		[$field_name, $field_value] = explode(':', $kwd, 2);
 		switch(trim(strtolower($field_name))) {
 		case 'event':
+		case 'evt':
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::EVENT, $field_value);
 		  break;
 		case 'scence':
+		case 'sce':
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::SCENES, $field_value);
 		  break;
 		case 'genre':
+		case 'gnr':
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::GENRE, $field_value);
 		  break;
@@ -707,17 +694,15 @@ class Metadata {
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::PERSON, $field_value);
 		  break;
-		case 'org':
 		case 'organization':
+		case 'org':
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::ORG, $field_value);
 		  break;
-		case 'nat':
 		case 'nationality':
+		case 'nat':
 		  $this->drop(self::KEYWORDS, $kwd);
 		  $this->set(self::NAT, $field_value);
-		  break;
-		default:
 		  break;
 		}
 	  }
@@ -804,7 +789,7 @@ class Metadata {
    */
   private function exportIptc(): void
   {
-	$iptc_data = array();
+	$iptc_data = [];
 	if($this->isset(self::AUTHOR)) $iptc_data[Iptc::AUTHOR][0] = $this->get(self::AUTHOR);
 	if($this->isset(self::AUTHOR_TITLE)) $iptc_data[Iptc::AUTHOR_TITLE][0] = $this->get(self::AUTHOR_TITLE);
 	if($this->isset(self::CAPTION, self::LANG_DEFAULT))
@@ -967,17 +952,18 @@ class Metadata {
 	if(!$this->isset(self::IMG_COLOR_SPACE_FMT) && $xmp_data->isXmpText(Xmp::COLOR_SPACE))
 	  $this->setRW(self::IMG_COLOR_SPACE_FMT, $xmp_data->getXmpText(Xmp::COLOR_SPACE));
 	if($xmp_data->isXmpText(Xmp::COLOR_MODE) && $this->isset(self::IMG_COLOR_SPACE_FMT)) {
-	  switch($xmp_data->getXmpText(Xmp::COLOR_MODE)) {
-	  case 0: $color_mode = 'Bitmap'; break;
-	  case 1: $color_mode = 'Grayscale'; break;
-	  case 2: $color_mode = 'Indexed'; break;
-	  case 3: $color_mode = 'RGB'; break;
-	  case 4: $color_mode = 'CMYK'; break;
-	  case 7: $color_mode = 'Multichannel'; break;
-	  case 8: $color_mode = 'Duotone'; break;
-	  case 9: $color_mode = 'Lab'; break;
-      }
-	  if(isset($color_mode))
+	  $color_mode = match((int)$xmp_data->getXmpText(Xmp::COLOR_MODE)) {
+		0 => _('Bitmap'),
+		1 => _('Grayscale'),
+		2 => _('Indexed'),
+		3 => _('RGB'),
+		4 => _('CMYK'),
+		7 => _('Multichannel'),
+		8 => _('Duotone'),
+		9 => _('Lab'),
+		default => _('Unknown')
+      };
+	  if($color_mode !== _('Unknown'))
 		$this->setRW(self::IMG_COLOR_SPACE_FMT, $this->get(self::IMG_COLOR_SPACE_FMT).' / '.$color_mode);
     }
   }
@@ -1021,7 +1007,7 @@ class Metadata {
 	if($xmp_data->isXmpText(Xmp::PS_STATE)) $xmp_data->setXmpText(Xmp::PS_STATE, $this->get(self::STATE));
 	$xmp_data->setXmpBag(Xmp::SUBJECT_CODE, $this->get(self::SUBJECT_CODE));
 
-	$supp_cat = array();
+	$supp_cat = [];
 	if($this->isset(self::SUPP_CATEGORY_A)) $supp_cat[0] = $this->get(self::SUPP_CATEGORY_A);
 	if(!$this->isset(self::SUPP_CATEGORY_A) && $this->isset(self::SUPP_CATEGORY_B)) $supp_cat[0] = '';
 	if($this->isset(self::SUPP_CATEGORY_B)) $supp_cat[1]  = $this->get(self::SUPP_CATEGORY_B);
@@ -1059,8 +1045,8 @@ class Metadata {
    */
   protected static function calcFrac(string $data): float|false
   {
-	if(strpos($data, '/') === 0) return false;
-	list($nom, $denom) = explode('/', $data, 2);
+	if(!str_contains($data, '/')) return false;
+	[$nom, $denom] = explode('/', $data, 2);
 	return (float)((int)$nom / (int)$denom);
   }
 
@@ -1073,8 +1059,8 @@ class Metadata {
    */
  protected static function nrmFrac(string $frac): string
   {
-	if(strpos($frac, '/') === false) return $frac;
-	list($num, $denom) = explode('/', $frac);
+	if(!str_contains($frac, '/')) return $frac;
+	[$num, $denom] = explode('/', $frac);
 	$num = (int)trim($num); $denom = (int)trim($denom);
 	$new_denom = $denom / $num;
 	return '1/'.round($new_denom);
@@ -1089,10 +1075,10 @@ class Metadata {
   */
  protected static function fracToArray(string $frac): array
  {
-	if(strpos($frac, '/') === false)
+	if(!str_contains($frac, '/'))
 	  throw new Exception(_('Invalid fraction specified'), Exception::DATA_FORMAT_ERROR, $frac);
-	list($num, $denom) = explode('/', $frac);
-	return array($num, $denom);
+	[$num, $denom] = explode('/', $frac);
+	return [$num, $denom];
  }
  
   /**
@@ -1122,19 +1108,15 @@ class Metadata {
 	  $this->setRW(self::IMG_CAMERA_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_CAMERA_SERIAL_NUMBER)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) &&
 	   !$this->isset(self::IMG_COLOR_SPACE_FMT)) {
-	  switch((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) {
-	  case 0x1:
-		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('sRGB')); break;
-	  case 0x2:
-		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Adobe RGB')); break;
-	  case 0xfffd:
-		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Wide Gamut RGB')); break;
-	  case 0xfffe:
-		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('ICC Profile')); break;
-	  case 0xffff:
-		$this->setRW(self::IMG_COLOR_SPACE_FMT, _('Uncalibrated')); break;
-		
-	  }
+	  $this->setRW(self::IMG_COLOR_SPACE_FMT,
+				   match((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_COLOR_SPACE)]) {
+					 0x1 => _('sRGB'),
+					 0x2 => _('Adobe RGB'),
+					 0xfffd => _('Wide Gamut RGB'),
+					 0xfffe => _('ICC Profile'),
+					 0xffff => _('Uncalibrated'),
+					 default => _('Unknown')
+				   });
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)])) {
 	  $exposure = $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_TIME)];
@@ -1144,39 +1126,30 @@ class Metadata {
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) &&
 	   !$this->isset(self::IMG_EXPOSURE_MODE_FMT)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) {
-	  case 0:
-		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Auto')); break;
-	  case 1:
-		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Manual')); break;
-	  case 2:
-		$this->setRW(self::IMG_EXPOSURE_MODE_FMT, _('Auto bracket')); break;
-	  }
+	  $this->setRW(self::IMG_EXPOSURE_MODE_FMT,
+				   match((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_MODE)]) {
+					 0 => _('Auto'),
+					 1 => _('Manual'),
+					 2 => _('Auto bracket'),
+					 default => _('Unknown')
+				   });
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) &&
 	   !$this->isset(self::IMG_EXPOSURE_PGM_FMT)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) {
-	  case 0:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Not defined')); break;
-	  case 1:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Manual')); break;
-	  case 2:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Program')); break;
-	  case 3:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Aperture-priority')); break;
-	  case 4:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Shutter speed priority')); break;
-	  case 5:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Creative (slow speed)')); break;
-	  case 6:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Action (high speed)')); break;
-	  case 7:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Portrait')); break;
-	  case 8:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Landscape')); break;
-	  case 9:
-		$this->setRW(self::IMG_EXPOSURE_PGM_FMT, _('Bulb')); break;
-	  }
+	  $this->setRW(self::IMG_EXPOSURE_PGM_FMT,
+				   match((int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXPOSURE_PROGRAM)]) {
+					 0 => _('Not defined'),
+					 1 => _('Manual'),
+					 2 => _('Program'),
+					 3 => _('Aperture-priority'),
+					 4 => _('Shutter speed priority'),
+					 5 => _('Creative (slow speed)'),
+					 6 => _('Action (high speed)'),
+					 7 => _('Portrait'),
+					 8 => _('Landscape'),
+					 9 =>  _('Bulb'),
+					 default => _('Unknown')
+				   });
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)])) {
 	  $flash  =$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_FLASH)];
@@ -1203,8 +1176,7 @@ class Metadata {
 	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_ISO_SPEED)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]) && !$this->isset(self::IMG_ISO)) {
 	  // Note: SensitivtyType should be 2-7 or 0
-	  $photo_sensitivity = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)];
-	  $this->setRW(self::IMG_ISO, $photo_sensitivity);
+	  $this->setRW(self::IMG_ISO, (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_PHOTO_SENSITIVITY)]);
 	}
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_MAKE)]) &&
 	   !$this->isset(self::IMG_LENS_MAKE))
@@ -1217,24 +1189,16 @@ class Metadata {
 	  $this->setRW(self::IMG_LENS_SERIAL, $exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_LENS_SERIAL_NUMBER)]);
 	if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) &&
 	   !$this->isset(self::IMG_METERING_MODE_FMT)) {
-	  switch($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) {
-	  case 1:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Average')); break;
-	  case 2:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Center-weighted average')); break;
-	  case 3:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Spot')); break;
-	  case 4:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Multi-spot')); break;
-	  case 5:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Multi-segment')); break;
-	  case 6:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Partial')); break;
-	  case 255:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Other')); break;
-	  default:
-		$this->setRW(self::IMG_METERING_MODE_FMT, _('Unknown')); break;
-	  }
+	  $this->setRW(self::IMG_METERING_MODE_FMT,
+				   match($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_METERING_MODE)]) {
+					 1 => _('Average'),
+					 2 => _('Center-weighted average'),
+					 3 => _('Spot'),
+					 4 => _('Multi-spot'),
+					 5 => _('Multi-segment'),
+					 6 => _('Partial'),
+					 255 => _('Other'),
+					 default => _('Unknown')});
 	}
 	if(!$this->isset(self::IMG_RESOLUTION_UNIT)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_RESOLUTION_UNIT)])) {
@@ -1248,13 +1212,7 @@ class Metadata {
 	else {
 	  $resolution_unit = $this->get(self::IMG_RESOLUTION_UNIT);
 	}
-	switch($resolution_unit) {
-	case 1:
-	case 3:
-	  $resolution_per_cm = 1.0; break;
-	default:
-	  $resolution_per_cm = 2.54; break;
-	}
+	$resolution_per_cm = match($resolution_unit) { 1, 3 => 1.0, default => 2.54 };
 	// Note: We give preference to XResolution ofer YResolution
 	if(isset($exif_data[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_XRESOLUTION)]) &&
 	   !$this->isset(self::IMG_RESOLUTION)) {
@@ -1277,7 +1235,7 @@ class Metadata {
 	if(!$this->isset(self::IMG_WIDTH)) {
 	  if(isset($exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)])) {
 		$width = (int)$exif_data[Exif::tag(Exif::IFD_EXIF, Exif::TAG_EXIF_EXIF_IMAGE_WIDTH)];
-		$this->setRW(self::IMG_WIDTH, $height);
+		$this->setRW(self::IMG_WIDTH, $width);
 	  }
 	}
 	else {
@@ -1300,9 +1258,9 @@ class Metadata {
 	  if($this->isset(self::FILE_SIZE)) {
 		$file_size = $this->get(self::FILE_SIZE);
 		if($file_size > 1024 * 1024)
-		  $size_fmt .= ' ('.number_format($file_size / 1024 / 1024, 0).' MB)';
+		  $size_fmt .= ' ('.number_format($file_size / 1024 / 1024, 1).' MB)';
 		elseif($file_size > 1024)
-		  $size_fmt .= ' ('.number_format($file_size / 1024, 0).' KB)';
+		  $size_fmt .= ' ('.number_format($file_size / 1024, 1).' KB)';
 		else
 		  $size_fmt .= ' ('.number_format($file_size / 1024, 2).' KB)';
 	  }
@@ -1328,7 +1286,7 @@ class Metadata {
    */
   protected function exportExif(): void
   {
-	$exif_ary = array();
+	$exif_ary = [];
 	if($this->isset(self::CAPTION))
 	  $exif_ary[Exif::tag(Exif::IFD_IFD0, Exif::TAG_IFD0_IMAGE_DESCRIPTION)] = $this->get(self::CAPTION);
 	if($this->isset(self::COPYRIGHT))
