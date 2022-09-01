@@ -2,7 +2,7 @@
 [![Minimum PHP version](https://img.shields.io/packagist/php-v/diderich/metadata)](https://packagist.org/packages/diderich/metadata)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blueviolet.svg)](https://github.com/diderich/metadata/blob/master/LICENSE)
 [![Standard](https://img.shields.io/badge/standard-IPTC%20Photo%20Metadata%20Standard%202021.1-yellow)](https://iptc.org/standards/photo-metadata/interoperability-tests/)
-
+[![PHP Innovation Award](https://img.shields.io/badge/PHP%20Innovation%20Award-Winner-green)](https://www.phpclasses.org/package/12584-PHP-Read-and-write-metadata-stored-in-JPEG-image-files.html)
 
 # Name
 **Metadata** - A PHP class for reading and writing *Photo Metadata* from JPEG files in a transparent way
@@ -10,6 +10,10 @@
 
 # Version
 See `CHANGELOG.md` and php constant `\Holiday\Metadata::VERSION` for the latest version number.
+
+# Awards
+
+[![PHP Innovation Award](https://files.phpclasses.org/graphics/phpclasses/innovation-award-logo.png)](https://www.phpclasses.org/package/12584-PHP-Read-and-write-metadata-stored-in-JPEG-image-files.html)
 
 
 # Description
@@ -167,7 +171,8 @@ All class files are commended in a phpDocumenter (https://www.phpdoc.org/) compl
       |-- Exif.php          Class reading and writing EXIF/APP1 specific raw data
       |-- Iptc.php          Class reading and writing IPTC/APP13 specific raw data
       |-- Jpeg.php          Class reading and writing JPEG header segment data
-      |-- XmpDocument.php   Class encoding and decoding Xmp data in a DOMDocument class format
+      |-- Xmp
+	    |-- Document.php    Class encoding and decoding Xmp data in a DOMDocument class format
       |-- Xmp.php           Class reading and writing XMP/APP1 specific data
 |-- test/
   |-- example.php           Sample program using the metadata class libraries
@@ -204,7 +209,7 @@ of the JPEG file. Issus without accompanying JPEG data will be closed by the aut
 # Open issues
 The following limitations currently exist and are acknowledged as such:
 * IPTC/APP13: Only Latin 1 and UTF-8 encoded data can be read. Other data formats will throw an exception.
-* XMP/APP1: The classes Xmp and/or XmpDocument may nor recognize all poorly/incorrectly formatted XMP/APP1 data.
+* XMP/APP1: The classes Xmp and/or Xmp\Document may nor recognize all poorly/incorrectly formatted XMP/APP1 data.
 * XMP/APP1: If a data element TAG is updated in the namespace NS, then it will also be updated in the namespaces
   Iptc4xmpCore, dc, aux, xmp, photoshop, and photomechanic, if a data entry exists in those name spaces. Other name
   spaces, for example, used by other applications, are not updated/synchronized. This may result in inconsistent data.
