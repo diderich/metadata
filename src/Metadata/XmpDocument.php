@@ -723,11 +723,19 @@ class XmpDocument {
 	  $node = $root->appendChild($new_child);
 	}
 
-	// Check if $node has children that are not of tye rdf:$tag
+	// Check if $node has children that are not of type rdf:$tag
 	if($node->childNodes->count() !== 0) {
 	  $remove_children = [];
+	  $expected_nodenames = ["rdf:$tag"];
+	  $container_tags = ["Bag", "Seq", "Alt"];
+	  
+	  // If the tag is a container type, all container type children can be removed
+	  if (in_array($tag, $container_tags)) {
+		$expected_nodenames = ["rdf:Bag", "rdf:Seq", "rdf:Alt"];
+	  }
+		
 	  foreach($node->childNodes as $child) {
-		if($child->prefix === 'rdf' && $child->nodeName !== "rdf:$tag") {
+		if($child->prefix === 'rdf' && !in_array($child->nodeName, $expected_nodenames)) {
 		  throw new Exception(_('Incorrect element tag found'), Exception::DATA_FORMAT_ERROR, $child->nodeName);
 		}
 		$remove_children[] = $child;
